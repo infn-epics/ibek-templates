@@ -14,7 +14,7 @@
         "devtype": {
               "type": "string",
               "description": "Global Device type (e.g., camerasim or aravisCamera).",
-              "enum": ["camerasim", "aravisCamera"]
+              "enum": ["camerasim", "aravisCamera", "baslerCamera", "genericCamera"]
         },
         "roi_enable": {
             "type": "boolean",

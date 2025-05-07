@@ -25,7 +25,8 @@ jobs:
       - name: Validate JSON Schemas
         run: |
           npm install -g ajv-cli
-          for schema in schemas/*.json; do
+          cd schemas
+          for schema in *.json; do
             echo "Validating $schema"
             ajv compile -s "$schema" || exit 1
           done
