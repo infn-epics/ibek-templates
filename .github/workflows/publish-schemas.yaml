@@ -45,7 +45,8 @@ jobs:
           gh release create "${{ github.ref_name }}" \
             --title "Schemas Release ${{ github.ref_name }}" \
             --notes "This release contains the latest JSON schemas for the project.\n- Published to GitHub Pages\n- Available as individual release assets" \
-            --target "${{ github.ref }}"
+            --target "${{ github.sha }}" \
+            --draft=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
