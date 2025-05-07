@@ -33,13 +33,26 @@ jobs:
             ajv compile -s "$schema" || exit 1
           done
 
-      # Step 4: Publish schemas to the `gh-pages` branch
-      - name: Publish Schemas to gh-pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: schemas
-          publish_branch: gh-pages
-          commit_message: "Publish updated schemas [skip ci]"
+          tag_name: "schemas-v${{ github.run_number }}"
+          release_name: "Schemas Release v${{ github.run_number }}"
+          body: |
+            This release contains the latest JSON schemas for the project.
+            - Published to GitHub Pages
+            - Available as individual release assets
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      
+      - name: Upload Schema Files
+        run: |
+          for schema in schemas/*.json; do
+            echo "Uploading $schema"
+            gh release upload ${{ steps.create_release.outputs.tag_name }} "$schema" --clobber
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
