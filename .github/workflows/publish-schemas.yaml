@@ -30,7 +30,7 @@ jobs:
           npm install -g ajv-cli
           for schema in schemas/*.json; do
             echo "Validating $schema"
-            ajv validate -s "$schema" || exit 1
+            ajv compile -s "$schema" || exit 1
           done
 
       # Step 4: Publish schemas to the `gh-pages` branch
