@@ -1,0 +1,20 @@
+ioc_name: {{iocname}}
+description:  CHILLER  TEMPLATE
+
+entities:
+
+- type: smc.CreateCtrl
+  name: "CHILLER01"
+  IP: {{server}}
+  TCPPORT: {{port | default(4001) }}
+  P: "{{iocprefix}}:{{iocroot}}"
+  DEV_ID: "{{dev_id | default("01")}}"
+  
+
+
+
+
+- type: epics.PostStartupCommand 
+  command: |
+          dbl
+          dbl("*") > {{config_dir}}/pvlist.txt           ## dumps PV NAMES
