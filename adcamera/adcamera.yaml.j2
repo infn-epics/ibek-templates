@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://github.com/infn-epics/ibek-templates/releases/download/v1.0.2b4/adcamera.schema.json
+
 ioc_name: {{iocname}}
 description: AD Camera Array model with plugins
 
@@ -188,6 +190,7 @@ entities:
       dbpf("{{iocprefix}}:{{camera.name}}:TIFF1:FileName","camera")
       dbpf("{{iocprefix}}:{{camera.name}}:TIFF1:AutoIncrement",1)
       dbpf("{{iocprefix}}:{{camera.name}}:TIFF1:FileTemplate","%s%s_%3.3d.tiff")
+      {%- if proc_enable %}
       dbpf("{{iocprefix}}:{{camera.name}}:Proc1:TIFF1:FilePath", "{{data_dir}}")
       dbpf("{{iocprefix}}:{{camera.name}}:Proc1:TIFF1:FileWriteMode",2)
       dbpf("{{iocprefix}}:{{camera.name}}:Proc1:TIFF1:FileName","{{camera.name}}")
@@ -198,6 +201,7 @@ entities:
       dbpf("{{iocprefix}}:{{camera.name}}:Proc1:TIFF:FileName","{{camera.name}}")
       dbpf("{{iocprefix}}:{{camera.name}}:Proc1:TIFF:AutoIncrement",1)
       dbpf("{{iocprefix}}:{{camera.name}}:Proc1:TIFF:FileTemplate","%s%s_%3.3d.tiff")
+      {%- endif %}
       {%- if roi_enable %}
       dbpf("{{iocprefix}}:{{camera.name}}:Roi1:TIFF1:FilePath", "{{data_dir}}")
       dbpf("{{iocprefix}}:{{camera.name}}:Roi1:TIFF1:FileWriteMode",2)
@@ -235,5 +239,8 @@ entities:
   {%- endfor %}
   
       dbl("*") > {{config_dir}}/pvlist.txt
+   {%- if iocexit %}
+      exit
+   {%- endif %}
   - type: epics.EpicsCaMaxArrayBytes 
     max_bytes: 10000000
