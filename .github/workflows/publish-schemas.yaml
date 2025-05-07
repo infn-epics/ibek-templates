@@ -2,11 +2,8 @@ name: Publish Schemas
 
 on:
   push:
-    branches:
-      - main  # Trigger on pushes to the main branch
-  pull_request:
-    branches:
-      - main  # Trigger on pull requests to the main branch
+    tags:
+      - '*'  # Trigger only on tag pushes
 
 jobs:
   publish:
@@ -45,8 +42,8 @@ jobs:
       # Step 5: Create a release using gh CLI
       - name: Create Release
         run: |
-          gh release create "schemas-v${{ github.run_number }}" \
-            --title "Schemas Release v${{ github.run_number }}" \
+          gh release create "${{ github.ref_name }}" \
+            --title "Schemas Release ${{ github.ref_name }}" \
             --notes "This release contains the latest JSON schemas for the project.\n- Published to GitHub Pages\n- Available as individual release assets" \
             --target "${{ github.ref }}"
         env:
@@ -57,7 +54,7 @@ jobs:
         run: |
           for schema in schemas/*.json; do
             echo "Uploading $schema"
-            gh release upload "schemas-v${{ github.run_number }}" "$schema" --clobber
+            gh release upload "${{ github.ref_name }}" "$schema" --clobber
           done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
