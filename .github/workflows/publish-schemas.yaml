@@ -1,0 +1,45 @@
+name: Publish Schemas
+
+on:
+  push:
+    branches:
+      - main  # Trigger on pushes to the main branch
+  pull_request:
+    branches:
+      - main  # Trigger on pull requests to the main branch
+
+jobs:
+  publish:
+    name: Publish Schemas
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js (optional, if needed for JSON validation)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      # Step 3: Validate JSON schemas (optional)
+      - name: Validate JSON Schemas
+        run: |
+          npm install -g ajv-cli
+          for schema in schemas/*.json; do
+            echo "Validating $schema"
+            ajv validate -s "$schema" || exit 1
+          done
+
+      # Step 4: Publish schemas to the `gh-pages` branch
+      - name: Publish Schemas to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: schemas
+          publish_branch: gh-pages
+          commit_message: "Publish updated schemas [skip ci]"
+
+      
