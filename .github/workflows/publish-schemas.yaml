@@ -63,7 +63,7 @@ jobs:
         run: |
           for schema in schemas/*.json; do
             echo "Uploading $schema"
-            gh release upload ${{ steps.create_release.outputs.tag_name }} "$schema" --clobber
+            gh release upload "${{ steps.create_release.outputs.tag_name }}" "$schema" --clobber
           done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
