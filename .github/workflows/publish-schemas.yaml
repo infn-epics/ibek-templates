@@ -42,28 +42,22 @@ jobs:
           publish_branch: gh-pages
           commit_message: "Publish updated schemas [skip ci]"
 
-      # Step 5: Create a release
+      # Step 5: Create a release using gh CLI
       - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+        run: |
+          gh release create "schemas-v${{ github.run_number }}" \
+            --title "Schemas Release v${{ github.run_number }}" \
+            --notes "This release contains the latest JSON schemas for the project.\n- Published to GitHub Pages\n- Available as individual release assets" \
+            --target "${{ github.ref }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: "schemas-v${{ github.run_number }}"
-          release_name: "Schemas Release v${{ github.run_number }}"
-          body: |
-            This release contains the latest JSON schemas for the project.
-            - Published to GitHub Pages
-            - Available as individual release assets
-          draft: false
-          prerelease: false
 
       # Step 6: Upload each schema file as a release asset
       - name: Upload Schema Files
         run: |
           for schema in schemas/*.json; do
             echo "Uploading $schema"
-            gh release upload "${{ steps.create_release.outputs.tag_name }}" "$schema" --clobber
+            gh release upload "schemas-v${{ github.run_number }}" "$schema" --clobber
           done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
