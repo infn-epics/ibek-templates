@@ -6,6 +6,10 @@
         "type": "string",
         "description": "Name of the IOC."
       },
+      "iocexit": {
+        "type": "boolean",
+        "description": "Exit IOC after initialization. (debug and CI intergration)"
+      },
       "template": {
         "const": "adcamera",
         "description": "The template type for this schema."
