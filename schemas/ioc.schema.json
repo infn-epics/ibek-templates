@@ -1,0 +1,57 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "iocname": {
+        "type": "string",
+        "description": "Name of the IOC."
+      },
+      "iocexit": {
+        "type": "boolean",
+        "description": "Exit IOC after initialization. (debug and CI intergration)"
+      },
+      "template": {
+        "const": "ioc",
+        "description": "The template type for this schema."
+      },
+      "devtype": {
+              "type": "string",
+              "description": "Global Device type."
+    },
+      "iocprefix": {
+        "type": "string",
+        "description": "Prefix for the IOC PVs."
+      },
+      "iocroot": {
+        "type": "string",
+        "description": "PV prefix for the IOC PVs."
+      },
+      "data_dir": {
+        "type": "string",
+        "description": "Directory for storing data files."
+      },
+      "config_dir": {
+        "type": "string",
+        "description": "Directory for storing configuration files."
+      },
+      "iocinit": {
+        "type": "array",
+        "description": "Common IOC initialization parameters.",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the parameter."
+            },
+            "value": {
+              "type": "string",
+              "description": "Value of the parameter."
+            }
+          },
+          "required": ["name", "value"]
+        }
+      }
+    },
+    "required": ["iocname", "iocprefix"]
+  }

@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./ioc.schema.json"
+        },
+        {
+            "$ref": "./eth2serial.schema.json"
+        }
+    ],
+    "properties": {
+        "template": {
+            "const": "chiller",
+            "description": "The template type for this schema."
+        },
+    
+        "dev_id": {
+            "type": "string",
+            "description": "Device ID of the chiller.",
+            "default": "01"
+        }
+    },
+    "required": ["server", "port", "iocprefix", "iocroot", "dev_id"]
+}

@@ -1,0 +1,17 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+    
+        "server": {
+            "type": "string",
+            "description": "IP address of the ethernet/serial converter."
+        },
+        "port": {
+            "type": "integer",
+            "description": "TCP port of the ethernet/serial converter.",
+            "default": 4001
+        }
+    },
+    "required": ["server", "port"]
+}
