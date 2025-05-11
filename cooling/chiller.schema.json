@@ -6,7 +6,7 @@
             "$ref": "./ioc.schema.json"
         },
         {
-            "$ref": "./eth2serial.schema.json"
+            "$ref": "./connection.schema.json"
         }
     ],
     "properties": {

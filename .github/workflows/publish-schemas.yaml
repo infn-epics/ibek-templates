@@ -31,11 +31,20 @@ jobs:
             ajv compile -s "$schema" || exit 1
           done
 
+      # Step 4: Create a release and tag it as 'latest'
       - name: Release
         uses: softprops/action-gh-release@v2
         if: github.ref_type == 'tag'
         with:
           files: |
             schemas/*.json
-      
+          tag_name: latest  # Add the 'latest' tag
+          name: Release ${{ github.ref_name }} (Latest)
+          body: |
+            This release contains the latest JSON schemas for the project.
+            - Published to GitHub Pages
+            - Available as individual release assets
+          draft: false
+          prerelease: false
+
 

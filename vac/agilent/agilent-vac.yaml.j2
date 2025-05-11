@@ -1,0 +1,59 @@
+ioc_name: {{iocname}}
+description:  Agilent VAC TEMPLATE
+
+entities:
+
+
+{% if devtype == "xgs600" %}
+- type: agilent.{{devtype}}.controller
+  name: AGILENT001
+  IP: {{server}}
+  TCPPORT: {{port}}
+  P: "{{iocprefix}}"
+{% if devices and devices.img and devices.img.channels %}
+{%- for t in devices.img.channels %}
+- type: agilent.xgs600.imgsensor
+  controller: AGILENT001
+  P: "{{iocprefix}}:{{ t.name }}"
+  sensor: {{ t.sensor }}
+  tcauto: {{ t.tcauto }}
+{%- endfor %}
+{%- endif %}
+
+{% if devices and devices.cnv and devices.cnv.channels %}
+{%- for t in devices.cnv.channels %}
+- type: agilent.{{devtype}}.cnvsensor
+  controller: AGILENT001
+  P: "{{iocprefix}}:{{ t.name }}"
+  sensor: {{ t.sensor }}
+{%- endfor %}
+{%- endif %}
+
+{% if devices and devices.setpoint and devices.setpoint.channels %}
+{%- for t in devices.setpoint.channels %}
+- type: agilent.{{devtype}}.setpoint
+  controller: AGILENT001
+  P: "{{iocprefix}}:{{ t.name }}"
+  sensor: {{ t.sensor }}
+  number: {{ t.number }}
+{%- endfor %}
+{%- endif %}
+## pumps
+{%- else %}
+- type: agilent.{{devtype}}.controller
+  name: AGILENT_PUMP
+  IP: {{server}}
+  TCPPORT: {{port}}
+  P: "{{iocprefix}}"
+{%- for t in devices %}
+- type: agilent.{{devtype}}.pump
+  controller: AGILENT_PUMP
+  name: "{{ t.name }}"
+  channel: {{ t.channel }}
+{%- endfor %}
+{%- endif %}
+
+- type: epics.PostStartupCommand 
+  command: |
+    dbl
+    dbl("*") > {{config_dir}}/pvlist.txt           ## dumps PV NAMES
