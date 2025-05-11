@@ -43,9 +43,16 @@
             "type": "array",
             "description": "Common IOC initialization parameters.",
             "items": {
-                "$ref": "#/definitions/iocinit"
+                "$ref": "#/definitions/keyvalue"
             }
         },
+        "iocparam": {
+                    "type": "array",
+                    "description": "generic IOC parameters to be replaced in the template.",
+                    "items": {
+                        "$ref": "#/definitions/keyvalue"
+                    }
+                },
         "connection": {
             "type": "object",
             "description": "Connection parameters for the IOC.",
@@ -61,7 +68,7 @@
     },
     "required": ["iocname", "iocprefix", "asset"],
     "definitions": {
-        "iocinit": {
+        "keyvalue": {
             "type": "object",
             "properties": {
                 "name": {
@@ -108,7 +115,7 @@
                     "type": "array",
                     "description": "Device-specific IOC initialization parameters.",
                     "items": {
-                        "$ref": "#/definitions/iocinit"
+                        "$ref": "#/definitions/keyvalue"
                     }
                 },
                 "connection": {
@@ -117,7 +124,7 @@
                     "$ref": "#/definitions/connection"
                 }
             },
-            "required": ["name", "channel", "asset"]
+            "required": ["name", "channel"]
         }
     }
 }
