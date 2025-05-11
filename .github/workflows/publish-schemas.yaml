@@ -1,13 +1,15 @@
 name: Publish Schemas
 
 on:
-  push:
+  push:  # Trigger on every push
+    branches:
+      - '**'  # Run on all branches
     tags:
-      - 'v*'  # Trigger only on version tags
+      - 'v*'  # Also trigger on version tags
 
 jobs:
-  publish:
-    name: Publish Schemas
+  validate:
+    name: Validate Schemas and Test YAML Files
     runs-on: ubuntu-latest
 
     steps:
@@ -15,22 +17,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Step 2: Extract Major Version
-      - name: Extract Major Version
-        id: version
-        run: |
-          # Extract the major version from the tag
-          TAG=${GITHUB_REF#refs/tags/}
-          VERSION=$(echo "$TAG" | cut -d. -f1)
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-
-      # Step 3: Set up Node.js (optional, if needed for JSON validation)
+      # Step 2: Set up Node.js for JSON validation
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16'
 
-      # Step 4: Validate JSON schemas (optional)
+      # Step 3: Validate JSON schemas
       - name: Validate JSON Schemas
         run: |
           npm install -g ajv-cli
@@ -40,14 +33,35 @@ jobs:
             ajv compile -s "$schema" || exit 1
           done
 
-      # Step 5: Create a release with Major version
+      # Step 4: Run jnjrender on YAML files in tests
+      - name: Test templates on YAML files
+        run: |
+          pip install jnjrender
+          cd tests
+          for file in *.yaml; do
+            echo "Processing $file with jnjrender..."
+            jnjrender templates/ "$file" || exit 1
+          done
+
+  release:
+    name: Create Release
+    needs: validate  # Run only if the validate job succeeds
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')  # Run only on tag pushes
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2: Create a release using the existing tag
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             schemas/*.json
-          tag_name: ${{ env.VERSION }}  # Use the extracted major version
-          name: Release ${{ env.VERSION }}
+          tag_name: ${{ github.ref_name }}  # Use the existing tag that triggered the workflow
+          name: Release ${{ github.ref_name }}
           body: |
             This release contains the latest JSON schemas for the project.
             - Published to GitHub Pages

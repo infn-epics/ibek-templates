@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+
+iocname: "testcam"
+asset: "testcam"
+iocprefix: "TESTCAM"
+template: "adcamera"
+iocexit: true
+cameras:
+  - name: cam01
+    CAMERA_ID: "none"
+    devtype: "camerasim"
+    CAMERA_CLASS: "Simulated"
+    iocinit:
+        - name: "AcquirePeriod"
+          value: "1"
+        - name: "Gain"
+          value: "255"
+        - name: "SimMode"
+          value: "Peaks"
+        - name: "PeakStartX"
+          value: "250"
+        - name: "PeakStartY"
+          value: "200"
+        - name: "PeakWidthX"
+          value: "70"
+        - name: "PeakWidthY"
+          value: "50"
+        - name: "PeakVariation"
+          value: "10"
+  - name: cam02
+    CAMERA_ID: "none"
+    devtype: "camerasim"
+    CAMERA_CLASS: "Simulated"
+

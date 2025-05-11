@@ -1,9 +1,11 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
+    "$id": "adcamera.schema.json",
+
     "allOf": [
         {
-            "$ref": "./ioc.schema.json"
+            "$ref": "http://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json"
         }
     ],
     "properties": {
