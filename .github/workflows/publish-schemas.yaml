@@ -3,7 +3,7 @@ name: Publish Schemas
 on:
   push:
     tags:
-      - '*'  # Trigger only on tag pushes
+      - 'v*'  # Trigger only on version tags
 
 jobs:
   publish:
@@ -15,13 +15,22 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up Node.js (optional, if needed for JSON validation)
+      # Step 2: Extract Major Version
+      - name: Extract Major Version
+        id: version
+        run: |
+          # Extract the major version from the tag
+          TAG=${GITHUB_REF#refs/tags/}
+          VERSION=$(echo "$TAG" | cut -d. -f1)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      # Step 3: Set up Node.js (optional, if needed for JSON validation)
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16'
 
-      # Step 3: Validate JSON schemas (optional)
+      # Step 4: Validate JSON schemas (optional)
       - name: Validate JSON Schemas
         run: |
           npm install -g ajv-cli
@@ -31,15 +40,14 @@ jobs:
             ajv compile -s "$schema" || exit 1
           done
 
-      # Step 4: Create a release and tag it as 'latest'
+      # Step 5: Create a release with Major version
       - name: Release
         uses: softprops/action-gh-release@v2
-        if: github.ref_type == 'tag'
         with:
           files: |
             schemas/*.json
-          tag_name: latest  # Add the 'latest' tag
-          name: Release ${{ github.ref_name }} (Latest)
+          tag_name: ${{ env.VERSION }}  # Use the extracted major version
+          name: Release ${{ env.VERSION }}
           body: |
             This release contains the latest JSON schemas for the project.
             - Published to GitHub Pages
