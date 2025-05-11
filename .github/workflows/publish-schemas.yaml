@@ -37,7 +37,7 @@ jobs:
       - name: Test templates on YAML files
         run: |
           pip install jnjrender
-          for file in *.yaml; do
+          for file in tests/*.yaml; do
             echo "Processing $file with jnjrender..."
             jnjrender templates/ "$file" || exit 1
           done
