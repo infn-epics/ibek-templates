@@ -105,7 +105,7 @@
                 },
                 "devtype": {
                     "type": "string",
-                    "description": "Global Device type."
+                    "description": "controlled device/sensor type"
                 },
                 "channel": {
                     "type": "integer",
@@ -113,7 +113,7 @@
                 },
                 "asset": {
                     "type": "string",
-                    "description": "Asset entry associated with the device."
+                    "description": "Asset entry associated with the device/sensor"
                 },
 
                 "iocinit": {
