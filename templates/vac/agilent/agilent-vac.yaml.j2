@@ -12,34 +12,29 @@ entities:
   IP: {{server}}
   TCPPORT: {{port}}
   P: "{{iocprefix}}"
-{% if devices and devices.img and devices.img.channels %}
-{%- for t in devices.img.channels %}
+{%- for t in devices %}
+{%- if t.devtype == "img" %}
 - type: agilent.xgs600.imgsensor
   controller: AGILENT001
   P: "{{iocprefix}}:{{ t.name }}"
   sensor: {{ t.sensor }}
   tcauto: {{ t.tcauto }}
-{%- endfor %}
 {%- endif %}
-
-{% if devices and devices.cnv and devices.cnv.channels %}
-{%- for t in devices.cnv.channels %}
+{%- if t.devtype == "cnv" %}
 - type: agilent.{{devtype}}.cnvsensor
   controller: AGILENT001
   P: "{{iocprefix}}:{{ t.name }}"
   sensor: {{ t.sensor }}
-{%- endfor %}
 {%- endif %}
-
-{% if devices and devices.setpoint and devices.setpoint.channels %}
-{%- for t in devices.setpoint.channels %}
+{%- if t.devtype == "setpoint" %}
 - type: agilent.{{devtype}}.setpoint
   controller: AGILENT001
   P: "{{iocprefix}}:{{ t.name }}"
   sensor: {{ t.sensor }}
   number: {{ t.number }}
-{%- endfor %}
 {%- endif %}
+{%- endfor %}
+
 ## pumps
 {%- else %}
 - type: agilent.{{devtype}}.controller

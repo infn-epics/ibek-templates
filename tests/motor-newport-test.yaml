@@ -1,0 +1,21 @@
+iocname: "vitara"
+asset: "Vitara RF SPARC"
+template: "motor"
+devtype: newport
+devgroup: rf
+iocprefix: "SPARC:MOT"
+iocroot: "VITARA01"
+iocparam:
+  - name: "server"
+    value: "scsparcmoxa003.lnf.infn.it"
+  - name: "port"
+    value: "4004"
+motor:
+  axis:
+    - name: "m0"
+      axid: 0
+      dllm: -25
+      dhlm: 25
+      home: 1
+      start: 10
+      velo: 1

@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+iocname: "vacipcmini1"
+asset: "https://servicedesk.infn.it/secure/ObjectSchema.jspa?id=44&typeId=2505&objectId=129491"
+iocprefix: "SPARC:VACUUM"
+template: "agilent-vac"
+devtype: ipcmini
+devgroup: vpc
+iocparam:
+  - name: "server"
+    value: 192.168.197.105
+  - name: "port"
+    value: 4002
+devices:
+    - name: "RFDSIP01"
+      channel: 0x85
+    - name: "PTLSIP01"
+      channel: 0x86
+    - name: "PTLSIP02"
+      channel: 0x87

@@ -8,7 +8,7 @@ description: AD Camera Array model with plugins
 
 entities:
 
-  {%- for camera in cameras %}
+  {%- for camera in devices %}
   {%- if "Basler-a2A1920" in camera.CAMERA_CLASS %}
     {% set camera_elements = 2354176 %}
   {%- elif "Basler-scA1400" in camera.CAMERA_CLASS %}
@@ -182,7 +182,7 @@ entities:
 
   - type: epics.PostStartupCommand 
     command: |
-    {%- for camera in cameras %}
+    {%- for camera in devices %}
       ## camera {{camera.name}} initializations
 
       dbpf("{{iocprefix}}:{{camera.name}}:TIFF1:FilePath", "{{data_dir}}")

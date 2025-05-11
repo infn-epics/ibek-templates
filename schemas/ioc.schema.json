@@ -103,6 +103,10 @@
                     "type": "string",
                     "description": "Name of the device."
                 },
+                "devtype": {
+                    "type": "string",
+                    "description": "Global Device type."
+                },
                 "channel": {
                     "type": "integer",
                     "description": "Channel number of the device."
@@ -111,6 +115,7 @@
                     "type": "string",
                     "description": "Asset entry associated with the device."
                 },
+
                 "iocinit": {
                     "type": "array",
                     "description": "Device-specific IOC initialization parameters.",
@@ -124,7 +129,7 @@
                     "$ref": "#/definitions/connection"
                 }
             },
-            "required": ["name", "channel"]
+            "required": ["name"]
         }
     }
 }

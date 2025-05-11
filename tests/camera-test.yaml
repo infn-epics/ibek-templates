@@ -4,8 +4,7 @@ iocname: "testcam"
 asset: "testcam"
 iocprefix: "TESTCAM"
 template: "adcamera"
-iocexit: true
-cameras:
+devices:
   - name: cam01
     CAMERA_ID: "none"
     devtype: "camerasim"

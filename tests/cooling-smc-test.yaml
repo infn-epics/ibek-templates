@@ -1,0 +1,14 @@
+iocname: "chiller-CHLSLS01" 
+asset: "https://confluence.infn.it/display/LDCG/ICP-23-0032"
+iocprefix: "SPARC:CHL:SMC"
+iocroot: "CHLSLS01"
+template: "smc"
+devtype: smc
+devgroup: cooling
+iocparam:
+  - name: "server"
+    value: 192.168.197.80
+  - name: "port"
+    value: 4002
+  - name: "dev_id"
+    value: "01"

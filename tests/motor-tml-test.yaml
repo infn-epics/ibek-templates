@@ -1,0 +1,62 @@
+iocname: "tml-ch1"
+asset: "https://confluence.infn.it/x/nYD8DQ"
+devtype: tml
+template: "motor"
+devgroup: motor
+iocprefix: "SPARC:TML"
+serial:
+  ip: scsparcmoxa001.lnf.infn.it
+  port: 4001
+  ptty: /var/tmp/ttyV0
+  baud: 9600
+motor:
+  hostid: 5
+  velo_max: 50
+  accl_max: 100
+  jar: 100
+  har: 100
+  accl: 100
+  velo: 20
+  jvel: 20
+  hvel: 20
+  axis:
+    - name: GUNFLG01
+      axid: 10
+      velo: 30
+      jvel: 30
+      hvel: 30
+  # - name: AC1BAM01
+  #   axid: 23        
+    - name: "AC1FLG01"
+      axid: 3
+    - name: AC2FLG01
+      axid: 4
+      velo: 40
+      jvel: 40
+      hvel: 40
+    - name: AC3FLG01
+      axid: 5
+      velo: 40
+      jvel: 40
+      hvel: 40
+    - name: UTLFLG01
+      axid: 12
+      velo: 40
+      jvel: 40
+      hvel: 40
+    - name: UTLFLG02
+      axid: 13
+    - name: DGLFLG00
+      axid: 11
+      velo: 40
+      jvel: 40
+      hvel: 40
+    - name: DGLFLG01
+      axid: 14
+      velo: 40
+      jvel: 40
+      hvel: 40
+    - axid: 8
+      name: GUNHOR01
+    - axid: 7
+      name: GUNVER01

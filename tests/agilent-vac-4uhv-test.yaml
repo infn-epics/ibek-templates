@@ -1,0 +1,20 @@
+iocname: "vpcon17"
+asset: "https://servicedesk.infn.it/secure/ObjectSchema.jspa?id=44&typeId=2505&objectId=129492"
+iocprefix: "LEL:VAC:VPCON17"
+template: "agilent-vac"
+devtype: 4uhv
+devgroup: vpc
+iocparam:
+  - name: "server"
+    value: 10.16.4.57 # scelimxa16001
+  - name: "port"
+    value: 4002
+devices:
+  - name: "IONP01"
+    channel: 0
+  - name: "IONP02"
+    channel: 1
+  - name: "IONP03"
+    channel: 
+  - name: "IONP04"
+    channel: 3
