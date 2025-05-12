@@ -21,7 +21,7 @@ motor:
   velo: 20
   jvel: 20
   hvel: 20
-  axis:
+  devices:
     - name: GUNFLG01
       axid: 10
       velo: 30

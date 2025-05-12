@@ -6,7 +6,7 @@ description:  Agilent VAC TEMPLATE
 entities:
 
 
-{% if devtype == "xgs600" %}
+{%- if devtype == "xgs600" %}
 - type: agilent.{{devtype}}.controller
   name: AGILENT001
   IP: {{server}}

@@ -7,10 +7,7 @@ iocroot: "CHLSLS01"
 template: "smc"
 devtype: smc
 devgroup: cooling
-iocparam:
-  - name: "server"
-    value: 192.168.197.80
-  - name: "port"
-    value: 4002
-  - name: "dev_id"
-    value: "01"
+server: "192.168.197.105"
+port: 4002
+dev_id: "01"
+

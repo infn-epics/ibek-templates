@@ -5,11 +5,8 @@ iocprefix: "LEL:VAC:VGCON01"
 template: "agilent-vac"
 devtype: xgs600
 devgroup: vgc
-iocparam:
-  - name: "server"
-    value: 10.16.4.57 # scelimxa16001
-  - name: "port"
-    value: 4001
+server: "192.168.197.105"
+port: 4002
 devices:
   - name: "GAUG01:CC"
     sensor: "I1"

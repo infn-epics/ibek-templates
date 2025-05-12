@@ -4,11 +4,8 @@ iocprefix: "LEL:VAC:VPCON17"
 template: "agilent-vac"
 devtype: 4uhv
 devgroup: vpc
-iocparam:
-  - name: "server"
-    value: 10.16.4.57 # scelimxa16001
-  - name: "port"
-    value: 4002
+server: "10.16.4.57"
+port: 4002
 devices:
   - name: "IONP01"
     channel: 0

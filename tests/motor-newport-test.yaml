@@ -5,13 +5,10 @@ devtype: newport
 devgroup: rf
 iocprefix: "SPARC:MOT"
 iocroot: "VITARA01"
-iocparam:
-  - name: "server"
-    value: "scsparcmoxa003.lnf.infn.it"
-  - name: "port"
-    value: "4004"
+server: "192.168.197.105"
+port: 4002
 motor:
-  axis:
+  devices:
     - name: "m0"
       axid: 0
       dllm: -25

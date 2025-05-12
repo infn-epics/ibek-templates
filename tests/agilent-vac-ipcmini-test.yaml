@@ -5,11 +5,8 @@ iocprefix: "SPARC:VACUUM"
 template: "agilent-vac"
 devtype: ipcmini
 devgroup: vpc
-iocparam:
-  - name: "server"
-    value: 192.168.197.105
-  - name: "port"
-    value: 4002
+server: "192.168.197.105"
+port: 4002
 devices:
     - name: "RFDSIP01"
       channel: 0x85
