@@ -28,6 +28,27 @@ entities:
     BUFFERS: {{camera.buffers | default(100)}}
     MEMORY: {{camera.memory | default(0)}}
 
+  {%- if stream_enable %}
+  - type: ffmpegStream
+    PORT: {{camera.name}}.STREAM
+    P: "{{iocprefix}}:{{camera.name}}"
+    R: ":Stream1:"
+    NDARRAY_PORT: {{camera.name}}
+    BUFFERS: {{camera.buffers | default(50)}}
+    HTTP_PORT: 8082  
+    MAXH: 1200
+    MAXW: 1600
+    MEMORY: 0
+    NDARRAY_ADDR: 0
+    BLOCK: 0
+    PRIORITY: 0
+    QUALITY: 100
+    QUEUE: 2
+    SCANRATE: I/O Intr
+    SETH: 0
+    SETW: 0
+    STACKSIZE: 0
+  {%- end %}
   {%- if roi_enable %}
   - type: ADCore.NDROI
     PORT: {{camera.name}}.ROI1

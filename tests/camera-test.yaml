@@ -4,6 +4,11 @@ iocname: "testcam"
 asset: "testcam"
 iocprefix: "TESTCAM"
 template: "adcamera"
+stream_enable: true
+roi_enable: true
+stats_enable: true
+proc_enable: true
+overlay_enable: true
 devices:
   - name: cam01
     CAMERA_ID: "none"

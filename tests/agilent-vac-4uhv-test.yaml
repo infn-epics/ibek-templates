@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
 iocname: "vpcon17"
 asset: "https://servicedesk.infn.it/secure/ObjectSchema.jspa?id=44&typeId=2505&objectId=129492"
 iocprefix: "LEL:VAC:VPCON17"
@@ -12,6 +13,6 @@ devices:
   - name: "IONP02"
     channel: 1
   - name: "IONP03"
-    channel: 
+    channel: 2
   - name: "IONP04"
     channel: 3
