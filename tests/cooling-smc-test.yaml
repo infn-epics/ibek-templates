@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+
 iocname: "chiller-CHLSLS01" 
 asset: "https://confluence.infn.it/display/LDCG/ICP-23-0032"
 iocprefix: "SPARC:CHL:SMC"
