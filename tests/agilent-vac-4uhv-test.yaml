@@ -10,10 +10,10 @@ iocexit: true
 port: 4002
 devices:
   - name: "IONP01"
-    channel: 0
-  - name: "IONP02"
     channel: 1
-  - name: "IONP03"
+  - name: "IONP02"
     channel: 2
-  - name: "IONP04"
+  - name: "IONP03"
     channel: 3
+  - name: "IONP04"
+    channel: 4
