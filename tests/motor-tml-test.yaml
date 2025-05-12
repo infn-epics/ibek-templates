@@ -6,6 +6,7 @@ devtype: tml
 template: "motor"
 devgroup: motor
 iocprefix: "SPARC:TML"
+iocexit: true
 serial:
   ip: scsparcmoxa001.lnf.infn.it
   port: 4001

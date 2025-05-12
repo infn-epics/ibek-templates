@@ -6,6 +6,7 @@ template: "agilent-vac"
 devtype: 4uhv
 devgroup: vpc
 server: "10.16.4.57"
+iocexit: true
 port: 4002
 devices:
   - name: "IONP01"

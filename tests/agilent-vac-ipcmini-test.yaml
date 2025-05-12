@@ -7,6 +7,7 @@ devtype: ipcmini
 devgroup: vpc
 server: "192.168.197.105"
 port: 4002
+iocexit: true
 devices:
     - name: "RFDSIP01"
       channel: 0x85

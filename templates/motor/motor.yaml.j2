@@ -197,3 +197,6 @@ entities:
     command: |
           dbl
           dbl("*") > {{config_dir}}/pvlist.txt
+   {%- if iocexit %}
+          exit
+   {%- endif %}

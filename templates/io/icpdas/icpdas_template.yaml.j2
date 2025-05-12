@@ -30,3 +30,6 @@ entities:
   command: |
           dbl
           dbl("*") > {{config_dir}}/pvlist.txt           ## dumps PV NAMES
+          {%- if iocexit %}
+           exit
+          {%- endif %}
