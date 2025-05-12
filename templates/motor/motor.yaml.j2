@@ -123,7 +123,6 @@ entities:
     controllerName: TML
     P: "{{iocprefix}}"
     TTY: {{serial.ptty}}
-    numAxes: {{motor.devices | length}}
     hostid: {{motor.hostid}}
   
 {%- for mot in motor.devices %}
