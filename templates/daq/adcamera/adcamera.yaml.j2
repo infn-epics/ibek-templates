@@ -29,7 +29,7 @@ entities:
     MEMORY: {{camera.memory | default(0)}}
 
   {%- if stream_enable %}
-  - type: ffmpegStream
+  - type: ffmpegServer.ffmpegStream
     PORT: {{camera.name}}.STREAM
     P: "{{iocprefix}}:{{camera.name}}"
     R: ":Stream1:"
@@ -258,10 +258,12 @@ entities:
       {%- endfor %}
 
   {%- endfor %}
-  
-      dbl("*") > {{config_dir}}/pvlist.txt
-   {%- if iocexit %}
+    
+  {%- if iocexit %}
+      dbl
       exit
-   {%- endif %}
+  {%- else %}
+      dbl("*") > {{config_dir}}/pvlist.txt           ## dumps PV NAMES
+  {%- endif %}
   - type: epics.EpicsCaMaxArrayBytes 
     max_bytes: 10000000

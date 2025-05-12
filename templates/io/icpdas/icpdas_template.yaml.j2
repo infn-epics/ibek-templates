@@ -29,7 +29,8 @@ entities:
 - type: epics.PostStartupCommand 
   command: |
           dbl
-          dbl("*") > {{config_dir}}/pvlist.txt           ## dumps PV NAMES
         {%- if iocexit %}
-          exit 
+          exit
+        {%- else %}
+          dbl("*") > {{config_dir}}/pvlist.txt           ## dumps PV NAMES
         {%- endif %}
