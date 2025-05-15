@@ -9,9 +9,8 @@ entities:
   TCPPORT: 502
   P: "{{iocprefix}}"
   R: "{{iocroot}}"
-  
-{% if devtype == "icp7215" %}
-{%- for t in temp %}
+{%- for t in devices %}
+{%- if devtype == "icp7215" %}
 - type: icpdas.icp7215temp
   icpctrl: ICPDAS001
   ID: {{ t.name }}
@@ -23,8 +22,9 @@ entities:
   HIGH: {{ t.high if t.high is defined else 80 }}
   HIHI: {{ t.hihi if t.hihi is defined else 100 }}
   NELM: 10 ## history
+{%- endif %}
 {%- endfor %}
-{% endif %}
+
 
 - type: epics.PostStartupCommand 
   command: |
