@@ -9,10 +9,10 @@ entities:
     P: "{{iocprefix}}:{{iocroot}}"
     IP: {{server}}
     TCPPORT: {{port}}
-    numAxes: {{motor.devices | length}}
+    numAxes: {{devices | length}}
     EGUXSTEP: "{{motor.eguxstep | default(0.00005)}}"
 
-  {% for mot in motor.devices %}
+  {% for mot in devices %}
   - type: motorNewport.motorAxis
     controller: NEWPORT001
     M: ":{{mot.name}}"
@@ -125,7 +125,7 @@ entities:
     TTY: {{serial.ptty}}
     hostid: {{motor.hostid}}
   
-{%- for mot in motor.devices %}
+{%- for mot in devices %}
   - <<: *motor
     axid: {{mot.axid}}
     name: {{mot.name}}
