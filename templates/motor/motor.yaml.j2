@@ -1,5 +1,7 @@
 ioc_name: {{iocname}}
 description: Motor template {{devtype}}
+{%- set motor = motor | default({}, true) %}
+{%- set devices = devices | default([], true) %}
 
 {%- if devtype == "newport" %}
 entities:
@@ -10,7 +12,7 @@ entities:
     IP: {{server}}
     TCPPORT: {{port}}
     numAxes: {{devices | length}}
-    EGUXSTEP: "{{motor.eguxstep | default(0.00005)}}"
+    EGUXSTEP: "{{ motor.eguxstep | default(0.00005, true) }}"
 
   {% for mot in devices %}
   - type: motorNewport.motorAxis
@@ -20,27 +22,27 @@ entities:
     {%- if mot.dllm %}
     DLLM: {{mot.dllm}}
     {%- else %}
-    DLLM: {{motor.dllm | default(-25)}}
+    DLLM: {{ motor.dllm | default(-25, true) }}
     {%- endif %}
     {%- if mot.dhlm %}
     DHLM: {{mot.dhlm}}
     {%- else %}
-    DHLM: {{motor.dhlm | default(25)}}
+    DHLM: {{ motor.dhlm | default(25, true) }}
     {%- endif %}
     {%- if mot.home %}
     home: {{mot.home}}
     {%- else %}
-    home: {{motor.home | default(1)}}
+    home: {{ motor.home | default(1, true) }}
     {%- endif %}
     {%- if mot.start %}
     start: {{mot.start}}
     {%- else %}
-    start: {{motor.start | default(10)}}
+    start: {{ motor.start | default(10, true) }}
     {%- endif %}
     {%- if mot.velo %}
     VELO: {{mot.velo}}
     {%- else %}
-    VELO: {{motor.velo | default(1)}}
+    VELO: {{ motor.velo | default(1, true) }}
     {%- endif %}
     {%- if mot.desc %}
     DESC: {{mot.desc}}
@@ -50,47 +52,47 @@ entities:
     {%- if mot.dir %}
     DIR: {{mot.dir}}
     {%- else %}
-    DIR: {{motor.dir | default('Pos')}}
+    DIR: {{ motor.dir | default('Pos', true) }}
     {%- endif %}
     {%- if mot.egu %}
     EGU: "{{mot.egu}}"
     {%- else %}
-    EGU: {{motor.egu | default("mm")}}
+    EGU: {{ motor.egu | default("mm", true) }}
     {%- endif %}
     {%- if mot.vbas %}
     VBAS: {{mot.vbas}}
     {%- else %}
-    VBAS: {{motor.vbas | default(0.2)}}
+    VBAS: {{ motor.vbas | default(0.2, true) }}
     {%- endif %}
     {%- if mot.accl %}
     ACCL: {{mot.accl}}
     {%- else %}
-    ACCL: {{motor.accl | default(0.2)}}
+    ACCL: {{ motor.accl | default(0.2, true) }}
     {%- endif %}
     {%- if mot.bdst %}
     BDST: {{mot.bdst}}
     {%- else %}
-    BDST: {{motor.bdst | default(0)}}
+    BDST: {{ motor.bdst | default(0, true) }}
     {%- endif %}
     {%- if mot.bvel %}
     BVEL: {{mot.bvel}}
     {%- else %}
-    BVEL: {{motor.bvel | default(0.5)}}
+    BVEL: {{ motor.bvel | default(0.5, true) }}
     {%- endif %}
     {%- if mot.bacc %}
     BACC: {{mot.bacc}}
     {%- else %}
-    BACC: {{motor.bacc | default(0.2)}}
+    BACC: {{ motor.bacc | default(0.2, true) }}
     {%- endif %}
     {%- if mot.mres %}
     MRES: {{mot.mres}}
     {%- else %}
-    MRES: {{motor.mres | default(0.00001)}}
+    MRES: {{ motor.mres | default(0.00001, true) }}
     {%- endif %}
     {%- if mot.prec %}
     PREC: {{mot.prec}}
     {%- else %}
-    PREC: {{motor.prec | default(6)}}
+    PREC: {{ motor.prec | default(6, true) }}
     {%- endif %}
     
   {% endfor %}
@@ -101,21 +103,21 @@ shared:
   - &motor
     type: motorTML.motorAxis
     controller: TML
-    NSTEPS: {{ motor.nsteps | default(200) }}
-    NMICROSTEPS: {{ motor.nmicrosteps | default(256) }}
-    VELO: {{motor.velo | default(20)}} 
-    VELO_MAX: {{ motor.velo_max | default(50)}}
-    VELO_MIN: {{ motor.velo_min | default(0.1 )}}
-    ACCL: {{motor.accl | default (0.5)}}
-    ACCL_MAX: {{motor.accl_max | default (1.5)}}
-    ACCL_MIN: {{motor.accl_min | default (0.01)}}
-    HAR: {{motor.har | default (0.5)}}
-    HVEL: {{motor.hvel | default (10)}}
-    JAR: {{motor.jar | default (1)}}
-    JVEL: {{motor.jvel | default (5)}}
-    EGU: {{motor.egu | default ("rpm")}} 
-    SLSP: {{motor.slsp | default (0.8)}}
-    ENABLED: {{motor.enabled | default (1)}}
+    NSTEPS: {{ motor.nsteps | default(200, true) }}
+    NMICROSTEPS: {{ motor.nmicrosteps | default(256, true) }}
+    VELO: {{ motor.velo | default(20, true) }} 
+    VELO_MAX: {{ motor.velo_max | default(50, true) }}
+    VELO_MIN: {{ motor.velo_min | default(0.1, true) }}
+    ACCL: {{ motor.accl | default(0.5, true) }}
+    ACCL_MAX: {{ motor.accl_max | default(1.5, true) }}
+    ACCL_MIN: {{ motor.accl_min | default(0.01, true) }}
+    HAR: {{ motor.har | default(0.5, true) }}
+    HVEL: {{ motor.hvel | default(10, true) }}
+    JAR: {{ motor.jar | default(1, true) }}
+    JVEL: {{ motor.jvel | default(5, true) }}
+    EGU: {{ motor.egu | default("rpm", true) }} 
+    SLSP: {{ motor.slsp | default(0.8, true) }}
+    ENABLED: {{ motor.enabled | default(1, true) }}
     TIMEOUT: 0
 
 entities:
@@ -123,7 +125,7 @@ entities:
     controllerName: TML
     P: "{{iocprefix}}"
     TTY: {{serial.ptty}}
-    hostid: {{motor.hostid}}
+    hostid: {{ motor.hostid | default('', true) }}
   
 {%- for mot in devices %}
   - <<: *motor
