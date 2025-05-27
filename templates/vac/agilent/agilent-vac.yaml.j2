@@ -50,11 +50,20 @@ entities:
 {%- endfor %}
 {%- endif %}
 
+
+
+
 - type: epics.PostStartupCommand 
   command: |
-    dbl
+  {%- for dev in devices %}
+  {%- for param in dev.iocinit %}
+  dbpf ("{{iocprefix}}:{{dev.name}}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- endfor %}
   {%- if iocexit %}
-    exit
+      dbl
+      exit
   {%- else %}
-    dbl("*") > {{config_dir}}/pvlist.txt           ## dumps PV NAMES
+      dbl("*") > {{config_dir}}/pvlist.txt           ## dumps PV NAMES
+      dbl
   {%- endif %}

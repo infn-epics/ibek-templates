@@ -18,4 +18,17 @@ entities:
   max: {{ t.channel | default(10)}}
 {%- endfor %}
 
-  
+- type: epics.PostStartupCommand 
+  command: |
+  {%- for dev in devices %}
+  {%- for param in dev.iocinit %}
+  dbpf ("{{iocprefix}}:{{dev.name}}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- endfor %}
+  {%- if iocexit %}
+      dbl
+      exit
+  {%- else %}
+      dbl("*") > {{config_dir}}/pvlist.txt           ## dumps PV NAMES
+      dbl
+  {%- endif %} 

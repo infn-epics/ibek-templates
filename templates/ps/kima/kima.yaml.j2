@@ -1,16 +1,16 @@
-
 ioc_name: {{iocname}}
-description:  CHILLER TEMPLATE
+description:  Undulator Control
 
 entities:
 
-- type: smc.CreateCtrl
-  name: "CHILLER01"
+- type: kima.KimaUndulatorCreateController
+  name: UND01
   IP: {{server}}
-  TCPPORT: {{port | default(4001) }}
-  P: "{{iocprefix}}:{{iocroot}}"
-  DEV_ID: "{{dev_id | default("01")}}"
+  TCPPORT: 502
+  P: "{{iocprefix}}"
+  R: "{{iocroot}}"
   
+
 - type: epics.PostStartupCommand 
   command: |
   {%- for param in iocinit %}
