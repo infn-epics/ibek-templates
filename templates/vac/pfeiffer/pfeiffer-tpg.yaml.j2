@@ -13,7 +13,6 @@ entities:
 {%- for t in devices %}
 - type: pfeiffer.{{devtype}}.channel
   controller: PFEIFFER_CTRL_PORT
-  P: "{{iocprefix}}"
   name: "{{ t.name }}"
   channel: {{ t.channel }}
 {%- endfor %}
@@ -32,3 +31,5 @@ entities:
       dbl("*") > {{config_dir}}/pvlist.txt           ## dumps PV NAMES
       dbl
   {%- endif %}
+
+  
