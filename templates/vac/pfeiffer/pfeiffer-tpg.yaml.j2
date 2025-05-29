@@ -1,0 +1,34 @@
+
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+ioc_name: {{iocname}}
+description:  Pfeiffer TPG Gauge Conntrollers TEMPLATE
+
+entities:
+
+- type: pfeiffer.{{devtype}}.controller
+  name: PFEIFFER_CTRL_PORT
+  IP: {{server}}
+  TCPPORT: {{port}}
+  P: "{{iocprefix}}"
+{%- for t in devices %}
+- type: pfeiffer.{{devtype}}.channel
+  controller: PFEIFFER_CTRL_PORT
+  P: "{{iocprefix}}"
+  name: "{{ t.name }}"
+  channel: {{ t.channel }}
+{%- endfor %}
+
+- type: epics.PostStartupCommand 
+  command: |
+  {%- for dev in devices %}
+  {%- for param in dev.iocinit %}
+  dbpf ("{{iocprefix}}:{{dev.name}}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- endfor %}
+  {%- if iocexit %}
+      dbl
+      exit
+  {%- else %}
+      dbl("*") > {{config_dir}}/pvlist.txt           ## dumps PV NAMES
+      dbl
+  {%- endif %}
