@@ -139,45 +139,73 @@ entities:
     {%- endif %}
     {%- if mot.velo %}
     VELO: {{ mot.velo }}
+    {%- else %}
+    VELO: {{ motor.velo | default(200, true) }}
     {%- endif %}
     {%- if mot.pos_max %}
     POS_MAX: {{ mot.pos_max }}
+    {%- elif motor.pos_max %}
+    POS_MAX: {{ motor.pos_max }}
     {%- endif %}
     {%- if mot.pos_min %}
     POS_MIN: {{ mot.pos_min }}
+    {%- elif motor.pos_min %}
+    POS_MIN: {{ motor.pos_min }}
     {%- endif %}
     {%- if mot.egu2mm %}
     EGU2MM: {{ mot.egu2mm }}
+    {%- elif motor.egu2mm %}
+    EGU2MM: {{ motor.egu2mm }}
     {%- endif %}
     {%- if mot.velo_max %}
     VELO_MAX: {{ mot.velo_max }}
+    {%- elif motor.velo_max %}
+    VELO_MAX: {{ motor.velo_max }}
     {%- endif %}
     {%- if mot.velo_min %}
     VELO_MIN: {{ mot.velo_min }}
+    {%- elif motor.velo_min %}
+    VELO_MIN: {{ motor.velo_min }}
     {%- endif %}
     {%- if mot.accl %}
     ACCL: {{ mot.accl }}
+    {%- elif motor.accl %}
+    ACCL: {{ motor.accl }}
     {%- endif %}
     {%- if mot.accl_max %}
     ACCL_MAX: {{ mot.accl_max }}
+    {%- elif motor.accl_max %}
+    ACCL_MAX: {{ motor.accl_max }}
     {%- endif %}
     {%- if mot.accl_min %}
     ACCL_MIN: {{ mot.accl_min }}
+    {%- elif motor.accl_min %}
+    ACCL_MIN: {{ motor.accl_min }}
     {%- endif %}
     {%- if mot.har %}
     HAR: {{ mot.har }}
+    {%- else %}
+    HAR: {{ motor.har | default(1, true) }}
     {%- endif %}
     {%- if mot.hvel %}
     HVEL: {{ mot.hvel }}
+    {%- else %}
+    HVEL: {{ motor.hvel | default(20, true) }}
     {%- endif %}
     {%- if mot.jar %}
     JAR: {{ mot.jar }}
+    {%- else %}
+    JAR: {{ motor.jar | default(1, true) }}
     {%- endif %}
     {%- if mot.jvel %}
     JVEL: {{ mot.jvel }}
+    {%- else %}
+    JVEL: {{ motor.jvel | default(20, true) }}
     {%- endif %}
     {%- if mot.egu %}
     EGU: {{ mot.egu }}
+    {%- elif motor.egu %}
+    EGU: {{ motor.egu }}
     {%- endif %}
     {%- if mot.slsp %}
     SLSP: {{ mot.slsp }}
