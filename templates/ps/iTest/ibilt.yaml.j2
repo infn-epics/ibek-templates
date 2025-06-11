@@ -15,7 +15,7 @@ entities:
     controller: BILT_CTRL_PORT
     P: "{{ t.name }}"
     id: {{ t.channel }}
-    max: {{ t.channel | default(10)}}
+    max: {{ t.max | default(10)}}
 {%- endfor %}
 
   - type: epics.PostStartupCommand 
