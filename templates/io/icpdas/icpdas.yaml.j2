@@ -10,6 +10,7 @@ entities:
   P: "{{iocprefix}}"
   R: "{{iocroot}}"
 {%- for t in devices %}
+
 {%- if devtype == "icp7215" %}
 - type: icpdas.icp7215temp
   icpctrl: ICPDAS001
@@ -22,6 +23,11 @@ entities:
   HIGH: {{ t.high if t.high is defined else 80 }}
   HIHI: {{ t.hihi if t.hihi is defined else 100 }}
   NELM: 10 ## history
+{%- else %}
+- type: icpdas.{{t.devtype}}
+  icpctrl: ICPDAS001
+  name: {{ t.name }}
+  channel: {{ t.channel}}
 {%- endif %}
 {%- endfor %}
 

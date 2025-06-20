@@ -200,10 +200,15 @@ entities:
 
   {%- endfor %}
 
+  - type: epics.StartupCommand
+    command: |
+      dbLoadRecords("config/infncam.db","device=mycamera")
 
   - type: epics.PostStartupCommand 
     command: |
+
     {%- for camera in devices %}
+
       ## camera {{camera.name}} initializations
 
       dbpf("{{iocprefix}}:{{camera.name}}:TIFF1:FilePath", "{{data_dir}}")
