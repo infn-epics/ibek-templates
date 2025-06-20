@@ -202,7 +202,9 @@ entities:
 
   - type: epics.StartupCommand
     command: |
-      dbLoadRecords("config/infncam.db","device=mycamera")
+    {%- for camera in devices %}
+      dbLoadRecords("config/infncam.db","device="{{iocprefix}}:{{camera.name}}")
+    {%- endfor %}
 
   - type: epics.PostStartupCommand 
     command: |
