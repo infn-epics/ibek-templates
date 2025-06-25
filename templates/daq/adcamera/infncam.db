@@ -1,0 +1,6 @@
+record(ai, "$(device):pxcal") {
+    field(DESC, "pixel to um calibration")
+    field(SCAN, "Passive")
+    field(INP,  "input link")
+    field(EGU,  "um")
+}
