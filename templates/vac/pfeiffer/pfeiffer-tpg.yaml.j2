@@ -17,6 +17,14 @@ entities:
   channel: {{ t.channel }}
 {%- endfor %}
 
+- type: epics.StartupCommand
+    command: |
+    {%- for dev in devices %}
+    {%- for param in dev.aliases %}
+      alias("{{iocprefix}}:{{dev.name}}:{{param.name}}","{{param.alias}}")
+    {%- endfor %}
+    {%- endfor %}
+    
 - type: epics.PostStartupCommand 
   command: |
   {%- for dev in devices %}

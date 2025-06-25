@@ -10,7 +10,13 @@ entities:
   TCPPORT: {{port | default(4001) }}
   P: "{{iocprefix}}:{{iocroot}}"
   DEV_ID: "{{dev_id | default("01")}}"
-  
+
+- type: epics.StartupCommand
+    command: |
+    {%- for param in aliases %}
+      alias("{{iocprefix}}:{{name}}:{{param.name}}","{{param.alias}}")
+    {%- endfor %}
+
 - type: epics.PostStartupCommand 
   command: |
   {%- for param in iocinit %}

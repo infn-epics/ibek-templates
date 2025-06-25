@@ -32,6 +32,62 @@ entities:
 {%- endfor %}
 
 
+{%- for dev in devices %}
+{%- if dev.devtype == "rly" %}
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:RLY{{dev.channel}}_RB"
+  alias: "{{iocprefix}}:{{dev.name}}_RB"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:RLY{{dev.channel}}_SP"
+  alias: "{{iocprefix}}:{{dev.name}}_SP"
+{%- endif %}
+
+{%- if dev.devtype == "di" %}
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:DI{{dev.channel}}_RB"
+  alias: "{{iocprefix}}:{{dev.name}}_RB"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:DI{{dev.channel}}_CNT_RB"
+  alias: "{{iocprefix}}:{{dev.name}}_CNT_SP"
+{%- endif %}
+
+{%- if dev.devtype == "do" %}
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:DO{{dev.channel}}"
+  alias: "{{iocprefix}}:{{dev.name}}_SP"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:DO{{dev.channel}}_RB"
+  alias: "{{iocprefix}}:{{dev.name}}_RB"
+{%- endif %}
+
+{%- if dev.devtype == "ai" %}
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:AI{{dev.channel}}_RB"
+  alias: "{{iocprefix}}:{{dev.name}}_RB"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:AI{{dev.channel}}:VOLT_RB"
+  alias: "{{iocprefix}}:{{dev.name}}_VOLT_RB"
+{%- endif %}
+
+{%- if dev.devtype == "ao" %}
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:AO{{dev.channel}}:VOLT"
+  alias: "{{iocprefix}}:{{dev.name}}_VOLT_SP"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:AO{{dev.channel}}:VOLT_RB"
+  alias: "{{iocprefix}}:{{dev.name}}_VOLT_RB"
+{%- endif %}
+{%- endfor %}
+
+# - type: epics.StartupCommand
+#   command: |
+#      echo "Starting {{iocname}} IOC"
+#     {%- for dev in devices %}
+#     {%- for param in dev.aliases %}
+#       alias("{{iocprefix}}:{{dev.name}}:{{param.name}}","{{param.alias}}")
+#     {%- endfor %}
+#     {%- endfor %}
+
 - type: epics.PostStartupCommand 
   command: |
   {%- for param in iocinit %}

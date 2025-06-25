@@ -4,13 +4,13 @@ ioc_name: {{iocname}}
 description: AD Camera Array model with plugins
 
 ## create a j2jna string variable
-{% set camera_elements = 325546 %}
+{%- set camera_elements = 325546 %}
 
 entities:
+{%- for camera in devices %}
 
-  {%- for camera in devices %}
   {%- if "Basler-a2A1920" in camera.CAMERA_CLASS %}
-    {% set camera_elements = 2354176 %}
+    {%- set camera_elements = 2354176 %}
   {%- elif "Basler-scA1400" in camera.CAMERA_CLASS %}
     {% set camera_elements = 1447680 %}
   {%- endif %}
@@ -198,13 +198,20 @@ entities:
     R: ":TIFF1:"
     ENABLED: 1
 
-  {%- endfor %}
+{%- endfor %}
 
   - type: epics.StartupCommand
     command: |
-    {%- for camera in devices %}
-      dbLoadRecords("config/infncam.db","device="{{iocprefix}}:{{camera.name}}")
+    {%- for dev in devices %}
+      dbLoadRecords("config/infncam.db","device={{iocprefix}}:{{dev.name}}")
+
     {%- endfor %}
+    
+{%- for param in dev.aliases %}
+  - type: epics.DbAlias
+    name: "{{iocprefix}}:{{iocroot}}:{{param.name}}"
+    alias: "{{iocprefix}}:{{iocroot}}:{{param.alias}}"
+{%- endfor %}
 
   - type: epics.PostStartupCommand 
     command: |

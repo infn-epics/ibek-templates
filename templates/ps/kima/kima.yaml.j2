@@ -10,7 +10,11 @@ entities:
   P: "{{iocprefix}}"
   R: "{{iocroot}}"
   
-
+- type: epics.StartupCommand
+    command: |
+    {%- for param in aliases %}
+      alias("{{iocprefix}}:{{camera.name}}:{{param.name}}","{{param.alias}}")
+    {%- endfor %}
 - type: epics.PostStartupCommand 
   command: |
   {%- for param in iocinit %}
