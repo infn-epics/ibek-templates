@@ -206,11 +206,14 @@ entities:
       dbLoadRecords("config/infncam.db","device={{iocprefix}}:{{dev.name}}")
 
     {%- endfor %}
-    
+
+{%- for dev in devices %}
+
 {%- for param in dev.aliases %}
   - type: epics.DbAlias
     name: "{{iocprefix}}:{{iocroot}}:{{param.name}}"
     alias: "{{iocprefix}}:{{iocroot}}:{{param.alias}}"
+{%- endfor %}
 {%- endfor %}
 
   - type: epics.PostStartupCommand 
