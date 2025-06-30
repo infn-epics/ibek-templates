@@ -10,7 +10,7 @@ entities:
   P: "{{iocprefix}}"
 
 
-{%- for dev in devices %}
+{%- for t in devices %}
 - type: tektronix.channel
   ctrl: TEKTRONIX001
   DESC: "{{t.desc if t.desc is defined else "Channel" }}"
@@ -21,9 +21,7 @@ entities:
 
 - type: epics.DbAlias
   name: "{{iocprefix}}:RAWYDATA_CH{{t.channel}}"
-  alias: "{{iocprefix}}:{{dev.name}}_RAW"
-
-{%- endif %}
+  alias: "{{iocprefix}}:{{t.name}}_RAW"
 {%- endfor %}
 
 - type: epics.PostStartupCommand 
