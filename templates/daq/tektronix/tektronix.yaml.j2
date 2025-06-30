@@ -1,0 +1,45 @@
+ioc_name: {{iocname}}
+description:  Tektronics TEMPLATE
+
+entities:
+
+- type: tektronix.{{devtype}}
+  name: TEKTRONIX001
+  IP: {{server}}
+  TCPPORT: 4000
+  P: "{{iocprefix}}"
+
+
+{%- for dev in devices %}
+- type: tektronix.channel
+  ctrl: TEKTRONIX001
+  DESC: "{{t.desc if t.desc is defined else "Channel" }}"
+  channel: {{t.channel}}
+  samples: {{t.samples if t.samples is defined else 1000}}
+  name: {{t.name}}
+  rate: {{t.rate if t.rate is defined else "1 second"}}
+
+- type: epics.DbAlias
+  name: "{{iocprefix}}:RAWYDATA_CH{{t.channel}}"
+  alias: "{{iocprefix}}:{{dev.name}}_RAW"
+
+{%- endif %}
+{%- endfor %}
+
+- type: epics.PostStartupCommand 
+  command: |
+  {%- for param in iocinit %}
+  dbpf ("{{iocprefix}}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- for dev in devices %}
+  {%- for param in dev.iocinit %}
+  dbpf ("{{iocprefix}}:{{dev.name}}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- endfor %}
+  {%- if iocexit %}
+      dbl
+      exit
+  {%- else %}
+      dbl("*") > {{config_dir}}/pvlist.txt           ## dumps PV NAMES
+      dbl
+  {%- endif %}
