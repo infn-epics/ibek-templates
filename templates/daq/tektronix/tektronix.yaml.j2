@@ -13,7 +13,6 @@ entities:
 {%- for t in devices %}
 - type: tektronix.channel
   ctrl: TEKTRONIX001
-  DESC: "{{t.desc if t.desc is defined else "Channel" }}"
   channel: {{t.channel}}
   samples: {{t.samples if t.samples is defined else 1000}}
   name: {{t.name}}
