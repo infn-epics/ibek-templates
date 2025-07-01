@@ -1,10 +1,10 @@
 ioc_name: {{iocname}}
 description: Caenels template {{devtype}}
 
-{%- if devtype == "easydriver" %}
+{%- if devtype == "easydriver" or devtype == "fastps" %}
 entities:
 {% for alim in devices %}
-  - type: caenels.easydriver
+  - type: caenels.{{devtype}}
     P: "{{iocprefix}}:" 
     R: "{{alim.name}}:"
     IP: {{alim.ip}}
