@@ -1,7 +1,6 @@
 ioc_name: {{iocname}}
 description: Caenels template {{devtype}}
 
-{%- if devtype == "easydriver" or devtype == "fastps" %}
 entities:
 {%- for alim in devices %}
   - type: caenels.{{devtype}}
@@ -10,15 +9,14 @@ entities:
     IP: {{alim.ip}}
     TCPPORT: {{alim.port | default(10001)}}
 {%- if devtype == "fastps" %}
-    RANGEI: {{alim.rangeI | default(30)}}
-    RANGEV: {{alim.rangeV | default(20)}}
+    rangeI: {{alim.rangeI | default(30)}}
+    rangeV: {{alim.rangeV | default(20)}}
 {%- else %}
-    RANGE: {{alim.range | default(30)}}
+    range: {{alim.range | default(30)}}
 {%- endif %}
     OMAX: {{alim.omax | default(0)}}
     IMAX: {{alim.imax | default(0)}}
 {%- endfor %}
-{%- endif %}
 
 
 {%- for dev in devices %}
