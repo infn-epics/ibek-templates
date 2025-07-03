@@ -3,16 +3,21 @@ description: Caenels template {{devtype}}
 
 {%- if devtype == "easydriver" or devtype == "fastps" %}
 entities:
-{% for alim in devices %}
+{%- for alim in devices %}
   - type: caenels.{{devtype}}
     P: "{{iocprefix}}:" 
     R: "{{alim.name}}:"
     IP: {{alim.ip}}
     TCPPORT: {{alim.port | default(10001)}}
-    RANGE: {{alim.range | default(1)}}
+{%- if devtype == "fastps" %}
+    RANGEI: {{alim.rangeI | default(30)}}
+    RANGEV: {{alim.rangeV | default(20)}}
+{%- else %}
+    RANGE: {{alim.range | default(30)}}
+{%- endif %}
     OMAX: {{alim.omax | default(0)}}
     IMAX: {{alim.imax | default(0)}}
-{% endfor %}
+{%- endfor %}
 {%- endif %}
 
 
@@ -26,7 +31,20 @@ entities:
 {%- endfor %}
   
 
-  - type: epics.PostStartupCommand
+  - type: epics.PostStartupCommand 
     command: |
-          dbl
-          dbl("*") > {{config_dir}}/pvlist.txt
+  {%- for param in iocinit %}
+      dbpf ("{{iocprefix}}:{{iocroot}}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- for dev in devices %}
+  {%- for param in dev.iocinit %}
+      dbpf ("{{iocprefix}}:{{dev.name}}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- endfor %}
+  {%- if iocexit %}
+      dbl
+      exit
+  {%- else %}
+      dbl("*") > {{config_dir}}/pvlist.txt           ## dumps PV NAMES
+      dbl
+  {%- endif %}
