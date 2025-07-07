@@ -6,7 +6,7 @@ entities:
 - type: icpdas.{{devtype}}
   NAME: ICPDAS001
   IP: {{server}}
-  TCPPORT: 502
+  TCPPORT: {{port |default(502)}}
   P: "{{iocprefix}}"
   R: "{{iocroot}}"
 {%- for t in devices %}

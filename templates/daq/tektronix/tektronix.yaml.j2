@@ -6,7 +6,7 @@ entities:
 - type: tektronix.{{devtype}}
   name: TEKTRONIX001
   IP: {{server}}
-  TCPPORT: 4000
+  TCPPORT: {{port |default(4000)}}
   P: "{{iocprefix}}"
 
 

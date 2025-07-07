@@ -6,7 +6,7 @@ entities:
 - type: kima.KimaUndulatorCreateController
   name: UND01
   IP: {{server}}
-  TCPPORT: 502
+  TCPPORT: {{port | default(502) }}
   P: "{{iocprefix}}"
   R: "{{iocroot}}"
   
