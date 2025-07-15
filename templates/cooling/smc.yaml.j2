@@ -11,11 +11,14 @@ entities:
   P: "{{iocprefix}}:{{iocroot}}"
   DEV_ID: "{{dev_id | default("01")}}"
 
+{%- if aliases is defined and aliases %}
+
 - type: epics.StartupCommand
     command: |
     {%- for param in aliases %}
       alias("{{iocprefix}}:{{name}}:{{param.name}}","{{param.alias}}")
     {%- endfor %}
+{%- endif %}
 
 - type: epics.PostStartupCommand 
   command: |
