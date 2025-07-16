@@ -3,11 +3,108 @@ description: Motor template {{devtype}}
 {%- set motor = motor | default({}, true) %}
 {%- set devices = devices | default([], true) %}
 
+
+{%- if devtype == "pollux" %}
+entities:
+
+  - type: micos.pollux
+    controllerName: {{devtype}}_001
+    P: "{{iocprefix}}:{{iocroot}}"
+    IP: {{server}}
+    TCPPORT: {{port}}
+    numAxes: {{devices | length}}
+    mapAxes: [{% for dev in devices %}{{ dev.axid }}{% if not loop.last %}, {% endif %}{% endfor %}]
+    EGUXSTEP: "{{ motor.eguxstep | default(0.00005, true) }}"
+
+  {% for mot in devices %}
+  - type: micos.axis
+    controller: {{devtype}}_001
+    M: ":{{mot.name}}"
+    ADDR: {{mot.axid}}
+    {%- if mot.dllm %}
+    DLLM: {{mot.dllm}}
+    {%- else %}
+    DLLM: {{ motor.dllm | default(-25, true) }}
+    {%- endif %}
+    {%- if mot.dhlm %}
+    DHLM: {{mot.dhlm}}
+    {%- else %}
+    DHLM: {{ motor.dhlm | default(25, true) }}
+    {%- endif %}
+    {%- if mot.home %}
+    home: {{mot.home}}
+    {%- else %}
+    home: {{ motor.home | default(1, true) }}
+    {%- endif %}
+    {%- if mot.start %}
+    start: {{mot.start}}
+    {%- else %}
+    start: {{ motor.start | default(10, true) }}
+    {%- endif %}
+    {%- if mot.velo %}
+    VELO: {{mot.velo}}
+    {%- else %}
+    VELO: {{ motor.velo | default(1, true) }}
+    {%- endif %}
+    {%- if mot.desc %}
+    DESC: {{mot.desc}}
+    {%- else %}
+    DESC: "Axis {{mot.name}} {{mot.axid}}"
+    {%- endif %}
+    {%- if mot.dir %}
+    DIR: {{mot.dir}}
+    {%- else %}
+    DIR: {{ motor.dir | default('Pos', true) }}
+    {%- endif %}
+    {%- if mot.egu %}
+    EGU: "{{mot.egu}}"
+    {%- else %}
+    EGU: {{ motor.egu | default("mm", true) }}
+    {%- endif %}
+    {%- if mot.vbas %}
+    VBAS: {{mot.vbas}}
+    {%- else %}
+    VBAS: {{ motor.vbas | default(0.2, true) }}
+    {%- endif %}
+    {%- if mot.accl %}
+    ACCL: {{mot.accl}}
+    {%- else %}
+    ACCL: {{ motor.accl | default(0.2, true) }}
+    {%- endif %}
+    {%- if mot.bdst %}
+    BDST: {{mot.bdst}}
+    {%- else %}
+    BDST: {{ motor.bdst | default(0, true) }}
+    {%- endif %}
+    {%- if mot.bvel %}
+    BVEL: {{mot.bvel}}
+    {%- else %}
+    BVEL: {{ motor.bvel | default(0.5, true) }}
+    {%- endif %}
+    {%- if mot.bacc %}
+    BACC: {{mot.bacc}}
+    {%- else %}
+    BACC: {{ motor.bacc | default(0.2, true) }}
+    {%- endif %}
+    {%- if mot.mres %}
+    MRES: {{mot.mres}}
+    {%- else %}
+    MRES: {{ motor.mres | default(0.00001, true) }}
+    {%- endif %}
+    {%- if mot.prec %}
+    PREC: {{mot.prec}}
+    {%- else %}
+    PREC: {{ motor.prec | default(6, true) }}
+    {%- endif %}
+    
+  {% endfor %}
+{%- endif %}
+
 {%- if devtype == "newport" %}
 entities:
 
   - type: motorNewport.SMC100CreateController
-    controllerName: NEWPORT001
+    controllerName: {{devtype}}_001
     P: "{{iocprefix}}:{{iocroot}}"
     IP: {{server}}
     TCPPORT: {{port}}
@@ -16,7 +113,7 @@ entities:
 
   {% for mot in devices %}
   - type: motorNewport.motorAxis
-    controller: NEWPORT001
+    controller: {{devtype}}_001
     M: ":{{mot.name}}"
     ADDR: {{mot.axid}}
     {%- if mot.dllm %}
@@ -102,7 +199,7 @@ entities:
 shared:
   - &motor
     type: motorTML.motorAxis
-    controller: TML
+    controller: {{devtype}}_001
     NSTEPS: {{ motor.nsteps | default(200, true) }}
     NMICROSTEPS: {{ motor.nmicrosteps | default(256, true) }}
     VELO: {{ motor.velo | default(20, true) }} 
@@ -122,7 +219,7 @@ shared:
 
 entities:
   - type: motorTML.CreateController
-    controllerName: TML
+    controllerName: {{devtype}}_001
     P: "{{iocprefix}}"
     TTY: {{serial.ptty}}
     hostid: {{ motor.hostid | default('', true) }}
