@@ -8,17 +8,17 @@ description: Motor template {{devtype}}
 entities:
 
   - type: micos.pollux
-    controllerName: {{devtype}}_001
+    controllerName: "{{devtype}}_001"
     P: "{{iocprefix}}:{{iocroot}}"
-    IP: {{server}}
+    IP: "{{server}}"
     TCPPORT: {{port}}
     numAxes: {{devices | length}}
-    mapAxes: "{% for dev in devices %}{{ dev.axid }}{% if not loop.last %}, {% endif %}{% endfor %}"
+    mapAxes: "{% for dev in devices %}{{ dev.axid }}{% if not loop.last %},{% endif %}{% endfor %}"
     EGUXSTEP: "{{ motor.eguxstep | default(0.00005, true) }}"
 
   {% for mot in devices %}
   - type: micos.axis
-    controller: {{devtype}}_001
+    controller: "{{devtype}}_001"
     M: ":{{mot.name}}"
     ADDR: {{mot.axid}}
     {%- if mot.dllm %}
@@ -104,7 +104,7 @@ entities:
 entities:
 
   - type: motorNewport.SMC100CreateController
-    controllerName: {{devtype}}_001
+    controllerName: "{{devtype}}_001"
     P: "{{iocprefix}}:{{iocroot}}"
     IP: {{server}}
     TCPPORT: {{port}}
@@ -113,7 +113,7 @@ entities:
 
   {% for mot in devices %}
   - type: motorNewport.motorAxis
-    controller: {{devtype}}_001
+    controller: "{{devtype}}_001"
     M: ":{{mot.name}}"
     ADDR: {{mot.axid}}
     {%- if mot.dllm %}
@@ -219,7 +219,7 @@ shared:
 
 entities:
   - type: motorTML.CreateController
-    controllerName: {{devtype}}_001
+    controllerName: "{{devtype}}_001"
     P: "{{iocprefix}}"
     TTY: {{serial.ptty}}
     hostid: {{ motor.hostid | default('', true) }}
