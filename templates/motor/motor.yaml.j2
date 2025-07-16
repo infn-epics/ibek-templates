@@ -13,7 +13,7 @@ entities:
     IP: {{server}}
     TCPPORT: {{port}}
     numAxes: {{devices | length}}
-    mapAxes: [{% for dev in devices %}{{ dev.axid }}{% if not loop.last %}, {% endif %}{% endfor %}]
+    mapAxes: "{% for dev in devices %}{{ dev.axid }}{% if not loop.last %}, {% endif %}{% endfor %}"
     EGUXSTEP: "{{ motor.eguxstep | default(0.00005, true) }}"
 
   {% for mot in devices %}
