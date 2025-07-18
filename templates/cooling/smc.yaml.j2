@@ -1,23 +1,32 @@
-
 ioc_name: {{iocname}}
 description:  CHILLER TEMPLATE
 
 entities:
-
+{%- if devices is defined and devices %}
+  {%- for dev in devices %}
+- type: smc.CreateCtrl
+  name: "PORT_{{dev.name | default('CHILLER01')}}"
+  IP: {{dev.server | default(server)}}
+  TCPPORT: {{dev.port | default(4001)}}
+  P: "{{iocprefix}}:{{dev.name}}"
+  DEV_ID: "{{dev.id | default('01')}}"
+  {%- endfor %}
+{%- else %}
 - type: smc.CreateCtrl
   name: "CHILLER01"
   IP: {{server}}
   TCPPORT: {{port | default(4001) }}
   P: "{{iocprefix}}:{{iocroot}}"
-  DEV_ID: "{{dev_id | default("01")}}"
+  DEV_ID: "{{id | default("01")}}"
+{%- endif %}
 
 {%- if aliases is defined and aliases %}
-
 - type: epics.StartupCommand
-    command: |
-    {%- for param in aliases %}
-      alias("{{iocprefix}}:{{name}}:{{param.name}}","{{param.alias}}")
-    {%- endfor %}
+  command: |
+  {%- for param in aliases %}
+    alias("{{iocprefix}}:{{name}}:{{param.name}}","{{param.alias}}")
+  {%- endfor %}
+
 {%- endif %}
 
 - type: epics.PostStartupCommand 
@@ -25,6 +34,13 @@ entities:
   {%- for param in iocinit %}
   dbpf ("{{iocprefix}}:{{iocroot}}:{{param.name}}","{{param.value}}")
   {%- endfor %}
+  
+  {%- for dev in devices %}
+  {%- for param in dev.iocinit %}
+    dbpf ("{{iocprefix}}:{{dev.name}}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- endfor %}
+
   {%- if iocexit %}
       dbl
       exit
