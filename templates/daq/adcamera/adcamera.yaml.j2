@@ -9,9 +9,9 @@ description: AD Camera Array model with plugins
 entities:
 {%- for camera in devices %}
 
-  {%- if "Basler-a2A1920" in camera.CAMERA_CLASS %}
+  {%- if "Basler-a2A1920" in camera.devtype %}
     {%- set camera_elements = 2354176 %}
-  {%- elif "Basler-scA1400" in camera.CAMERA_CLASS %}
+  {%- elif "Basler-scA1400" in camera.devtype %}
     {% set camera_elements = 1447680 %}
   {%- endif %}
   
@@ -19,8 +19,8 @@ entities:
   - type: ADSimDetector.simDetector
   {%- else %}
   - type: ADAravis.aravisCamera
-    ID: {{camera.CAMERA_ID}}
-    CLASS: {{camera.CAMERA_CLASS}}
+    ID: {{camera.id}}
+    CLASS: {{camera.devtype}}
   {%- endif %}
     PORT: {{camera.name}}
     P: "{{iocprefix}}:"
