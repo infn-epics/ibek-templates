@@ -28,6 +28,12 @@ entities:
     BUFFERS: {{camera.buffers | default(100)}}
     MEMORY: {{camera.memory | default(0)}}
 
+  {%- if camera.devtype != "camerasim" or devtype != "camerasim" %}
+  - type: ADAravis.aravisSettings
+    camera: {{camera.name}}
+
+  {%- endif %}
+
   {%- if stream_enable %}
   - type: ffmpegServer.ffmpegStream
     PORT: {{camera.name}}.STREAM
