@@ -20,7 +20,7 @@ entities:
   {%- else %}
   - type: ADAravis.aravisCamera
     ID: {{camera.id}}
-    CLASS: {{camera.devtype}}
+    CLASS: AutoADGenICam    #{{camera.devtype}}
   {%- endif %}
     PORT: {{camera.name}}
     P: "{{iocprefix}}:"
