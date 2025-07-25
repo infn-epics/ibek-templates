@@ -15,6 +15,7 @@ entities:
   VMAX: {{ t.vmax if t.vmax is defined else 110 }}
   IMAX: {{ t.imax if t.imax is defined else 200 }}
   ID: {{ t.id}}
+  POLL: {{ t.poll if t.poll is defined else 1000 }}
 {%- endfor %}
 {%- endif %}
 
