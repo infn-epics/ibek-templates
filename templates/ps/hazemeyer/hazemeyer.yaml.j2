@@ -1,0 +1,47 @@
+ioc_name: {{iocname}}
+description:  HAZEMEYER TEMPLATE
+
+entities:
+{%- if devtype == "haz-ser" %}
+- type: hazemeyer.serial
+  IP: {{server}}
+  TCPPORT: {{port}}
+  P: "{{iocprefix}}"
+  NAME: "HAZEMEYER001"
+{%- for t in devices %}
+- type: hazemeyer.ps
+  serctrl: "HAZEMEYER001"
+  R: "{{t.name}}"
+  VMAX: {{ t.vmax if t.vmax is defined else 110 }}
+  IMAX: {{ t.imax if t.imax is defined else 200 }}
+  ID: {{ t.id}}
+{%- endfor %}
+{%- endif %}
+
+
+# - type: epics.StartupCommand
+#   command: |
+#      echo "Starting {{iocname}} IOC"
+#     {%- for dev in devices %}
+#     {%- for param in dev.aliases %}
+#       alias("{{iocprefix}}:{{dev.name}}:{{param.name}}","{{param.alias}}")
+#     {%- endfor %}
+#     {%- endfor %}
+
+- type: epics.PostStartupCommand 
+  command: |
+  {%- for param in iocinit %}
+  dbpf ("{{iocprefix}}:{{iocroot}}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- for dev in devices %}
+  {%- for param in dev.iocinit %}
+  dbpf ("{{iocprefix}}:{{dev.name}}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- endfor %}
+  {%- if iocexit %}
+      dbl
+      exit
+  {%- else %}
+      dbl("*") > {{config_dir}}/pvlist.txt           ## dumps PV NAMES
+      dbl
+  {%- endif %}
