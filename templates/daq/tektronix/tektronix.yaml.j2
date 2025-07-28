@@ -19,8 +19,37 @@ entities:
   rate: {{t.rate if t.rate is defined else "1 second"}}
 
 - type: epics.DbAlias
-  name: "{{iocprefix}}:RAWYDATA_CH{{t.channel}}"
-  alias: "{{iocprefix}}:{{t.name}}_RAW"
+  name: "{{iocprefix}}:INTEGRAL_CH{{t.channel}}"
+  alias: "{{iocprefix}}:{{t.name}}:INTEGRAL"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:MATH_INTEGRAL_CH{{t.channel}}"
+  alias: "{{iocprefix}}:{{t.name}}:WIN-INTEGRAL"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:RMS_CH{{t.channel}}"
+  alias: "{{iocprefix}}:{{t.name}}:RMS"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:MATH_RMS_CH{{t.channel}}"
+  alias: "{{iocprefix}}:{{t.name}}:WIN-RMS"
+
+- type: epics.DbAlias
+  name: "{{iocprefix}}:AVG_CH{{t.channel}}"
+  alias: "{{iocprefix}}:{{t.name}}:AVG"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:MATH_AVG_CH{{t.channel}}"
+  alias: "{{iocprefix}}:{{t.name}}:WIN-AVG"
+
+- type: epics.DbAlias
+  name: "{{iocprefix}}:MIN_CH{{t.channel}}"
+  alias: "{{iocprefix}}:{{t.name}}:MIN"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:MATH_MIN_CH{{t.channel}}"
+  alias: "{{iocprefix}}:{{t.name}}:WIN-MIN"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:MAX_CH{{t.channel}}"
+  alias: "{{iocprefix}}:{{t.name}}:MAX"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:MATH_MAX_CH{{t.channel}}"
+  alias: "{{iocprefix}}:{{t.name}}:WIN-MAX"
 {%- endfor %}
 
 - type: epics.PostStartupCommand 
