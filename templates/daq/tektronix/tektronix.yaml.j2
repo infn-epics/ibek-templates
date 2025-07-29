@@ -16,6 +16,7 @@ entities:
   channel: {{t.channel}}
   samples: {{t.samples if t.samples is defined else 10000}}
   name: {{t.name}}
+  sensibility: {{t.s if t.s is defined else "1.0"}}
   rate: {{t.rate if t.rate is defined else "1 second"}}
 
 - type: epics.DbAlias
