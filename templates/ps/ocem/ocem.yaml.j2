@@ -2,18 +2,19 @@ ioc_name: {{iocname}}
 description: OCEM template {{devtype}}
 
 entities:
+{% if devtype == "modbusps" %}
 {%- for alim in devices %}
   - type: ocem.modbusps
     P: "{{iocprefix}}" 
     R: "{{alim.name}}"
     IP: {{alim.ip}}
+    IMAX: {{alim.imax | default(100)}}
+    VMAX: {{alim.vmax | default(16)}}
     TCPPORT: {{alim.port | default(502)}}
        
 {%- endfor %}
+{%- endif %}
 
-
-
-  
 
   - type: epics.PostStartupCommand 
     command: |
