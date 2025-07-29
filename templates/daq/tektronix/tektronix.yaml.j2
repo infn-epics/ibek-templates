@@ -32,11 +32,11 @@ entities:
   alias: "{{iocprefix}}:{{t.name}}:WIN-RMS"
 
 - type: epics.DbAlias
-  name: "{{iocprefix}}:AVG_CH{{t.channel}}"
-  alias: "{{iocprefix}}:{{t.name}}:AVG"
+  name: "{{iocprefix}}:MEAN_CH{{t.channel}}"
+  alias: "{{iocprefix}}:{{t.name}}:MEAN"
 - type: epics.DbAlias
-  name: "{{iocprefix}}:MATH_AVG_CH{{t.channel}}"
-  alias: "{{iocprefix}}:{{t.name}}:WIN-AVG"
+  name: "{{iocprefix}}:MATH_MEAN_CH{{t.channel}}"
+  alias: "{{iocprefix}}:{{t.name}}:WIN-MEAN"
 
 - type: epics.DbAlias
   name: "{{iocprefix}}:MIN_CH{{t.channel}}"
