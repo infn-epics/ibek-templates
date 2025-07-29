@@ -14,7 +14,7 @@ entities:
 - type: tektronix.channel
   ctrl: TEKTRONIX001
   channel: {{t.channel}}
-  samples: {{t.samples if t.samples is defined else 1000}}
+  samples: {{t.samples if t.samples is defined else 10000}}
   name: {{t.name}}
   rate: {{t.rate if t.rate is defined else "1 second"}}
 
