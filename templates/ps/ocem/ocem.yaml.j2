@@ -1,0 +1,34 @@
+ioc_name: {{iocname}}
+description: OCEM template {{devtype}}
+
+entities:
+{%- for alim in devices %}
+  - type: ocem.modbusps
+    P: "{{iocprefix}}" 
+    R: "{{alim.name}}"
+    IP: {{alim.ip}}
+    TCPPORT: {{alim.port | default(502)}}
+       
+{%- endfor %}
+
+
+
+  
+
+  - type: epics.PostStartupCommand 
+    command: |
+  {%- for param in iocinit %}
+      dbpf ("{{iocprefix}}:{{iocroot}}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- for dev in devices %}
+  {%- for param in dev.iocinit %}
+      dbpf ("{{iocprefix}}:{{dev.name}}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- endfor %}
+  {%- if iocexit %}
+      dbl
+      exit
+  {%- else %}
+      dbl("*") > {{config_dir}}/pvlist.txt           ## dumps PV NAMES
+      dbl
+  {%- endif %}
