@@ -17,7 +17,7 @@ entities:
   icpctrl: ICPDAS001
   ID: {{ t.name }}
   DESC: "{{t.desc if t.desc is defined else "Temperature sensor" }}"
-  REGOFFSET: {{t.idx}}
+  REGOFFSET: {{t.channel}}
   ASLO: {{t.aslo if t.aslo is defined else 0.0183112}}
   LOLO: {{ t.lolo if t.lolo is defined else -100 }}
   LOW: {{ t.low if t.low is defined else 0 }}
