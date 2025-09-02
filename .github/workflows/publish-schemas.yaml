@@ -39,7 +39,7 @@ jobs:
           pip install jnjrender
           for file in tests/*.yaml; do
             echo "Processing $file with jnjrender..."
-            jnjrender templates/ "$file" || exit 1
+            jnjrender templates/ "$file" -o . || exit 1
           done
 
   release:
