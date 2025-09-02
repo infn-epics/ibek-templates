@@ -10,6 +10,8 @@ entities:
   TCPPORT: {{port |default(502)}}
   P: "{{iocprefix}}"
   R: "{{iocroot}}"
+  POLL_DELAY: {{polldelay | default(1000)}}
+  TIMEOUT: {{timeout | default(2000)}}
 {%- for t in devices %}
 
 {%- if devtype == "icp7215" %}
