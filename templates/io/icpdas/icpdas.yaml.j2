@@ -12,25 +12,23 @@ entities:
   R: "{{iocroot}}"
   POLL_DELAY: {{polldelay | default(1000)}}
   TIMEOUT: {{timeout | default(2000)}}
-{%- for t in devices %}
-
-{%- if dev.devtype == "rtd" %}
-- type: icpdas.rtd
-  icpctrl: "ICP-{{server}}"
-  ID: {{ t.name }}
-  DESC: "{{t.desc if t.desc is defined else "Temperature sensor" }}"
-  ID: {{t.channel}}
-  ASLO: {{t.aslo if t.aslo is defined else 0.0183112}}
-  AOFF: {{t.aoff if t.aoff is defined else 0.0}}
-  LOLO: {{ t.lolo if t.lolo is defined else -100 }}
-  LOW: {{ t.low if t.low is defined else 0 }}
-  HIGH: {{ t.high if t.high is defined else 80 }}
-  HIHI: {{ t.hihi if t.hihi is defined else 100 }}
-{%- endif %}
-{%- endfor %}
 
 
 {%- for dev in devices %}
+{%- if dev.devtype == "rtd" %}
+- type: icpdas.rtd
+  icpctrl: "ICP-{{server}}"
+  DESC: "{{dev.desc if dev.desc is defined else "Temperature sensor" }}"
+  channel: {{dev.channel}}
+  ASLO: {{dev.aslo if dev.aslo is defined else 0.0183112}}
+  AOFF: {{dev.aoff if dev.aoff is defined else 0.0}}
+  LOLO: {{ dev.lolo if dev.lolo is defined else -100 }}
+  LOW: {{ dev.low if dev.low is defined else 0 }}
+  HIGH: {{ dev.high if dev.high is defined else 80 }}
+  HIHI: {{ dev.hihi if dev.hihi is defined else 100 }}
+{%- endif %}
+
+
 {%- if dev.devtype == "rly" %}
 - type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:RLY{{dev.channel}}_RB"
