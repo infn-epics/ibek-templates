@@ -5,7 +5,7 @@ description:  ICPDAS TEMPLATE
 entities:
 
 - type: icpdas.{{devtype}}
-  NAME: ICPDAS001
+  NAME: "ICP-{{server}}"
   IP: {{server}}
   TCPPORT: {{port |default(502)}}
   P: "{{iocprefix}}"
@@ -14,18 +14,18 @@ entities:
   TIMEOUT: {{timeout | default(2000)}}
 {%- for t in devices %}
 
-{%- if devtype == "icp7215" %}
-- type: icpdas.icp7215temp
-  icpctrl: ICPDAS001
+{%- if dev.devtype == "rtd" %}
+- type: icpdas.rtd
+  icpctrl: "ICP-{{server}}"
   ID: {{ t.name }}
   DESC: "{{t.desc if t.desc is defined else "Temperature sensor" }}"
-  REGOFFSET: {{t.channel}}
+  ID: {{t.channel}}
   ASLO: {{t.aslo if t.aslo is defined else 0.0183112}}
+  AOFF: {{t.aoff if t.aoff is defined else 0.0}}
   LOLO: {{ t.lolo if t.lolo is defined else -100 }}
   LOW: {{ t.low if t.low is defined else 0 }}
   HIGH: {{ t.high if t.high is defined else 80 }}
   HIHI: {{ t.hihi if t.hihi is defined else 100 }}
-  NELM: {{ t.histo if t.histo is defined else 60 }}
 {%- endif %}
 {%- endfor %}
 
@@ -38,6 +38,12 @@ entities:
 - type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:RLY{{dev.channel}}_SP"
   alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}_SP"
+{%- endif %}
+
+{%- if dev.devtype == "rtd" %}
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:RTD{{dev.channel}}:TEMP_RB"
+  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:TEMP_RB"
 {%- endif %}
 
 {%- if dev.devtype == "di" %}
