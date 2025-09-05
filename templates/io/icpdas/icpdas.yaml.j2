@@ -28,6 +28,48 @@ entities:
   HIHI: {{ dev.hihi if dev.hihi is defined else 100 }}
 {%- endif %}
 
+{%- if dev.devtype == "di" %}
+- type: icpdas.di
+  icpctrl: "ICP-{{server}}"
+  DESC: "{{dev.desc if dev.desc is defined else "Digital Input" }}"
+  channel: {{dev.channel}}
+{%- endif %}
+
+{%- if dev.devtype == "do" %}
+- type: icpdas.do
+  icpctrl: "ICP-{{server}}"
+  DESC: "{{dev.desc if dev.desc is defined else "Digital Output" }}"
+  channel: {{dev.channel}}
+{%- endif %}
+
+{%- if dev.devtype == "ai" %}
+- type: icpdas.ai
+  icpctrl: "ICP-{{server}}"
+  DESC: "{{dev.desc if dev.desc is defined else "Analog Input" }}"
+  channel: {{dev.channel}}
+  maxscale: {{dev.maxscale if dev.maxscale is defined else 10.0}}
+{%- endif %}
+
+{%- if dev.devtype == "ao" %}
+- type: icpdas.ao
+  icpctrl: "ICP-{{server}}"
+  DESC: "{{dev.desc if dev.desc is defined else "Analog Output" }}"
+  channel: {{dev.channel}}
+  maxscale: {{dev.maxscale if dev.maxscale is defined else 10.0}}
+
+{%- endif %}
+
+{%- if dev.devtype == "rly" %}
+- type: icpdas.rly
+  icpctrl: "ICP-{{server}}"
+  DESC: "{{dev.desc if dev.desc is defined else "Analog Output" }}"
+  channel: {{dev.channel}}
+
+{%- endif %}
+{%- endfor %}
+
+
+{%- for dev in devices %}
 
 {%- if dev.devtype == "rly" %}
 - type: epics.DbAlias
@@ -47,35 +89,40 @@ entities:
 {%- if dev.devtype == "di" %}
 - type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:DI{{dev.channel}}_RB"
-  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}_RB"
+  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:DI_RB"
 - type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:DI{{dev.channel}}_CNT_RB"
-  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}_CNT_SP"
+  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:DI_CNT_RB"
 {%- endif %}
 
 {%- if dev.devtype == "do" %}
 - type: epics.DbAlias
-  name: "{{iocprefix}}:{{iocroot}}:DO{{dev.channel}}"
-  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}_SP"
-
+  name: "{{iocprefix}}:{{iocroot}}:DO{{dev.channel}}_SP"
+  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:DO_SP"
 {%- endif %}
 
 {%- if dev.devtype == "ai" %}
 - type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:AI{{dev.channel}}_RB"
-  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}_RB"
+  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:AI_RB"
 - type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:AI{{dev.channel}}:VOLT_RB"
-  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}_VOLT_RB"
+  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:VOLT_RB"
 {%- endif %}
 
 {%- if dev.devtype == "ao" %}
 - type: epics.DbAlias
-  name: "{{iocprefix}}:{{iocroot}}:AO{{dev.channel}}:VOLT"
-  alias: "{{iocprefix}}:{{dev.name}}_VOLT_SP"
+  name: "{{iocprefix}}:{{iocroot}}:AO{{dev.channel}}:VOLT_SP"
+  alias: "{{iocprefix}}:{{dev.name}}:VOLT_SP"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:AO{{dev.channel}}_SP"
+  alias: "{{iocprefix}}:{{dev.name}}:AO_SP"
 - type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:AO{{dev.channel}}:VOLT_RB"
-  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}_VOLT_RB"
+  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:VOLT_RB"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:AO{{dev.channel}}_RB"
+  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:AO_RB"
 {%- endif %}
 {%- endfor %}
 
