@@ -113,10 +113,10 @@ entities:
 {%- if dev.devtype == "ao" %}
 - type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:AO{{dev.channel}}:VOLT_SP"
-  alias: "{{iocprefix}}:{{dev.name}}:VOLT_SP"
+  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:VOLT_SP"
 - type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:AO{{dev.channel}}_SP"
-  alias: "{{iocprefix}}:{{dev.name}}:AO_SP"
+  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:AO_SP"
 - type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:AO{{dev.channel}}:VOLT_RB"
   alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:VOLT_RB"
