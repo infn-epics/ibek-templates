@@ -74,10 +74,10 @@ entities:
 {%- if dev.devtype == "rly" %}
 - type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:RLY{{dev.channel}}_RB"
-  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}_RB"
+  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:RLY_RB"
 - type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:RLY{{dev.channel}}_SP"
-  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}_SP"
+  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:RLY_SP"
 {%- endif %}
 
 {%- if dev.devtype == "rtd" %}
