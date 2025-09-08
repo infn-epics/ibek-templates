@@ -76,8 +76,14 @@ entities:
   name: "{{iocprefix}}:{{iocroot}}:RLY{{dev.channel}}_RB"
   alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:RLY_RB"
 - type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:RLY{{dev.channel}}_RB"
+  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}_RB"
+- type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:RLY{{dev.channel}}_SP"
   alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:RLY_SP"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:RLY{{dev.channel}}_SP"
+  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}_SP"
 {%- endif %}
 
 {%- if dev.devtype == "rtd" %}
@@ -98,10 +104,17 @@ entities:
 {%- if dev.devtype == "do" %}
 - type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:DO{{dev.channel}}_SP"
+  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}_SP"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:DO{{dev.channel}}_SP"
   alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:DO_SP"
 - type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:DO{{dev.channel}}_RB"
   alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:DO_RB"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:DO{{dev.channel}}_RB"
+  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}_RB"
+
 {%- endif %}
 
 {%- if dev.devtype == "ai" %}
@@ -111,6 +124,9 @@ entities:
 - type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:AI{{dev.channel}}:VOLT_RB"
   alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:VOLT_RB"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:AI{{dev.channel}}:VOLT_RB"
+  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}_RB"
 {%- endif %}
 
 {%- if dev.devtype == "ao" %}
@@ -118,11 +134,17 @@ entities:
   name: "{{iocprefix}}:{{iocroot}}:AO{{dev.channel}}:VOLT_SP"
   alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:VOLT_SP"
 - type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:AO{{dev.channel}}:VOLT_SP"
+  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}_SP"
+- type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:AO{{dev.channel}}_SP"
   alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:AO_SP"
 - type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:AO{{dev.channel}}:VOLT_RB"
   alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:VOLT_RB"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:AO{{dev.channel}}:VOLT_RB"
+  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}_RB"
 - type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:AO{{dev.channel}}_RB"
   alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:AO_RB"
