@@ -19,12 +19,18 @@ entities:
   P: "{{iocprefix}}:{{ t.name }}"
   sensor: {{ t.sensor }}
   tcauto: {{ t.tcauto }}
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{t.name}}:PRES"
+  alias: "{{iocprefix}}:{{t.name}}:PRES_RB"
 {%- endif %}
 {%- if t.devtype == "cnv" %}
 - type: agilent.{{devtype}}.cnvsensor
   controller: AGILENT001
   P: "{{iocprefix}}:{{ t.name }}"
   sensor: {{ t.sensor }}
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{t.name}}:PRES"
+  alias: "{{iocprefix}}:{{t.name}}:PRES_RB"
 {%- endif %}
 {%- if t.devtype == "setpoint" %}
 - type: agilent.{{devtype}}.setpoint
@@ -47,6 +53,9 @@ entities:
   controller: AGILENT_PUMP
   name: "{{ t.name }}"
   channel: {{ t.channel }}
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{t.name}}:PRES"
+  alias: "{{iocprefix}}:{{t.name}}:PRES_RB"
 {%- endfor %}
 {%- endif %}
 
