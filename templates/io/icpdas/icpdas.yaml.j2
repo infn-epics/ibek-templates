@@ -97,6 +97,9 @@ entities:
   name: "{{iocprefix}}:{{iocroot}}:DI{{dev.channel}}_RB"
   alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:DI_RB"
 - type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:DI{{dev.channel}}_RB"
+  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}_RB"
+- type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:DI{{dev.channel}}_CNT_RB"
   alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:DI_CNT_RB"
 {%- endif %}
