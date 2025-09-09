@@ -8,34 +8,34 @@ entities:
 
 {%- if devtype == "xgs600" %}
 - type: agilent.{{devtype}}.controller
-  name: AGILENT001
+  name: "AGILENT001-{{server}}"
   IP: {{server}}
   TCPPORT: {{port}}
-  P: "{{iocprefix}}"
+  P: "{{iocprefix}}:{{iocroot}}"
 {%- for t in devices %}
 {%- if t.devtype == "img" %}
 - type: agilent.xgs600.imgsensor
-  controller: AGILENT001
-  P: "{{iocprefix}}:{{ t.name }}"
+  controller: "AGILENT001-{{server}}"
+  P: "{{iocprefix}}:{{iocroot}}:{{ t.name }}"
   sensor: {{ t.sensor }}
   tcauto: {{ t.tcauto }}
 - type: epics.DbAlias
-  name: "{{iocprefix}}:{{t.name}}:PRES"
-  alias: "{{iocprefix}}:{{t.name}}:PRES_RB"
+  name: "{{iocprefix}}:{{iocroot}}:{{t.name}}:PRES"
+  alias: "{{iocprefix}}:{{iocroot}}:{{t.name}}:PRES_RB"
 {%- endif %}
 {%- if t.devtype == "cnv" %}
 - type: agilent.{{devtype}}.cnvsensor
-  controller: AGILENT001
-  P: "{{iocprefix}}:{{ t.name }}"
+  controller: "AGILENT001-{{server}}"
+  P: "{{iocprefix}}:{{iocroot}}:{{ t.name }}"
   sensor: {{ t.sensor }}
 - type: epics.DbAlias
-  name: "{{iocprefix}}:{{t.name}}:PRES"
-  alias: "{{iocprefix}}:{{t.name}}:PRES_RB"
+  name: "{{iocprefix}}:{{iocroot}}:{{t.name}}:PRES"
+  alias: "{{iocprefix}}:{{iocroot}}:{{t.name}}:PRES_RB"
 {%- endif %}
 {%- if t.devtype == "setpoint" %}
 - type: agilent.{{devtype}}.setpoint
-  controller: AGILENT001
-  P: "{{iocprefix}}:{{ t.name }}"
+  controller: "AGILENT001-{{server}}"
+  P: "{{iocprefix}}:{{iocroot}}:{{ t.name }}"
   sensor: {{ t.sensor }}
   number: {{ t.number }}
 {%- endif %}
@@ -44,18 +44,18 @@ entities:
 ## pumps
 {%- else %}
 - type: agilent.{{devtype}}.controller
-  name: AGILENT_PUMP
+  name: "AGILENT_PUMP-{{server}}"
   IP: {{server}}
   TCPPORT: {{port}}
-  P: "{{iocprefix}}"
+  P: "{{iocprefix}}:{{iocroot}}"
 {%- for t in devices %}
 - type: agilent.{{devtype}}.pump
-  controller: AGILENT_PUMP
+  controller: "AGILENT_PUMP-{{server}}"
   name: "{{ t.name }}"
   channel: {{ t.channel }}
 - type: epics.DbAlias
-  name: "{{iocprefix}}:{{t.name}}:PRES"
-  alias: "{{iocprefix}}:{{t.name}}:PRES_RB"
+  name: "{{iocprefix}}:{{iocroot}}:{{t.name}}:PRES"
+  alias: "{{iocprefix}}:{{iocroot}}:{{t.name}}:PRES_RB"
 {%- endfor %}
 {%- endif %}
 
@@ -66,8 +66,8 @@ entities:
 
 {%- for param in dev.aliases %}
 - type: epics.DbAlias
-  name: "{{iocprefix}}:{{iocroot}}:{{param.name}}"
-  alias: "{{iocprefix}}:{{iocroot}}:{{param.alias}}"
+  name: "{{iocprefix}}:{{iocroot}}:{{iocroot}}:{{param.name}}"
+  alias: "{{iocprefix}}:{{iocroot}}:{{iocroot}}:{{param.alias}}"
 {%- endfor %}
 {%- endfor %}
 
@@ -76,7 +76,7 @@ entities:
   command: |
   {%- for dev in devices %}
   {%- for param in dev.iocinit %}
-  dbpf ("{{iocprefix}}:{{dev.name}}:{{param.name}}","{{param.value}}")
+  dbpf ("{{iocprefix}}:{{iocroot}}:{{dev.name}}:{{param.name}}","{{param.value}}")
   {%- endfor %}
   {%- endfor %}
   {%- if iocexit %}
