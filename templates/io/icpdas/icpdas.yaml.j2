@@ -90,6 +90,9 @@ entities:
 - type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:RTD{{dev.channel}}:TEMP_RB"
   alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}:TEMP_RB"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{iocroot}}:RTD{{dev.channel}}:TEMP_RB"
+  alias: "{{iocprefix}}:{{iocroot}}:{{dev.name}}_RB"
 {%- endif %}
 
 {%- if dev.devtype == "di" %}
