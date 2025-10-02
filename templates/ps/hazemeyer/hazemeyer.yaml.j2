@@ -15,7 +15,10 @@ entities:
   VMAX: {{ t.vmax if t.vmax is defined else 110 }}
   IMAX: {{ t.imax if t.imax is defined else 200 }}
   ID: {{ t.id}}
-  POLL: {{ t.poll if t.poll is defined else 1000 }}
+  WPOLL: {{ t.wpoll if t.wpoll is defined else 200 }}
+  RPOLL: {{ t.rpoll if t.rpoll is defined else 2000 }}
+  TIMEOUT: {{ t.timeout if t.timeout is defined else 1000 }}
+  WDELAY: {{ t.wdelay if t.wdelay is defined else 200 }}
 {%- endfor %}
 {%- endif %}
 
