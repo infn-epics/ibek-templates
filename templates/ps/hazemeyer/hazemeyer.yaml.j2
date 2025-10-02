@@ -8,6 +8,8 @@ entities:
   TCPPORT: {{port}}
   P: "{{iocprefix}}"
   NAME: "HAZEMEYER001"
+  TIMEOUT: {{ timeout if timeout is defined else 1000 }}
+  WDELAY: {{ wdelay if wdelay is defined else 200 }}
 {%- for t in devices %}
 - type: hazemeyer.ps
   serctrl: "HAZEMEYER001"
@@ -17,8 +19,7 @@ entities:
   ID: {{ t.id}}
   WPOLL: {{ t.wpoll if t.wpoll is defined else 200 }}
   RPOLL: {{ t.rpoll if t.rpoll is defined else 2000 }}
-  TIMEOUT: {{ t.timeout if t.timeout is defined else 1000 }}
-  WDELAY: {{ t.wdelay if t.wdelay is defined else 200 }}
+  
 {%- endfor %}
 {%- endif %}
 
