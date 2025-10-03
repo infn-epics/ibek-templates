@@ -4,7 +4,7 @@ description:  Tektronics TEMPLATE
 entities:
 
 - type: tektronix.{{devtype}}
-  name: TEKTRONIX001
+  name: TEKTRONIX-{{server}}
   IP: {{server}}
   TCPPORT: {{port |default(4000)}}
   P: "{{iocprefix}}"
@@ -12,7 +12,7 @@ entities:
 
 {%- for t in devices %}
 - type: tektronix.channel
-  ctrl: TEKTRONIX001
+  ctrl: TEKTRONIX-{{server}}
   channel: {{t.channel}}
   {% if t.samples is defined %}
   samples: {{t.samples}}
@@ -20,41 +20,26 @@ entities:
   samples: {{samples if samples is defined else 10000}}
   {% endif %}
   name: {{t.name}}
-  sensibility: {{t.s if t.s is defined else "1.0"}}
+  coeff: {{t.coeff if t.coeff is defined else "1.0"}}
   rate: {{t.rate if t.rate is defined else "1 second"}}
 
 - type: epics.DbAlias
   name: "{{iocprefix}}:INTEGRAL_CH{{t.channel}}"
   alias: "{{iocprefix}}:{{t.name}}:INTEGRAL"
 - type: epics.DbAlias
-  name: "{{iocprefix}}:MATH_INTEGRAL_CH{{t.channel}}"
-  alias: "{{iocprefix}}:{{t.name}}:WIN-INTEGRAL"
-- type: epics.DbAlias
   name: "{{iocprefix}}:RMS_CH{{t.channel}}"
   alias: "{{iocprefix}}:{{t.name}}:RMS"
-- type: epics.DbAlias
-  name: "{{iocprefix}}:MATH_RMS_CH{{t.channel}}"
-  alias: "{{iocprefix}}:{{t.name}}:WIN-RMS"
 
 - type: epics.DbAlias
   name: "{{iocprefix}}:MEAN_CH{{t.channel}}"
   alias: "{{iocprefix}}:{{t.name}}:MEAN"
-- type: epics.DbAlias
-  name: "{{iocprefix}}:MATH_MEAN_CH{{t.channel}}"
-  alias: "{{iocprefix}}:{{t.name}}:WIN-MEAN"
 
 - type: epics.DbAlias
   name: "{{iocprefix}}:MIN_CH{{t.channel}}"
   alias: "{{iocprefix}}:{{t.name}}:MIN"
 - type: epics.DbAlias
-  name: "{{iocprefix}}:MATH_MIN_CH{{t.channel}}"
-  alias: "{{iocprefix}}:{{t.name}}:WIN-MIN"
-- type: epics.DbAlias
   name: "{{iocprefix}}:MAX_CH{{t.channel}}"
   alias: "{{iocprefix}}:{{t.name}}:MAX"
-- type: epics.DbAlias
-  name: "{{iocprefix}}:MATH_MAX_CH{{t.channel}}"
-  alias: "{{iocprefix}}:{{t.name}}:WIN-MAX"
 {%- endfor %}
 
 - type: epics.PostStartupCommand 
