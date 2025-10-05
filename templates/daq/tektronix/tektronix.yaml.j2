@@ -26,7 +26,7 @@ entities:
   name: "{{iocprefix}}:CHARGE_DAY_CH{{t.channel}}"
   alias: "{{iocprefix}}:{{t.name}}:CHARGE_DAY"
 
-{% -else %}
+{%- else %}
 - type: tektronix.channel
   ctrl: TEKTRONIX-{{server}}
   channel: {{t.channel}}
