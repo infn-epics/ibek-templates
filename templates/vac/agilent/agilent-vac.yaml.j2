@@ -53,6 +53,7 @@ entities:
   controller: "AGILENT_PUMP-{{server}}"
   name: "{{ t.name }}"
   channel: {{ t.channel }}
+  interlock: {{ t.interlock if t.interlock is defined else 0 }}
 - type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:{{t.name}}:PRES"
   alias: "{{iocprefix}}:{{iocroot}}:{{t.name}}:PRES_RB"
