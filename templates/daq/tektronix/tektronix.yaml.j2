@@ -18,7 +18,7 @@ entities:
   name: {{t.name}}
   coeff: {{t.coeff if t.coeff is defined else "1.0"}}
   rate: {{t.rate if t.rate is defined else ".1 second"}}
-
+  EGU: {{t.egu if t.egu is defined else "pC"}}
 - type: epics.DbAlias
   name: "{{iocprefix}}:CHARGE_CH{{t.channel}}"
   alias: "{{iocprefix}}:{{t.name}}:CHARGE"
