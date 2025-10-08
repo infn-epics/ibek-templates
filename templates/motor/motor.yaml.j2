@@ -320,6 +320,9 @@ entities:
 {%- endif %}
 
 
+  - type: epics.StartupCommand
+    command: |
+      dbLoadRecords("config/poi.db","")
 
 {%- for dev in devices %}
 

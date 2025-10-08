@@ -1,0 +1,227 @@
+
+# ============================================================================
+# POI - Points of Interest: Named Positions
+# ============================================================================
+# This template generates POI records only for motors that have poi array defined
+# Each POI must have both 'name' and 'value' properties set
+
+## since prefix name can be iocprefix or iocprefix:iocroot depending on tipe 
+{%- set PREFIX = iocprefix %}
+{%- if iocroot is defined and iocroot|length > 0 %}
+{%- set PREFIX = PREFIX + ':' + iocroot %}
+{%- endif %}
+
+{%- for mot in devices %}
+{%- if mot.poi is defined and mot.poi|length > 0 %}
+
+# Motor: {{ mot.name }} - POI Configuration
+# Number of POIs defined: {{ mot.poi|length }}
+
+{%- for poi_item in mot.poi %}
+{%- if poi_item.name is defined and poi_item.value is defined %}
+# POI: {{ poi_item.name }} at position {{ poi_item.value }}
+record(ao, "{{PREFIX}}:{{ mot.name }}:POI{{ loop.index0 }}_POS") {
+    field(DESC, "POI{{ loop.index0 }} {{ poi_item.name }} at {{ poi_item.value }}")
+    field(EGU, "ustep")
+    field(VAL, "{{ poi_item.value }}")
+    field(PINI, "YES")
+}
+
+record(stringin, "{{PREFIX}}:{{ mot.name }}:POI{{ loop.index0 }}_NAME") {
+    field(DESC, "POI{{ loop.index0 }} at {{ poi_item.value }} {{ poi_item.name }} ")
+    field(VAL, "{{ poi_item.name }}")
+    field(PINI, "YES")
+}
+
+record(calc, "{{PREFIX}}:{{ mot.name }}:POI{{ loop.index0 }}_AT") {
+    field(DESC, "At POI {{ loop.index0 }} {{ poi_item.name }}")
+    field(INPA, "{{PREFIX}}:{{ mot.name }}:RBV CP")
+    field(INPB, "{{PREFIX}}:{{ mot.name }}:POI{{ loop.index0 }}_POS CP")
+    field(INPC, "{{PREFIX}}:{{ mot.name }}:POI_TOL CP")
+    field(CALC, "ABS(A-B)<=C?1:0")
+}
+
+{%- endif %}
+{%- endfor %}
+
+# POI Selector - Choose which POI to move to
+record(mbbo, "{{PREFIX}}:{{ mot.name }}:POI_SEL") {
+    field(DESC, "Select POI to move to")
+{%- for poi_item in mot.poi %}
+{%- if poi_item.name is defined and poi_item.value is defined %}
+{%- set poi_fields = [
+    ('ZRVL', 'ZRST'),
+    ('ONVL', 'ONST'),
+    ('TWVL', 'TWST'),
+    ('THVL', 'THST'),
+    ('FRVL', 'FRST'),
+    ('FVVL', 'FVST'),
+    ('SXVL', 'SXST'),
+    ('SVVL', 'SVST'),
+    ('EIVL', 'EIST'),
+    ('NIVL', 'NIST'),
+    ('TEVL', 'TEST'),
+    ('ELVL', 'ELST'),
+    ('TVVL', 'TVST'),
+    ('TTVL', 'TTST'),
+    ('FTVL', 'FTST'),
+    ('FFVL', 'FFST')
+] %}
+{%- if loop.index0 < 16 %}
+    field({{ poi_fields[loop.index0][0] }}, "{{ loop.index0 }}")
+    field({{ poi_fields[loop.index0][1] }}, "{{ poi_item.name }}")
+{%- endif %}
+{%- endif %}
+{%- endfor %}
+    field(VAL, "0")
+    field(PINI, "YES")
+}
+
+# POI Move Trigger - Execute move to selected POI
+record(bo, "{{PREFIX}}:{{ mot.name }}:POI_GO") {
+    field(DESC, "Move to selected POI")
+    field(ZNAM, "Ready")
+    field(ONAM, "Go")
+    field(FLNK, "{{PREFIX}}:{{ mot.name }}:POI_PROC")
+}
+
+# POI Processing Sequence - Routes to correct position based on selection
+record(seq, "{{PREFIX}}:{{ mot.name }}:POI_PROC") {
+    field(DESC, "Process POI movement")
+{%- for poi_item in mot.poi %}
+{%- if poi_item.name is defined and poi_item.value is defined %}
+{%- set seq_fields = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'] %}
+{%- if loop.index0 < 16 %}
+    field(DOL{{ seq_fields[loop.index0] }}, "{{PREFIX}}:{{ mot.name }}:POI{{ loop.index0 }}_POS")
+    field(LNK{{ seq_fields[loop.index0] }}, "{{PREFIX}}:{{ mot.name }}:VAL PP")
+{%- endif %}
+{%- endif %}
+{%- endfor %}
+    field(SELM, "Specified")
+    field(SELL, "{{PREFIX}}:{{ mot.name }}:POI_SEL")
+}
+
+# Current POI Position Display (shows which position motor is at)
+record(stringin, "{{PREFIX}}:{{ mot.name }}:POI_CURR") {
+    field(DESC, "Current POI at position")
+    field(VAL, "---")
+}
+
+# POI position tolerance (usteps) - how close to be considered "at" POI
+record(longout, "{{PREFIX}}:{{ mot.name }}:POI_TOL") {
+    field(DESC, "POI position tolerance")
+    field(VAL, "{{ mot.poi_tolerance|default(100) }}")
+    field(EGU, "ustep")
+    field(PINI, "YES")
+}
+
+# Determine which POI index we're at (priority to first matching POI)
+record(calc, "{{PREFIX}}:{{ mot.name }}:POI_IDX") {
+    field(DESC, "Current POI index")
+{%- set poi_count = (mot.poi | selectattr('name', 'defined') | selectattr('value', 'defined') | list | length) %}
+{%- if poi_count > 0 %}
+{%- set inputs = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'] %}
+{%- for poi_item in mot.poi %}
+{%- if poi_item.name is defined and poi_item.value is defined and loop.index0 < 12 %}
+    field(INP{{ inputs[loop.index0] }}, "{{PREFIX}}:{{ mot.name }}:POI{{ loop.index0 }}_AT CP")
+{%- endif %}
+{%- endfor %}
+{%- set poi_indices = [] %}
+{%- for poi_item in mot.poi %}
+{%- if poi_item.name is defined and poi_item.value is defined and loop.index0 < 12 %}
+{%- set _ = poi_indices.append(loop.index0) %}
+{%- endif %}
+{%- endfor %}
+{%- if poi_indices|length > 0 %}
+    field(CALC, "{%- for idx in poi_indices %}{{ inputs[loop.index0] }}?{{ idx }}:{%- endfor %}{{ '(' * (poi_indices|length - 1) }}-1{{ ')' * (poi_indices|length - 1) }}")
+{%- else %}
+    field(CALC, "-1")
+{%- endif %}
+{%- else %}
+    field(CALC, "-1")
+{%- endif %}
+{%- if poi_count > 12 %}
+    field(FLNK, "{{PREFIX}}:{{ mot.name }}:POI_IDX2")
+{%- else %}
+    field(FLNK, "{{PREFIX}}:{{ mot.name }}:POI_NAME_UPDATE")
+{%- endif %}
+}
+
+{%- if poi_count > 12 %}
+# Check remaining POIs 12-15
+record(calc, "{{PREFIX}}:{{ mot.name }}:POI_IDX2") {
+    field(DESC, "Current POI index 12-15")
+    field(INPA, "{{PREFIX}}:{{ mot.name }}:POI_IDX")
+{%- set inputs = ['B', 'C', 'D', 'E'] %}
+{%- set extra_poi_idx = [] %}
+{%- for poi_item in mot.poi %}
+{%- if poi_item.name is defined and poi_item.value is defined and loop.index0 >= 12 and loop.index0 < 16 %}
+    field(INP{{ inputs[loop.index0 - 12] }}, "{{PREFIX}}:{{ mot.name }}:POI{{ loop.index0 }}_AT CP")
+{%- set _ = extra_poi_idx.append(loop.index0) %}
+{%- endif %}
+{%- endfor %}
+{%- if extra_poi_idx|length > 0 %}
+    field(CALC, "A>=0?A:{%- for idx in extra_poi_idx %}{{ inputs[loop.index0] }}?{{ idx }}:{%- endfor %}{{ '(' * (extra_poi_idx|length) }}-1{{ ')' * (extra_poi_idx|length) }}")
+{%- else %}
+    field(CALC, "A")
+{%- endif %}
+    field(FLNK, "{{PREFIX}}:{{ mot.name }}:POI_NAME_UPDATE")
+}
+{%- endif %}
+
+# Update POI_CURR with the name of the POI we're at
+record(scalcout, "{{PREFIX}}:{{ mot.name }}:POI_NAME_UPDATE") {
+    field(DESC, "Update POI name from position")
+{%- if poi_count > 12 %}
+    field(INPA, "{{PREFIX}}:{{ mot.name }}:POI_IDX2")
+{%- else %}
+    field(INPA, "{{PREFIX}}:{{ mot.name }}:POI_IDX")
+{%- endif %}
+{%- set string_inputs = ['BB', 'CC', 'DD', 'EE', 'FF', 'GG', 'HH', 'II', 'JJ', 'KK', 'LL', 'MM'] %}
+{%- for poi_item in mot.poi %}
+{%- if poi_item.name is defined and poi_item.value is defined and loop.index0 < 12 %}
+    field(INP{{ string_inputs[loop.index0] }}, "{{PREFIX}}:{{ mot.name }}:POI{{ loop.index0 }}_NAME")
+{%- endif %}
+{%- endfor %}
+{%- set name_map = [] %}
+{%- for poi_item in mot.poi %}
+{%- if poi_item.name is defined and poi_item.value is defined and loop.index0 < 12 %}
+{%- set _ = name_map.append((loop.index0, string_inputs[loop.index0])) %}
+{%- endif %}
+{%- endfor %}
+{%- if name_map|length > 0 %}
+    field(CALC, "{%- for idx, inp in name_map %}A=={{ idx }}?{{ inp }}:{%- endfor %}{{ '(' * (name_map|length) }}'---'{{ ')' * (name_map|length) }}")
+{%- else %}
+    field(CALC, "'---'")
+{%- endif %}
+    field(OUT, "{{PREFIX}}:{{ mot.name }}:POI_CURR PP")
+}
+
+{%- if poi_count > 12 %}
+# Additional update for POIs 12-15
+record(scalcout, "{{PREFIX}}:{{ mot.name }}:POI_NAME_UPDATE2") {
+    field(DESC, "Update POI name 12-15")
+    field(INPA, "{{PREFIX}}:{{ mot.name }}:POI_IDX2 CP")
+{%- set string_inputs2 = ['BB', 'CC', 'DD', 'EE'] %}
+{%- set extra_name_map = [] %}
+{%- for poi_item in mot.poi %}
+{%- if poi_item.name is defined and poi_item.value is defined and loop.index0 >= 12 and loop.index0 < 16 %}
+    field(INP{{ string_inputs2[loop.index0 - 12] }}, "{{PREFIX}}:{{ mot.name }}:POI{{ loop.index0 }}_NAME")
+{%- set _ = extra_name_map.append((loop.index0, string_inputs2[loop.index0 - 12])) %}
+{%- endif %}
+{%- endfor %}
+{%- if extra_name_map|length > 0 %}
+    field(CALC, "{%- for idx, inp in extra_name_map %}A=={{ idx }}?{{ inp }}:{%- endfor %}{{ '(' * (extra_name_map|length) }}''{{ ')' * (extra_name_map|length) }}")
+{%- else %}
+    field(CALC, "''")
+{%- endif %}
+    field(OOPT, "When Non-zero")
+    field(DOPT, "Use CALC")
+    field(OUT, "{{PREFIX}}:{{ mot.name }}:POI_CURR PP")
+}
+{%- endif %}
+
+{%- endif %}
+
+
+{%- endfor %}
