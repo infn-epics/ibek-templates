@@ -180,7 +180,7 @@ record(scalcout, "{{PREFIX}}:{{ mot.name }}:POI_NAME_UPDATE") {
 {%- set string_inputs = ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'] %}
 {%- for poi_item in mot.poi %}
 {%- if poi_item.name is defined and poi_item.value is defined and loop.index0 < 12 %}
-    field(INP{{ string_inputs[loop.index0] }}, "{{PREFIX}}:{{ mot.name }}:POI{{ loop.index0 }}_NAME")
+    field(INP{{ string_inputs[loop.index0] }}, "{{PREFIX}}:{{ mot.name }}:POI{{ loop.index0 }}_NAME NPP NMS")
 {%- endif %}
 {%- endfor %}
 {%- set name_map = [] %}
@@ -206,7 +206,7 @@ record(scalcout, "{{PREFIX}}:{{ mot.name }}:POI_NAME_UPDATE2") {
 {%- set extra_name_map = [] %}
 {%- for poi_item in mot.poi %}
 {%- if poi_item.name is defined and poi_item.value is defined and loop.index0 >= 12 and loop.index0 < 16 %}
-    field(INP{{ string_inputs2[loop.index0 - 12] }}, "{{PREFIX}}:{{ mot.name }}:POI{{ loop.index0 }}_NAME")
+    field(INP{{ string_inputs2[loop.index0 - 12] }}, "{{PREFIX}}:{{ mot.name }}:POI{{ loop.index0 }}_NAME NPP NMS")
 {%- set _ = extra_name_map.append((loop.index0, string_inputs2[loop.index0 - 12])) %}
 {%- endif %}
 {%- endfor %}
