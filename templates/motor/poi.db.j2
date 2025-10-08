@@ -103,7 +103,7 @@ record(seq, "{{PREFIX}}:{{ mot.name }}:POI_PROC") {
 
 # Current POI Position Display (shows which position motor is at)
 record(stringin, "{{PREFIX}}:{{ mot.name }}:POI_CURR") {
-    field(DESC, "Current POI at position")
+    field(DESC, "Current POI at value")
     field(VAL, "---")
 }
 
@@ -177,7 +177,7 @@ record(scalcout, "{{PREFIX}}:{{ mot.name }}:POI_NAME_UPDATE") {
 {%- else %}
     field(INPA, "{{PREFIX}}:{{ mot.name }}:POI_IDX")
 {%- endif %}
-{%- set string_inputs = ['BB', 'CC', 'DD', 'EE', 'FF', 'GG', 'HH', 'II', 'JJ', 'KK', 'LL', 'MM'] %}
+{%- set string_inputs = ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'] %}
 {%- for poi_item in mot.poi %}
 {%- if poi_item.name is defined and poi_item.value is defined and loop.index0 < 12 %}
     field(INP{{ string_inputs[loop.index0] }}, "{{PREFIX}}:{{ mot.name }}:POI{{ loop.index0 }}_NAME")
@@ -202,7 +202,7 @@ record(scalcout, "{{PREFIX}}:{{ mot.name }}:POI_NAME_UPDATE") {
 record(scalcout, "{{PREFIX}}:{{ mot.name }}:POI_NAME_UPDATE2") {
     field(DESC, "Update POI name 12-15")
     field(INPA, "{{PREFIX}}:{{ mot.name }}:POI_IDX2 CP")
-{%- set string_inputs2 = ['BB', 'CC', 'DD', 'EE'] %}
+{%- set string_inputs2 = ['B', 'C', 'D', 'E'] %}
 {%- set extra_name_map = [] %}
 {%- for poi_item in mot.poi %}
 {%- if poi_item.name is defined and poi_item.value is defined and loop.index0 >= 12 and loop.index0 < 16 %}
