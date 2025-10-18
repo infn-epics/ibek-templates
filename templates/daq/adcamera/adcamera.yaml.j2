@@ -8,11 +8,13 @@ description: AD Camera Array model with plugins
 
 entities:
 {%- for camera in devices %}
-
+-
   {%- if "Basler-a2A1920" in camera.devtype %}
     {%- set camera_elements = 2354176 %}
   {%- elif "Basler-scA1400" in camera.devtype %}
     {% set camera_elements = 1447680 %}
+  {%- elif "Basler-a2A2600" in camera.devtype %}
+    {%- set camera_elements = 5616000 %}
   {%- endif %}
   
   {%- if camera.devtype == "camerasim" or devtype == "camerasim" %}
@@ -118,7 +120,7 @@ entities:
     NDARRAY_PORT: {{camera.name}}.PROC
     TYPE: {{camera.CAMERA_TYPE | default("Int16")}}
     FTVL: {{camera.CAMERA_FTVL | default("USHORT")}}
-    NELEMENTS: {{camera_elements}}
+    NELEMENTS: {{camera.pixels | default(camera_elements)}}
     ENABLED: 1
   
   {%- if stats_enable %}
