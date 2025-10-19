@@ -8,7 +8,6 @@ description: AD Camera Array model with plugins
 
 entities:
 {%- for camera in devices %}
--
   {%- if "Basler-a2A1920" in camera.devtype %}
     {%- set camera_elements = 2354176 %}
   {%- elif "Basler-scA1400" in camera.devtype %}
@@ -167,7 +166,6 @@ entities:
     R: ":Overlay1:TIFF1:"
     ENABLED: 1
   {%- endif %}
-  # Want to have also high throughput PVA protocol
   - type: ADCore.NDPvaPlugin
     PORT: {{camera.name}}.PVA
     PVNAME: "{{iocprefix}}:{{camera.name}}:PVA:OUTPUT"
@@ -229,7 +227,7 @@ entities:
 
     {%- for camera in devices %}
 
-      ## camera {{camera.name}} initializations
+      ############## camera {{camera.name}} initializations
 
       dbpf("{{iocprefix}}:{{camera.name}}:TIFF1:FilePath", "{{data_dir}}")
       dbpf("{{iocprefix}}:{{camera.name}}:TIFF1:FileWriteMode",2)
@@ -270,17 +268,17 @@ entities:
       dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:WidthY","2")
       {% endif %}
 
-      {%- for param in iocinit %}
       ## common initializations
+      {%- for param in iocinit %}
       dbpf("{{iocprefix}}:{{camera.name}}:{{param.name}}","{{param.value}}")
+      {%- endfor %}
       ### end common initializations
-      {%- endfor %}
 
-      {%- for param in camera.iocinit %}
       ## specific initializations
+      {%- for param in camera.iocinit %}
       dbpf("{{iocprefix}}:{{camera.name}}:{{param.name}}","{{param.value}}")
-      ### end specific initializations
       {%- endfor %}
+      ### end specific initializations
 
   {%- endfor %}
     
