@@ -29,10 +29,10 @@ entities:
     BUFFERS: {{camera.buffers | default(100)}}
     MEMORY: {{camera.memory | default(0)}}
 
-  {%- if camera.devtype != "camerasim" or devtype != "camerasim" %}
+  {%- if camera.devtype == "camerasim" or devtype == "camerasim" %}
+  {%- else %}
   - type: ADAravis.aravisSettings
     camera: {{camera.name}}
-
   {%- endif %}
 
   {%- if stream_enable %}
