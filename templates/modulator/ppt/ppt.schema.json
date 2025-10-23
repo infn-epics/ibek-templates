@@ -1,0 +1,154 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "$id": "https://github.com/infn-epics/ibek-templates/releases/download/v1/ppt.schema.json",
+    "allOf": [
+        {
+            "$ref": "../../schemas/ioc.schema.json"
+        }
+    ],
+    "properties": {
+        "template": {
+            "const": "ppt",
+            "description": "The template type for this schema (PPT Modulator)."
+        },
+        "devtype": {
+            "const": "ppt",
+            "description": "Device type for PPT Modulator."
+        },
+        "devgroup": {
+            "const": "modulator",
+            "description": "Device group classification."
+        },
+        "server": {
+            "type": "string",
+            "description": "Default IP address for all PPT Modulators (can be overridden per modulator).",
+            "default": "192.168.197.111"
+        },
+        "port": {
+            "type": "integer",
+            "description": "Default TCP port for all PPT Modulators (can be overridden per modulator).",
+            "default": 2000
+        },
+        "priority": {
+            "type": "integer",
+            "description": "Default Asyn priority (can be overridden per modulator).",
+            "default": 0
+        },
+        "noautoconnect": {
+            "type": "integer",
+            "description": "Default Asyn auto connect (0: auto, 1: no auto, can be overridden per modulator).",
+            "default": 0,
+            "minimum": 0,
+            "maximum": 1
+        },
+        "noprocesseos": {
+            "type": "integer",
+            "description": "Default Asyn noProcessEos (0: process, 1: do not process, can be overridden per modulator).",
+            "default": 0,
+            "minimum": 0,
+            "maximum": 1
+        },
+        "aliases": {
+            "type": "array",
+            "description": "Global PV aliases (applied at IOC level).",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Original PV name."
+                    },
+                    "alias": {
+                        "type": "string",
+                        "description": "Alias PV name."
+                    }
+                },
+                "required": ["name", "alias"]
+            }
+        },
+        "modulators": {
+            "type": "array",
+            "description": "Array of PPT Modulator devices to configure.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the modulator controller (Asyn port name)."
+                    },
+                    "server": {
+                        "type": "string",
+                        "description": "IP address of this specific modulator (overrides global server)."
+                    },
+                    "port": {
+                        "type": "integer",
+                        "description": "TCP port of this specific modulator (overrides global port)."
+                    },
+                    "iocroot": {
+                        "type": "string",
+                        "description": "PV root suffix for this modulator (if not specified, uses global iocroot with index)."
+                    },
+                    "priority": {
+                        "type": "integer",
+                        "description": "Asyn priority for this modulator."
+                    },
+                    "noautoconnect": {
+                        "type": "integer",
+                        "description": "Asyn auto connect for this modulator (0: auto, 1: no auto).",
+                        "minimum": 0,
+                        "maximum": 1
+                    },
+                    "noprocesseos": {
+                        "type": "integer",
+                        "description": "Asyn noProcessEos for this modulator (0: process, 1: do not process).",
+                        "minimum": 0,
+                        "maximum": 1
+                    },
+                    "aliases": {
+                        "type": "array",
+                        "description": "PV aliases specific to this modulator.",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "Original PV name (relative to this modulator's root)."
+                                },
+                                "alias": {
+                                    "type": "string",
+                                    "description": "Alias PV name."
+                                }
+                            },
+                            "required": ["name", "alias"]
+                        }
+                    },
+                    "iocinit": {
+                        "type": "array",
+                        "description": "Initialization parameters specific to this modulator.",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "Parameter name (relative to this modulator's root)."
+                                },
+                                "value": {
+                                    "type": "string",
+                                    "description": "Parameter value."
+                                }
+                            },
+                            "required": ["name", "value"]
+                        }
+                    },
+                    "asset": {
+                        "type": "string",
+                        "description": "Asset entry associated with this specific modulator."
+                    }
+                }
+            },
+            "minItems": 1
+        }
+    },
+    "required": ["iocprefix", "template", "modulators"]
+}

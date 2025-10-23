@@ -1,0 +1,58 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+ioc_name: {{iocname}}
+description: PPT Modulator Template
+
+entities:
+
+{%- for modulator in devices %}
+- type: ppt.PptModulatorController
+  name: "{{modulator.name | default('PPT_MOD_' ~ loop.index0)}}"
+  IP: {{modulator.server | default(server)}}
+  TCPPORT: {{modulator.port | default(port | default(2000))}}
+  P: "{{iocprefix}}"
+  R: "{{modulator.name }}"
+  PRIORITY: {{modulator.priority | default(priority | default(0))}}
+  NOAUTOCONNECT: {{modulator.noautoconnect | default(noautoconnect | default(0))}}
+  NOPROCESSEOS: {{modulator.noprocesseos | default(noprocesseos | default(0))}}
+
+{%- endfor %}
+
+{%- if aliases is defined %}
+- type: epics.StartupCommand
+  command: |
+  {%- for param in aliases %}
+    alias("{{iocprefix}}:{{param.name}}","{{param.alias}}")
+  {%- endfor %}
+{%- endif %}
+
+{%- for modulator in devices %}
+{%- if modulator.aliases is defined %}
+- type: epics.StartupCommand
+  command: |
+  {%- for param in modulator.aliases %}
+    alias("{{iocprefix}}:{{modulator.name}}:{{param.name}}","{{param.alias}}")
+  {%- endfor %}
+{%- endif %}
+{%- endfor %}
+
+- type: epics.PostStartupCommand 
+  command: |
+  {%- if iocinit is defined %}
+  {%- for param in iocinit %}
+    dbpf ("{{iocprefix}}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- endif %}
+  {%- for modulator in devices %}
+  {%- if modulator.iocinit is defined %}
+  {%- for param in modulator.iocinit %}
+    dbpf ("{{iocprefix}}:{{modulator.name}}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- endif %}
+  {%- endfor %}
+  {%- if iocexit %}
+    dbl
+    exit
+  {%- else %}
+    dbl("*") > {{config_dir | default('/epics/iocs')}}/pvlist.txt           ## dumps PV NAMES
+    dbl
+  {%- endif %}
