@@ -63,13 +63,13 @@ entities:
     P: "{{iocprefix}}:{{camera.name}}"
     R: ":Roi1:"
     ENABLED: 1
-  - type: ADCore.NDPvaPlugin
-    PORT: {{camera.name}}.PVA3
-    PVNAME: "{{iocprefix}}:{{camera.name}}:ROI1:OUTPUT"
-    P: "{{iocprefix}}:{{camera.name}}"
-    R: ":Roi1:Pva1:"
-    NDARRAY_PORT: {{camera.name}}.ROI1
-    ENABLED: 1
+  # - type: ADCore.NDPvaPlugin
+  #   PORT: {{camera.name}}.PVA3
+  #   PVNAME: "{{iocprefix}}:{{camera.name}}:ROI1:OUTPUT"
+  #   P: "{{iocprefix}}:{{camera.name}}"
+  #   R: ":Roi1:Pva1:"
+  #   NDARRAY_PORT: {{camera.name}}.ROI1
+  #   ENABLED: 1
   {%- if stats_enable %}
   - type: ADCore.NDStats
     PORT: {{camera.name}}.STATS3
@@ -104,13 +104,13 @@ entities:
     NDARRAY_PORT: {{camera.name}}.ROI1
     ENABLED: 1
 
-  - type: ADCore.NDPvaPlugin
-    PORT: {{camera.name}}.PVA2
-    PVNAME: "{{iocprefix}}:{{camera.name}}:PROC:OUTPUT"
-    P: "{{iocprefix}}:{{camera.name}}"
-    R: ":Proc1:Pva1:"
-    NDARRAY_PORT: {{camera.name}}.PROC
-    ENABLED: 1
+  # - type: ADCore.NDPvaPlugin
+  #   PORT: {{camera.name}}.PVA2
+  #   PVNAME: "{{iocprefix}}:{{camera.name}}:PROC:OUTPUT"
+  #   P: "{{iocprefix}}:{{camera.name}}"
+  #   R: ":Proc1:Pva1:"
+  #   NDARRAY_PORT: {{camera.name}}.PROC
+  #   ENABLED: 1
   
   - type: ADCore.NDStdArrays
     P: "{{iocprefix}}:{{camera.name}}"
@@ -151,13 +151,13 @@ entities:
     R: ":Overlay1:"
     NOverlays: 8
   
-  - type: ADCore.NDPvaPlugin
-    PORT: {{camera.name}}.PVA4
-    PVNAME: "{{iocprefix}}:{{camera.name}}:OVERLAY1:OUTPUT"
-    P: "{{iocprefix}}:{{camera.name}}"
-    R: ":Overlay1:Pva1:"
-    NDARRAY_PORT: {{camera.name}}.OVERLAY1
-    ENABLED: 1
+  # - type: ADCore.NDPvaPlugin
+  #   PORT: {{camera.name}}.PVA4
+  #   PVNAME: "{{iocprefix}}:{{camera.name}}:OVERLAY1:OUTPUT"
+  #   P: "{{iocprefix}}:{{camera.name}}"
+  #   R: ":Overlay1:Pva1:"
+  #   NDARRAY_PORT: {{camera.name}}.OVERLAY1
+  #   ENABLED: 1
   
   - type: ADCore.NDFileTIFF
     PORT: {{camera.name}}.TIFF4
@@ -166,13 +166,13 @@ entities:
     R: ":Overlay1:TIFF1:"
     ENABLED: 1
   {%- endif %}
-  - type: ADCore.NDPvaPlugin
-    PORT: {{camera.name}}.PVA
-    PVNAME: "{{iocprefix}}:{{camera.name}}:PVA:OUTPUT"
-    P: "{{iocprefix}}:{{camera.name}}"
-    R: ":Pva1:"
-    NDARRAY_PORT: {{camera.name}}
-    ENABLED: 1
+  # - type: ADCore.NDPvaPlugin
+  #   PORT: {{camera.name}}.PVA
+  #   PVNAME: "{{iocprefix}}:{{camera.name}}:PVA:OUTPUT"
+  #   P: "{{iocprefix}}:{{camera.name}}"
+  #   R: ":Pva1:"
+  #   NDARRAY_PORT: {{camera.name}}
+  #   ENABLED: 1
 
   - type: ADCore.NDStdArrays
     P: "{{iocprefix}}:{{camera.name}}"
