@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "$id": "https://github.com/infn-epics/ibek-templates/releases/download/v1/scandinova-rfmod.schema.json",
+  "allOf": [
+    {
+      "$ref": "../../schemas/ioc.schema.json"
+    }
+  ],
+  "properties": {
+    "template": {
+      "const": "scandinova-rfmod",
+      "description": "The template type for Scandinova RF Modulator optimized startup."
+    },
+    "devtype": {
+      "const": "scandinova-rfmod",
+      "description": "Device type name used by the IBEK support module."
+    },
+    "devgroup": {
+      "const": "modulator",
+      "description": "Device group classification."
+    },
+    "server": {
+      "type": "string",
+      "description": "Default IP address for devices (can be overridden per device).",
+      "default": "127.0.0.1"
+    },
+    "port": {
+      "type": "integer",
+      "description": "Default Modbus TCP port (can be overridden per device).",
+      "default": 502
+    },
+    "POLLING": {
+      "type": "integer",
+      "description": "Default standard polling interval (ms)",
+      "default": 4000
+    },
+    "WD_POLLING": {
+      "type": "integer",
+      "description": "Default watchdog read polling (ms)",
+      "default": 2000
+    },
+    "WD_WRITE_POLLING": {
+      "type": "integer",
+      "description": "Default watchdog write polling (ms)",
+      "default": 800
+    },
+    "SLOW_REGISTER_POLLING": {
+      "type": "integer",
+      "description": "Default slow register polling (ms)",
+      "default": 5000
+    },
+    "TEST_POLLING": {
+      "type": "integer",
+      "description": "Default test probe polling (ms)",
+      "default": 10000
+    },
+    "devices": {
+      "type": "array",
+      "description": "Array of Scandinova RF Modulator devices to configure.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "description": "Identifier for the device (e.g. '1')" },
+          "P": { "type": "string", "description": "PV prefix for the device (e.g. 'MODHEL01')" },
+          "IP": { "type": "string", "description": "IP address or hostname for this device" },
+          "SLAVE_ADDR": { "type": "integer", "description": "Modbus slave address", "default": 1 },
+          "TCPPORT": { "type": "integer", "description": "Modbus TCP port for this device", "default": 502 },
+          "POLLING": { "type": "integer", "description": "Polling interval (ms) for this device" },
+          "WD_POLLING": { "type": "integer", "description": "Watchdog read polling (ms)" },
+          "WD_WRITE_POLLING": { "type": "integer", "description": "Watchdog write polling (ms)" },
+          "SLOW_REGISTER_POLLING": { "type": "integer", "description": "Slow register polling (ms)" },
+          "TEST_POLLING": { "type": "integer", "description": "Test probe polling (ms)" }
+        },
+        "required": ["name", "P"]
+      },
+      "minItems": 1
+    }
+  },
+  "required": ["iocprefix", "template", "devices"]
+}
