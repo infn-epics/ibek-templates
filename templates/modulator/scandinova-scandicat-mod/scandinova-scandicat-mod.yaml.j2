@@ -7,7 +7,7 @@ entities:
 {%- for modulator in devices %}
 - type: scandinova-scandicat-mod.RFModulator
   name: "{{modulator.name | default('RFMod_' ~ loop.index0)}}"
-  P: "{{iocprefix}}{{modulator.name}}"
+  P: "{{iocprefix}}:{{modulator.name}}"
   SLAVE_ADDR: {{modulator.SLAVE_ADDR | default(SLAVE_ADDR | default(1))}}
   IP: {{modulator.server | default(server)}}
   TCPPORT: {{modulator.port | default(port | default(502))}}
@@ -32,7 +32,7 @@ entities:
 - type: epics.StartupCommand
   command: |
   {%- for param in modulator.aliases %}
-    alias("{{iocprefix}}{{modulator.name}}:{{param.name}}","{{param.alias}}")
+    alias("{{iocprefix}}:{{modulator.name}}:{{param.name}}","{{param.alias}}")
   {%- endfor %}
 {%- endif %}
 {%- endfor %}
@@ -47,7 +47,7 @@ entities:
   {%- for modulator in devices %}
   {%- if modulator.iocinit is defined %}
   {%- for param in modulator.iocinit %}
-    dbpf ("{{iocprefix}}{{modulator.name}}:{{param.name}}","{{param.value}}")
+    dbpf ("{{iocprefix}}:{{modulator.name}}:{{param.name}}","{{param.value}}")
   {%- endfor %}
   {%- endif %}
   {%- endfor %}
