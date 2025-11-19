@@ -19,12 +19,14 @@ entities:
   coeff: {{t.coeff if t.coeff is defined else "1.0"}}
   rate: {{t.rate if t.rate is defined else ".1 second"}}
   EGU: {{t.egu if t.egu is defined else "pC"}}
+  ENABLEPV: {{t.enablepv if t.enablepv is defined else "1"}}
 - type: epics.DbAlias
   name: "{{iocprefix}}:CHARGE_CH{{t.channel}}"
   alias: "{{iocprefix}}:{{t.name}}:CHARGE"
 - type: epics.DbAlias
   name: "{{iocprefix}}:CHARGE_DAY_CH{{t.channel}}"
   alias: "{{iocprefix}}:{{t.name}}:CHARGE_DAY"
+
 
 {%- else %}
 - type: tektronix.channel
