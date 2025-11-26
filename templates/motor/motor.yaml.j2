@@ -20,7 +20,7 @@ entities:
   - type: micos.axis
     controller: "{{devtype}}_001"
     M: ":{{mot.name}}"
-    ADDR: {{mot.axid}}
+    ADDR: {{loop.index0}}
     {%- if mot.dllm %}
     DLLM: {{mot.dllm}}
     {%- else %}
@@ -115,7 +115,7 @@ entities:
   - type: motorNewport.motorAxis
     controller: "{{devtype}}_001"
     M: ":{{mot.name}}"
-    ADDR: {{mot.axid}}
+    ADDR: {{loop.index}}
     {%- if mot.dllm %}
     DLLM: {{mot.dllm}}
     {%- else %}
@@ -226,7 +226,7 @@ entities:
   
 {%- for mot in devices %}
   - <<: *motor
-    axid: {{mot.axid}}
+    axid: {{loop.index}}
     name: {{mot.name}}
     {%- if mot.nsteps %}
     NSTEPS: {{ mot.nsteps }}
