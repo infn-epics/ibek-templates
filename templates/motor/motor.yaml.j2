@@ -44,7 +44,7 @@ entities:
     {%- if mot.velo %}
     VELO: {{mot.velo}}
     {%- else %}
-    VELO: {{ motor.velo | default(1, true) }}
+    VELO: {{ motor.velo | default(3, true) }}
     {%- endif %}
     {%- if mot.desc %}
     DESC: {{mot.desc}}
@@ -69,7 +69,7 @@ entities:
     {%- if mot.accl %}
     ACCL: {{mot.accl}}
     {%- else %}
-    ACCL: {{ motor.accl | default(0.2, true) }}
+    ACCL: {{ motor.accl | default(0.5, true) }}
     {%- endif %}
     {%- if mot.bdst %}
     BDST: {{mot.bdst}}
@@ -84,17 +84,17 @@ entities:
     {%- if mot.bacc %}
     BACC: {{mot.bacc}}
     {%- else %}
-    BACC: {{ motor.bacc | default(0.2, true) }}
+    BACC: {{ motor.bacc | default(2, true) }}
     {%- endif %}
     {%- if mot.mres %}
     MRES: {{mot.mres}}
     {%- else %}
-    MRES: {{ motor.mres | default(0.00001, true) }}
+    MRES: {{ motor.mres | default(1, true) }}
     {%- endif %}
     {%- if mot.prec %}
     PREC: {{mot.prec}}
     {%- else %}
-    PREC: {{ motor.prec | default(6, true) }}
+    PREC: {{ motor.prec | default(2, true) }}
     {%- endif %}
     
   {% endfor %}
