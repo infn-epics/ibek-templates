@@ -14,6 +14,9 @@
 {%- for mot in devices %}
 {%- if mot.poi is defined and mot.poi|length > 0 %}
 
+{%- set motor_val_suffix = '.VAL' if (mot.devtype is defined and mot.devtype != 'tml') or (devtype is defined and devtype != 'tml') else ':VAL' %}
+{%- set motor_rbv_suffix = '.RBV' if (mot.devtype is defined and mot.devtype != 'tml') or (devtype is defined and devtype != 'tml') else ':RBV' %}
+
 # Motor: {{ mot.name }} - POI Configuration
 # Number of POIs defined: {{ mot.poi|length }}
 
@@ -35,7 +38,7 @@ record(stringin, "{{PREFIX}}:{{ mot.name }}:POI{{ loop.index0 }}_NAME") {
 
 record(calc, "{{PREFIX}}:{{ mot.name }}:POI{{ loop.index0 }}_AT") {
     field(DESC, "At POI {{ loop.index0 }} {{ poi_item.name }}")
-    field(INPA, "{{PREFIX}}:{{ mot.name }}:RBV CP")
+    field(INPA, "{{PREFIX}}:{{ mot.name }}{{ motor_rbv_suffix }} CP")
     field(INPB, "{{PREFIX}}:{{ mot.name }}:POI{{ loop.index0 }}_POS CP")
     field(INPC, "{{PREFIX}}:{{ mot.name }}:POI_TOL CP")
     field(CALC, "ABS(A-B)<=C?1:0")
@@ -93,7 +96,7 @@ record(seq, "{{PREFIX}}:{{ mot.name }}:POI_PROC") {
 {%- set seq_fields = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'] %}
 {%- if loop.index0 < 16 %}
     field(DOL{{ seq_fields[loop.index0] }}, "{{PREFIX}}:{{ mot.name }}:POI{{ loop.index0 }}_POS")
-    field(LNK{{ seq_fields[loop.index0] }}, "{{PREFIX}}:{{ mot.name }}:VAL PP")
+    field(LNK{{ seq_fields[loop.index0] }}, "{{PREFIX}}:{{ mot.name }}{{ motor_val_suffix }} PP")
 {%- endif %}
 {%- endif %}
 {%- endfor %}
@@ -219,12 +222,6 @@ record(scalcout, "{{PREFIX}}:{{ mot.name }}:POI_NAME_UPDATE2") {
     field(DOPT, "Use CALC")
     field(OUT, "{{PREFIX}}:{{ mot.name }}:POI_CURR PP")
 }
-{%- endif %}
-
-{%- if (mot.devtype is defined and mot.devtype != 'tml' )  or (devtype is defined and devtype != 'tml') %}
-# Aliases for asyn motor compatibility (standard EPICS motor record uses .VAL and .RBV)
-alias("{{PREFIX}}:{{ mot.name }}.VAL", "{{PREFIX}}:{{ mot.name }}:VAL")
-alias("{{PREFIX}}:{{ mot.name }}.RBV", "{{PREFIX}}:{{ mot.name }}:RBV")
 {%- endif %}
 
 {%- endif %}
