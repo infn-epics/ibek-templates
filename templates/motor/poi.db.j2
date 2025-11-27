@@ -221,6 +221,12 @@ record(scalcout, "{{PREFIX}}:{{ mot.name }}:POI_NAME_UPDATE2") {
 }
 {%- endif %}
 
+{%- if mot.devtype is defined and mot.devtype != 'tml' %}
+# Aliases for asyn motor compatibility (standard EPICS motor record uses .VAL and .RBV)
+alias("{{PREFIX}}:{{ mot.name }}.VAL", "{{PREFIX}}:{{ mot.name }}:VAL")
+alias("{{PREFIX}}:{{ mot.name }}.RBV", "{{PREFIX}}:{{ mot.name }}:RBV")
+{%- endif %}
+
 {%- endif %}
 
 
