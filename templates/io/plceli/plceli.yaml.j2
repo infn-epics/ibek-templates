@@ -1,0 +1,67 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+ioc_name: {{iocname}}
+description: ELI-NP PLC Template for Magnets and Vacuum Systems
+
+entities:
+
+{%- for plc in devices %}
+{%- if plc.devtype == "magnets" or plc.devtype == "mag" %}
+- type: plc-eli.PLCMagnets
+  name: "{{plc.name | default('MAG_' ~ loop.index0)}}"
+  P: "{{iocprefix}}:{{plc.name}}"
+  IP: "{{plc.ip | default('10.16.4.170')}}"
+  TCPPORT: {{plc.port | default(502)}}
+  SLAVE_ADDR: {{plc.slave | default(1)}}
+  POLLING: {{plc.polling | default(1000)}}
+{%- endif %}
+
+{%- if plc.devtype == "vacuum" or plc.devtype == "vac" %}
+- type: plc-eli.PLCVacuum
+  name: "{{plc.name | default('VAC_' ~ loop.index0)}}"
+  P: "{{iocprefix}}:{{plc.name}}"
+  IP: "{{plc.ip | default('10.16.4.171')}}"
+  TCPPORT: {{plc.port | default(502)}}
+  SLAVE_ADDR: {{plc.slave | default(1)}}
+  POLLING: {{plc.polling | default(1000)}}
+{%- endif %}
+{%- endfor %}
+
+{%- if aliases is defined %}
+- type: epics.StartupCommand
+  command: |
+  {%- for param in aliases %}
+    alias("{{iocprefix}}:{{param.name}}","{{param.alias}}")
+  {%- endfor %}
+{%- endif %}
+
+{%- for plc in devices %}
+{%- if plc.aliases is defined %}
+- type: epics.StartupCommand
+  command: |
+  {%- for param in plc.aliases %}
+    alias("{{iocprefix}}:{{plc.prefix | default(plc.name)}}:{{param.name}}","{{param.alias}}")
+  {%- endfor %}
+{%- endif %}
+{%- endfor %}
+
+- type: epics.PostStartupCommand 
+  command: |
+  {%- if iocinit is defined %}
+  {%- for param in iocinit %}
+    dbpf ("{{iocprefix}}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- endif %}
+  {%- for plc in devices %}
+  {%- if plc.iocinit is defined %}
+  {%- for param in plc.iocinit %}
+    dbpf ("{{iocprefix}}:{{plc.prefix | default(plc.name)}}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- endif %}
+  {%- endfor %}
+  {%- if iocexit %}
+    dbl
+    exit
+  {%- else %}
+    dbl("*") > {{config_dir | default('/epics/iocs')}}/pvlist.txt           ## dumps PV NAMES
+    dbl
+  {%- endif %}
