@@ -226,7 +226,7 @@ entities:
   
 {%- for mot in devices %}
   - <<: *motor
-    axid: {{loop.index}}
+    axid: {{mot.axid}}
     name: {{mot.name}}
     {%- if mot.nsteps %}
     NSTEPS: {{ mot.nsteps }}
