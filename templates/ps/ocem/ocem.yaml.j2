@@ -16,29 +16,28 @@ entities:
 {%- endif %}
 
 {% if devtype == "E642" %}
-{%- for dev in devices %}
 
   # Controller entity
   - type: ocem.E642Group
     P: "{{iocprefix}}"
-    NAME: "{{dev.name}}"
-    IP: {{dev.ip}}
-    TCPPORT: {{dev.port | default(502)}}
-    NUMSLAVES: {{dev.slaves|length}}
-    SLAVELIST: "{{dev.slaves | map(attribute='id') | join(',') }}"
+    NAME: "{{name}}"
+    IP: "{{server}}"
+    TCPPORT: {{port | default(502)}}
+    NUMSLAVES: {{devices|length}}
+    SLAVELIST: "{{devices | map(attribute='id') | join(',') }}"
 
   # Slave entities
-  {%- for sl in dev.slaves %}
+  {%- for sl in devices %}
   - type: ocem.E642
     P: "{{iocprefix}}"
-    R: "{{sl.r}}"
-    NAME: "{{dev.name}}"
+    R: "{{sl.name}}"
+    NAME: "{{name}}"
     ADDR: {{sl.id}}
-    IMAX: {{dev.imax | default(280)}}
-    VMAX: {{dev.vmax | default(40)}}
+    IMAX: {{sl.imax | default(280)}}
+    VMAX: {{sl.vmax | default(40)}}
   {%- endfor %}
 
-{%- endfor %}
+
 {% endif %}
 
   - type: epics.PostStartupCommand 
