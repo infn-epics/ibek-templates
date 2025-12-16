@@ -1,0 +1,55 @@
+ioc_name: {{iocname}}
+description: EEI Power Supply TEMPLATE
+
+entities:
+# ============================================================================
+# TCP/IP MODE - Direct Modbus TCP connection per device
+# ============================================================================
+{%- for t in devices %}
+
+- type: EEI.ps
+  IP: {{ t.ip }}
+  TCPPORT: {{ port if port is defined else 502 }}
+  P: "{{ iocprefix }}"
+  R: "{{ t.name }}"
+  SLAVE_ID: {{ t.slave_id if t.slave_id is defined else 1 }}
+  RPOLL: {{ t.rpoll if t.rpoll is defined else 1000 }}
+  WPOLL: {{ t.wpoll if t.wpoll is defined else 0 }}
+  TIMEOUT: {{ t.timeout if t.timeout is defined else 1000 }}
+  MAX_CURR: {{ t.max_curr if t.max_curr is defined else 330000 }}
+  MIN_CURR: {{ t.min_curr if t.min_curr is defined else -330000 }}
+
+{%- endfor %}
+
+# ============================================================================
+# POST-STARTUP COMMANDS
+# ============================================================================
+
+# --- Aliases (currently disabled) ---
+# - type: epics.StartupCommand
+#   command: |
+#     echo "Starting {{iocname}} IOC"
+#     {%- for dev in devices %}
+#     {%- for param in dev.aliases %}
+#     alias("{{iocprefix}}:{{dev.name}}:{{param.name}}","{{param.alias}}")
+#     {%- endfor %}
+#     {%- endfor %}
+
+# --- Initialize PV values ---
+- type: epics.PostStartupCommand
+  command: |
+  {%- for param in iocinit %}
+    dbpf("{{iocprefix}}:{{iocroot}}:{{param.name}}", "{{param.value}}")
+  {%- endfor %}
+  {%- for dev in devices %}
+  {%- for param in dev.iocinit %}
+    dbpf("{{iocprefix}}:{{dev.name}}:{{param.name}}", "{{param.value}}")
+  {%- endfor %}
+  {%- endfor %}
+  {%- if iocexit %}
+    dbl
+    exit
+  {%- else %}
+    dbl("*") > {{config_dir}}/pvlist.txt
+    dbl
+  {%- endif %}
