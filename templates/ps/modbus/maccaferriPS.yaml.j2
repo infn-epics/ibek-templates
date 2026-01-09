@@ -1,0 +1,56 @@
+ioc_name: {{iocname}}
+description: Maccaferri Power Supply TEMPLATE
+
+entities:
+# ============================================================================
+# Modbus RTU over TCP - Maccaferri Power Supplies
+# ============================================================================
+{%- for t in devices %}
+
+- type: maccaferriPS.ps
+  server: "{{ t.server if t.server is defined else server }}"
+  port: {{ t.port if t.port is defined else port }}
+  P: "{{ iocprefix }}"
+  R: "{{ t.name }}"
+  slave_id: {{ t.slave_id if t.slave_id is defined else 1 }}
+  timeout: {{ t.timeout if t.timeout is defined else 2000 }}
+  fast_poll: {{ t.fast_poll if t.fast_poll is defined else 40 }}
+  slow_poll: {{ t.slow_poll if t.slow_poll is defined else 1000 }}
+  max_curr: {{ t.max_curr if t.max_curr is defined else 330 }}
+  min_curr: {{ t.min_curr if t.min_curr is defined else 0 }}
+
+{%- endfor %}
+
+# ============================================================================
+# POST-STARTUP COMMANDS
+# ============================================================================
+
+# --- Aliases (currently disabled) ---
+# - type: epics.StartupCommand
+#   command: |
+#     echo "Starting {{iocname}} IOC"
+#     {%- for dev in devices %}
+#     {%- for param in dev.aliases %}
+#     alias("{{iocprefix}}:{{dev.name}}:{{param.name}}","{{param.alias}}")
+#     {%- endfor %}
+#     {%- endfor %}
+
+# --- Initialize PV values ---
+- type: epics.PostStartupCommand
+  command: |
+  {%- for param in iocinit %}
+    dbpf("{{iocprefix}}:{{iocroot}}:{{param.name}}", "{{param.value}}")
+  {%- endfor %}
+  {%- for dev in devices %}
+  {%- for param in dev.iocinit %}
+    dbpf("{{iocprefix}}:{{dev.name}}:{{param.name}}", "{{param.value}}")
+  {%- endfor %}
+  {%- endfor %}
+  {%- if iocexit %}
+    dbl
+    exit
+  {%- else %}
+    dbl("*") > {{config_dir}}/pvlist.txt
+    dbl
+  {%- endif %}
+
