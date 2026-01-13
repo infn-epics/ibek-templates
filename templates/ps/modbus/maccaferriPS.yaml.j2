@@ -14,10 +14,10 @@ entities:
   R: "{{ t.name }}"
   slave_id: {{ t.slave_id if t.slave_id is defined else 1 }}
   timeout: {{ t.timeout if t.timeout is defined else 2000 }}
-  fast_poll: {{ t.fast_poll if t.fast_poll is defined else 40 }}
+  fast_poll: {{ t.fast_poll if t.fast_poll is defined else 500 }}
   slow_poll: {{ t.slow_poll if t.slow_poll is defined else 1000 }}
-  max_curr: {{ t.max_curr if t.max_curr is defined else 330 }}
-  min_curr: {{ t.min_curr if t.min_curr is defined else 0 }}
+  max_curr: {{ t.max_curr if t.max_curr is defined else 500 }}
+  min_curr: {{ t.min_curr if t.min_curr is defined else -500 }}
 
 {%- endfor %}
 

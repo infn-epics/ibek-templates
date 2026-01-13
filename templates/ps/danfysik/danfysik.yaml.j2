@@ -1,0 +1,46 @@
+ioc_name: {{iocname}}
+description: DANFYSIK SYS8X00 TEMPLATE
+
+entities:
+# ============================================================================
+# TCP/IP Connection
+# ============================================================================
+- type: danfysik.tcp
+  NAME: "DANFYSIK_PORT"
+  IP: {{ server if server is defined else "192.168.1.100" }}
+  PORT: {{ port if port is defined else 4001 }}
+
+# ============================================================================
+# Power Supplies with UNIMAG Interfaces
+# ============================================================================
+{%- for device in devices %}
+- type: danfysik.ps
+  NAME: "{{device.name}}"
+  P: "{{iocprefix}}:{{device.name}}"
+  PORT: "DANFYSIK_PORT"
+  ADDR: {{ device.id }}
+  IMAX: {{ device.imax | default(100.0) }}
+  VMAX: {{ device.vmax | default(25.0) }}
+  PREC: 3
+  unimag_enable: {{ device.unimag_enable | default(true) }}
+  debug: {{ device.debug | default(1) }}
+{%- endfor %}
+
+# ============================================================================
+# POST-STARTUP COMMANDS
+# ============================================================================
+- type: epics.PostStartupCommand
+  command: |
+    # Initialize the power supplies for remote operation
+    epicsThreadSleep 2.0
+    {%- for device in devices %}
+    dbpf "{{iocprefix}}:{{device.name}}:INIT_REMOTE" 1
+    dbpf "{{iocprefix}}:{{device.name}}:ERROR_TEXT" 1
+    {%- endfor %}
+  {%- if iocexit %}
+    dbl
+    exit
+  {%- else %}
+    dbl("*") > {{config_dir}}/pvlist.txt
+    dbl
+  {%- endif %}
