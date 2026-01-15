@@ -23,8 +23,11 @@ entities:
     NAME: "{{name}}"
     IP: "{{server}}"
     TCPPORT: {{port | default(502)}}
-    NUMSLAVES: {{devices|length}}
     SLAVELIST: "{{devices | map(attribute='id') | join(',') }}"
+    IDLE_POLL_S: {{idle_poll_s | default(1.0)}}
+    ACTIVE_POLL_S: {{active_poll_s | default(0.1)}}
+    ACTIVE_TIMEOUT_S: {{active_timeout_s | default(5.0)}}
+    DEBUG_LEVEL: {{debug_level | default(0)}}
 
   # Slave entities
   {%- for sl in devices %}
@@ -35,6 +38,13 @@ entities:
     ADDR: {{sl.id}}
     IMAX: {{sl.imax | default(280)}}
     VMAX: {{sl.vmax | default(40)}}
+    SET_TOLERANCE: {{sl.set_tolerance | default(1.0)}}
+    ZERO_TOLERANCE: {{sl.zero_tolerance | default(1.0)}}
+    SET_TIMEOUT_S: {{sl.set_timeout_s | default(10)}}
+    CURRENT_THRESHOLD: {{sl.current_threshold | default(-1)}}
+    VOLTAGE_THRESHOLD: {{sl.voltage_threshold | default(-1)}}
+    FORCE_STATE_QUERY_S: {{sl.force_state_query_s | default(60)}}
+    FORCE_OPERATING_QUERY_S: {{sl.force_operating_query_s | default(60)}}
   {%- endfor %}
 
 
