@@ -41,8 +41,8 @@ entities:
     SET_TOLERANCE: {{sl.set_tolerance | default(1.0)}}
     ZERO_TOLERANCE: {{sl.zero_tolerance | default(1.0)}}
     SET_TIMEOUT_S: {{sl.set_timeout_s | default(10)}}
-    CURRENT_THRESHOLD: {{sl.current_threshold | default(-1)}}
-    VOLTAGE_THRESHOLD: {{sl.voltage_threshold | default(-1)}}
+    CURRENT_THRESHOLD: {{sl.current_threshold | default(1)}}
+    VOLTAGE_THRESHOLD: {{sl.voltage_threshold | default(1)}}
     FORCE_STATE_QUERY_S: {{sl.force_state_query_s | default(60)}}
     FORCE_OPERATING_QUERY_S: {{sl.force_operating_query_s | default(60)}}
   {%- endfor %}
