@@ -24,7 +24,9 @@ entities:
     IP: "{{server}}"
     TCPPORT: {{port | default(502)}}
     SLAVELIST: "{{devices | map(attribute='id') | join(',') }}"
-    IDLE_POLL_S: {{idle_poll_s | default(1.0)}}
+    INIT_TIMEOUT_S: {{init_timeout_s | default(5.0)}}
+    INIT_MAX_RETRIES: {{init_max_retries | default(3)}}
+    IDLE_POLL_S: {{idle_poll_s | default(0.2)}}
     ACTIVE_POLL_S: {{active_poll_s | default(0.1)}}
     ACTIVE_TIMEOUT_S: {{active_timeout_s | default(5.0)}}
     DEBUG_LEVEL: {{debug_level | default(0)}}
@@ -38,13 +40,16 @@ entities:
     ADDR: {{sl.id}}
     IMAX: {{sl.imax | default(280)}}
     VMAX: {{sl.vmax | default(40)}}
-    SET_TOLERANCE: {{sl.set_tolerance | default(1.0)}}
-    ZERO_TOLERANCE: {{sl.zero_tolerance | default(1.0)}}
-    SET_TIMEOUT_S: {{sl.set_timeout_s | default(10)}}
-    CURRENT_THRESHOLD: {{sl.current_threshold | default(1)}}
-    VOLTAGE_THRESHOLD: {{sl.voltage_threshold | default(1)}}
-    FORCE_STATE_QUERY_S: {{sl.force_state_query_s | default(60)}}
-    FORCE_OPERATING_QUERY_S: {{sl.force_operating_query_s | default(60)}}
+    SET_TOLERANCE: {{sl.set_tolerance | default(set_tolerance) | default(1.8)}}
+    ZERO_TOLERANCE: {{sl.zero_tolerance | default(zero_tolerance) | default(1.8)}}
+    SET_TIMEOUT_S: {{sl.set_timeout_s | default(set_timeout_s) | default(60.0)}}
+    INIT_TIMEOUT_S: {{sl.init_timeout_s | default(init_timeout_s) | default(60.0)}}
+    CURRENT_THRESHOLD: {{sl.current_threshold | default(current_threshold) | default(99999)}}
+    VOLTAGE_THRESHOLD: {{sl.voltage_threshold | default(voltage_threshold) | default(999)}}
+    POLL_STATE: {{sl.poll_state | default(poll_state) | default(1)}}
+    POLL_STATE_INTERVAL: {{sl.poll_state_interval | default(poll_state_interval) | default(1.0)}}
+    POLL_ANALOG: {{sl.poll_analog | default(poll_analog) | default(1)}}
+    POLL_ANALOG_INTERVAL: {{sl.poll_analog_interval | default(poll_analog_interval) | default(0.5)}}
   {%- endfor %}
 
 
