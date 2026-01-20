@@ -104,7 +104,7 @@ entities:
 entities:
 
   - type: motorNewport.SMC100CreateController
-    controllerName: "{{devtype}}_001"
+    controllerName: "{{devtype}}_{{server}}"
     P: "{{iocprefix}}:{{iocroot}}"
     IP: {{server}}
     TCPPORT: {{port}}
@@ -113,9 +113,9 @@ entities:
 
   {% for mot in devices %}
   - type: motorNewport.motorAxis
-    controller: "{{devtype}}_001"
+    controller: "{{devtype}}_{{server}}"
     M: ":{{mot.name}}"
-    ADDR: {{loop.index}}
+    ADDR: {{mot.axid}}
     {%- if mot.dllm %}
     DLLM: {{mot.dllm}}
     {%- else %}
