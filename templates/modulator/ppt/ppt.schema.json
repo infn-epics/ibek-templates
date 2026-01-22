@@ -49,6 +49,19 @@
             "minimum": 0,
             "maximum": 1
         },
+        "hvmax": {
+            "type": "integer",
+            "description": "Default maximum operational HV voltage in kV (can be overridden per modulator).",
+            "default": 37,
+            "minimum": 1,
+            "maximum": 50
+        },
+        "retry_delay": {
+            "type": "number",
+            "description": "Default time in seconds between command retries for the auto sequencer (can be overridden per modulator).",
+            "default": 5.0,
+            "minimum": 0.1
+        },
         "aliases": {
             "type": "array",
             "description": "Global PV aliases (applied at IOC level).",
@@ -104,6 +117,17 @@
                         "description": "Asyn noProcessEos for this modulator (0: process, 1: do not process).",
                         "minimum": 0,
                         "maximum": 1
+                    },
+                    "hvmax": {
+                        "type": "integer",
+                        "description": "Maximum operational HV voltage in kV for this modulator.",
+                        "minimum": 1,
+                        "maximum": 50
+                    },
+                    "retry_delay": {
+                        "type": "number",
+                        "description": "Time in seconds between command retries for the auto sequencer for this modulator.",
+                        "minimum": 0.1
                     },
                     "aliases": {
                         "type": "array",

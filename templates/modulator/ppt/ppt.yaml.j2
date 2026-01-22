@@ -14,6 +14,8 @@ entities:
   PRIORITY: {{modulator.priority | default(priority | default(0))}}
   NOAUTOCONNECT: {{modulator.noautoconnect | default(noautoconnect | default(0))}}
   NOPROCESSEOS: {{modulator.noprocesseos | default(noprocesseos | default(0))}}
+  HVMAX: {{modulator.hvmax | default(hvmax | default(37))}}
+  RETRY_DELAY: {{modulator.retry_delay | default(retry_delay | default(5.0))}}
 
 {%- endfor %}
 
