@@ -31,12 +31,12 @@ entities:
     {%- else %}
     DHLM: {{ motor.dhlm | default(25, true) }}
     {%- endif %}
-    {%- if mot.home %}
+    {%- if mot.home is defined %}
     home: {{mot.home}}
     {%- else %}
     home: {{ motor.home | default(1, true) }}
     {%- endif %}
-    {%- if mot.start %}
+    {%- if mot.start is defined %}
     start: {{mot.start}}
     {%- else %}
     start: {{ motor.start | default(10, true) }}
@@ -51,22 +51,22 @@ entities:
     {%- else %}
     DESC: "Axis {{mot.name}} {{mot.axid}}"
     {%- endif %}
-    {%- if mot.dir %}
+    {%- if mot.dir is defined %}
     DIR: {{mot.dir}}
     {%- else %}
     DIR: {{ motor.dir | default('Pos', true) }}
     {%- endif %}
-    {%- if mot.egu %}
+    {%- if mot.egu is defined %}
     EGU: "{{mot.egu}}"
     {%- else %}
     EGU: {{ motor.egu | default("mm", true) }}
     {%- endif %}
-    {%- if mot.vbas %}
+    {%- if mot.vbas is defined %}
     VBAS: {{mot.vbas}}
     {%- else %}
     VBAS: {{ motor.vbas | default(0.2, true) }}
     {%- endif %}
-    {%- if mot.accl %}
+    {%- if mot.accl is defined %}
     ACCL: {{mot.accl}}
     {%- else %}
     ACCL: {{ motor.accl | default(0.5, true) }}
@@ -136,7 +136,7 @@ entities:
     {%- else %}
     start: {{ motor.start | default(10, true) }}
     {%- endif %}
-    {%- if mot.velo is defined is defined %}
+    {%- if mot.velo is defined %}
     VELO: {{mot.velo}}
     {%- else %}
     VELO: {{ motor.velo | default(1, true) }}
@@ -156,7 +156,7 @@ entities:
     {%- else %}
     EGU: {{ motor.egu | default("mm", true) }}
     {%- endif %}
-    {%- if mot.vbas is defined is defined %}
+    {%- if mot.vbas is defined %}
     VBAS: {{mot.vbas}}
     {%- else %}
     VBAS: {{ motor.vbas | default(0.2, true) }}
