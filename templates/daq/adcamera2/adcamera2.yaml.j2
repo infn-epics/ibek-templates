@@ -16,7 +16,7 @@ entities:
     {%- set camera_elements = 5616000 %}
   {%- endif %}
   
-  {#- Track the current source port for progressive chaining -#}
+  {# Track the current source port for progressive chaining #}
   {%- set current_source = camera.name %}
   {%- set current_prefix = "" %}
   
@@ -33,13 +33,14 @@ entities:
     BUFFERS: {{camera.buffers | default(100)}}
     MEMORY: {{camera.memory | default(0)}}
 
-  {%- if camera.devtype == "camerasim" or devtype == "camerasim" %}
-  {%- else %}
+{%- if camera.devtype == "camerasim" or devtype == "camerasim" %}
+{%- else %}
+
   - type: ADAravis.aravisSettings
     camera: {{camera.name}}
-  {%- endif %}
+{%- endif %}
 
-  {#- Base camera PVA and StdArrays always present -#}
+  {# Base camera PVA and StdArrays always present #}
   - type: ADCore.NDPvxsPlugin
     PORT: {{camera.name}}.PVA
     PVNAME: "{{iocprefix}}:{{camera.name}}:PVA:OUTPUT"
@@ -58,7 +59,7 @@ entities:
     NELEMENTS: {{camera_elements}}
     ENABLED: 1
 
-  {#- Optional stream plugin (parallel, not in chain) -#}
+  {# Optional stream plugin (parallel, not in chain) #}
   {%- if stream_enable %}
   - type: ffmpegServer.ffmpegStream
     PORT: {{camera.name}}.STREAM
@@ -79,12 +80,12 @@ entities:
     SETH: 0
     SETW: 0
     STACKSIZE: 0
-  {%- endif %}
+  {% endif %}
 
-  {#- Progressive plugin chain: Raw -> ROI -> Proc -> Stats -> Overlay -#}
-  
-  {%- if roi_enable %}
-  {#- ROI takes from current source (camera) -#}
+  {# Progressive plugin chain: Raw -> ROI -> Proc -> Stats -> Overlay #}
+
+  {% if roi_enable %}
+  {# ROI takes from current source (camera) #}
   - type: ADCore.NDROI
     PORT: {{camera.name}}.ROI1
     NDARRAY_PORT: {{current_source}}
@@ -111,10 +112,10 @@ entities:
   
   {%- set current_source = camera.name ~ ".ROI1" %}
   {%- set current_prefix = "Roi1:" %}
-  {%- endif %}
+  {% endif %}
 
-  {%- if proc_enable %}
-  {#- Proc takes from current source (ROI if enabled, else camera) -#}
+  {% if proc_enable %}
+  {# Proc takes from current source (ROI if enabled, else camera) #}
   - type: ADCore.NDProcess
     PORT: {{camera.name}}.PROC
     P: "{{iocprefix}}:{{camera.name}}"
@@ -151,10 +152,10 @@ entities:
   
   {%- set current_source = camera.name ~ ".PROC" %}
   {%- set current_prefix = "Proc1:" %}
-  {%- endif %}
+  {% endif %}
 
-  {%- if stats_enable %}
-  {#- Stats takes from current source (Proc if enabled, else ROI if enabled, else camera) -#}
+  {% if stats_enable %}
+  {# Stats takes from current source (Proc if enabled, else ROI if enabled, else camera) #}
   - type: ADCore.NDStats
     PORT: {{camera.name}}.STATS
     NDARRAY_PORT: {{current_source}}
@@ -184,10 +185,10 @@ entities:
   
   {%- set current_source = camera.name ~ ".STATS" %}
   {%- set current_prefix = "Stats1:" %}
-  {%- endif %}
+  {% endif %}
 
-  {%- if overlay_enable %}
-  {#- Overlay takes from current source (Stats if enabled, else Proc if enabled, else ROI if enabled, else camera) -#}
+  {% if overlay_enable %}
+  {# Overlay takes from current source (Stats if enabled, else Proc if enabled, else ROI if enabled, else camera) #}
   - type: ADCore.NDOverlay
     PORT: {{camera.name}}.OVERLAY1
     NDARRAY_PORT: {{current_source}}
@@ -214,9 +215,9 @@ entities:
   
   {%- set current_source = camera.name ~ ".OVERLAY1" %}
   {%- set current_prefix = "Overlay1:" %}
-  {%- endif %}
+  {% endif %}
 
-  {#- TIFF1: Always connects to the final active plugin in the chain -#}
+  {# TIFF1: Always connects to the final active plugin in the chain #}
   - type: ADCore.NDFileTIFF
     PORT: {{camera.name}}.TIFF1
     NDARRAY_PORT: {{current_source}}
@@ -249,7 +250,7 @@ entities:
 
       ############## camera {{camera.name}} initializations
 
-      {#- Track current source for file naming -#}
+      {# Track current source for file naming #}
       {%- set current_source = camera.name %}
       {%- set final_prefix = "" %}
       
