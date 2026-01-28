@@ -1,0 +1,107 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "$id": "adcamera.schema.json",
+
+    "allOf": [
+        {
+            "$ref": "http://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json"
+        }
+    ],
+    "properties": {
+        "template": {
+            "const": "adcamera",
+            "description": "The template type for this schema."
+        },
+        "devtype": {
+              "type": "string",
+              "description": "Global Device type (e.g., camerasim or aravisCamera).",
+              "enum": ["camerasim", "aravisCamera", "baslerCamera", "genericCamera"]
+        },
+        "roi_enable": {
+            "type": "boolean",
+            "description": "Enable or disable ROI processing."
+        },
+        "proc_enable": {
+            "type": "boolean",
+            "description": "Enable or disable processing plugins."
+        },
+        "overlay_enable": {
+            "type": "boolean",
+            "description": "Enable or disable overlay plugins."
+        },
+        "stats_enable": {
+            "type": "boolean",
+            "description": "Enable or disable statistics plugins."
+        },
+        "cameras": {
+            "type": "array",
+            "description": "List of cameras to configure.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the camera."
+                    },
+                    "CAMERA_ID": {
+                        "type": "string",
+                        "description": "ID of the camera (IP for instance)."
+                    },
+                    "CAMERA_CLASS": {
+                        "type": "string",
+                        "description": "Class of the camera (e.g., Basler-a2A1920)."
+                    },
+                    "devtype": {
+                        "type": "string",
+                        "description": "Device type (e.g., camerasim or aravisCamera)."
+                    },
+                    "buffers": {
+                        "type": "integer",
+                        "description": "Number of buffers for the camera."
+                    },
+                    "memory": {
+                        "type": "integer",
+                        "description": "Memory allocation for the camera."
+                    },
+                    "CAMERA_TYPE": {
+                        "type": "string",
+                        "description": "Data type of the camera (e.g., Int16)."
+                    },
+                    "CAMERA_FTVL": {
+                        "type": "string",
+                        "description": "Field type of the camera (e.g., USHORT)."
+                    },
+                    "CAMERA_STATS_XSIZE": {
+                        "type": "integer",
+                        "description": "X size for statistics."
+                    },
+                    "CAMERA_STATS_YSIZE": {
+                        "type": "integer",
+                        "description": "Y size for statistics."
+                    },
+                    "iocinit": {
+                        "type": "array",
+                        "description": "Specific IOC initialization parameters for the camera.",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "Name of the parameter."
+                                },
+                                "value": {
+                                    "type": "string",
+                                    "description": "Value of the parameter."
+                                }
+                            },
+                            "required": ["name", "value"]
+                        }
+                    }
+                },
+                "required": ["name", "CAMERA_ID", "CAMERA_CLASS"]
+            }
+        }
+    },
+    "required": ["template", "cameras"]
+}
