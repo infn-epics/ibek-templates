@@ -14,7 +14,7 @@ entities:
   POLLING: {{modulator.polling | default(POLLING | default(4000))}}
   WD_POLLING: {{modulator.wd_polling | default(WD_POLLING | default(2000))}}
   WD_WRITE_POLLING: {{modulator.wd_write_polling | default(WD_WRITE_POLLING | default(800))}}
-  SLOW_REGISTER_POLLING: {{modulator.slow_register_polling | default(SLOW_REGISTER_POLLING | default(5000))}}
+  SLOW_REGISTER_POLLING: {{modulator.slow_register_polling | default(SLOW_REGISTER_POLLING | default(0))}}
   TEST_POLLING: {{modulator.test_polling | default(TEST_POLLING | default(10000))}}
   CCPS_V_SP_HOPR: {{modulator.v_max | default(v_max | default(1270))}}
   PLS_WDTH_SP_HOPR: {{modulator.pls_width_max | default(pls_width_max | default(5))}}
