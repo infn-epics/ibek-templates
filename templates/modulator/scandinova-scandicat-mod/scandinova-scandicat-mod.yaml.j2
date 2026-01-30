@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
 ioc_name: {{iocname}}
-description: Scandinova RF Modulator Template
+description: Scandinova RF Modulator Template - Lite Version
 
 entities:
 
@@ -11,11 +11,9 @@ entities:
   SLAVE_ADDR: {{modulator.SLAVE_ADDR | default(SLAVE_ADDR | default(1))}}
   IP: {{modulator.server | default(server)}}
   TCPPORT: {{modulator.port | default(port | default(502))}}
-  POLLING: {{modulator.polling | default(POLLING | default(4000))}}
-  WD_POLLING: {{modulator.wd_polling | default(WD_POLLING | default(2000))}}
+  POLLING: {{modulator.polling | default(POLLING | default(2000))}}
+  WD_POLLING: {{modulator.wd_polling | default(WD_POLLING | default(1000))}}
   WD_WRITE_POLLING: {{modulator.wd_write_polling | default(WD_WRITE_POLLING | default(800))}}
-  SLOW_REGISTER_POLLING: {{modulator.slow_register_polling | default(SLOW_REGISTER_POLLING | default(0))}}
-  TEST_POLLING: {{modulator.test_polling | default(TEST_POLLING | default(10000))}}
   CCPS_V_SP_HOPR: {{modulator.v_max | default(v_max | default(1270))}}
   PLS_WDTH_SP_HOPR: {{modulator.pls_width_max | default(pls_width_max | default(5))}}
   FILPS_CURR_SP_HOPR: {{modulator.i_max | default(i_max | default(30))}}
@@ -23,6 +21,10 @@ entities:
   IONPMP_HIHI: {{modulator.pres_alarm | default(pres_alarm | default(9000))}}
 
 {%- endfor %}
+
+- type: epics.StartupCommand
+    command: |
+      dbLoadRecords("config/epik8s-version.db","")
 
 {%- if aliases is defined %}
 - type: epics.StartupCommand
@@ -41,6 +43,7 @@ entities:
   {%- endfor %}
 {%- endif %}
 {%- endfor %}
+
 
 - type: epics.PostStartupCommand 
   command: |
