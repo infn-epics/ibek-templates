@@ -17,6 +17,8 @@ entities:
   SLOW_REGISTER_POLLING: {{modulator.slow_register_polling | default(SLOW_REGISTER_POLLING | default(5000))}}
   TEST_POLLING: {{modulator.test_polling | default(TEST_POLLING | default(10000))}}
   CCPS_V_SP_HOPR: {{modulator.v_max | default(v_max | default(1270))}}
+  PLS_WDTH_SP_HOPR: {{modulator.pls_width_max | default(pls_width_max | default(5))}}
+  FILPS_CURR_SP_HOPR: {{modulator.i_max | default(i_max | default(30))}}
   IONPMP_HIGH: {{modulator.pres_warn | default(pres_warn | default(8000))}}
   IONPMP_HIHI: {{modulator.pres_alarm | default(pres_alarm | default(9000))}}
 
