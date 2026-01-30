@@ -1,5 +1,28 @@
-record(stringin, "$(PREFIX):EPIK8S:IOC:VERSION") {
+{% if devices is defined %}
+{% for device in devices %}
+{% set prefix = iocprefix ~ ((":" ~ iocroot) if iocroot is defined else "") %}
+{% set pv_prefix = prefix ~ ":" ~ device.name  %}
+record(stringin, "{{pv_prefix}}:EPIK8S:IOC:VERSION") {
     field(DESC, "IOC EPIK8s Version")
     field(VAL,  "{{ioc_version}}")
     field(PINI, "YES")
 }
+record(stringin, "{{pv_prefix}}:EPIK8S:IOC:NAME") {
+    field(DESC, "IOC Name")
+    field(VAL,  "{{iocname}}")
+    field(PINI, "YES")
+}
+{% endfor %}
+{% else %}
+{% set pv_prefix = iocprefix ~ ((":" ~ iocroot) if iocroot is defined else "") %}
+record(stringin, "{{pv_prefix}}:EPIK8S:IOC:VERSION") {
+    field(DESC, "IOC EPIK8s Version")
+    field(VAL,  "{{ioc_version}}")
+    field(PINI, "YES")
+}
+record(stringin, "{{pv_prefix}}:EPIK8S:IOC:NAME") {
+    field(DESC, "IOC Name")
+    field(VAL,  "{{iocname}}")
+    field(PINI, "YES")
+}
+{% endif %}
