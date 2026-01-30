@@ -22,9 +22,6 @@ entities:
 
 {%- endfor %}
 
-- type: epics.StartupCommand
-    command: |
-      dbLoadRecords("config/epik8s-version.db","")
 
 {%- if aliases is defined %}
 - type: epics.StartupCommand
