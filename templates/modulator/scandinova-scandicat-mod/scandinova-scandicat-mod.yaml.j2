@@ -16,6 +16,9 @@ entities:
   WD_WRITE_POLLING: {{modulator.wd_write_polling | default(WD_WRITE_POLLING | default(800))}}
   SLOW_REGISTER_POLLING: {{modulator.slow_register_polling | default(SLOW_REGISTER_POLLING | default(5000))}}
   TEST_POLLING: {{modulator.test_polling | default(TEST_POLLING | default(10000))}}
+  CCPS_V_SP_HOPR: {{modulator.v_max | default(v_max | default(1270))}}
+  IONPMP_HIGH: {{modulator.pres_warn | default(pres_warn | default(8000))}}
+  IONPMP_HIHI: {{modulator.pres_alarm | default(pres_alarm | default(9000))}}
 
 {%- endfor %}
 
