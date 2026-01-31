@@ -41,6 +41,9 @@ entities:
 {%- endif %}
 {%- endfor %}
 
+- type: epics.StartupCommand
+    command: |
+      dbLoadRecords("config/epik8s-version.db","")
 
 - type: epics.PostStartupCommand 
   command: |
