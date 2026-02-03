@@ -10,7 +10,7 @@
   "properties": {
     "template": {
       "const": "scandinova-rfmod",
-      "description": "The template type for Scandinova RF Modulator optimized startup."
+      "description": "The template type for Scandinova RF Modulator lite startup."
     },
     "devtype": {
       "const": "scandinova-rfmod",
@@ -19,6 +19,10 @@
     "devgroup": {
       "const": "modulator",
       "description": "Device group classification."
+    },
+    "version": {
+      "type": "string",
+      "description": "IOC version string for iocAdmin."
     },
     "server": {
       "type": "string",
@@ -33,27 +37,17 @@
     "POLLING": {
       "type": "integer",
       "description": "Default standard polling interval (ms)",
-      "default": 4000
+      "default": 2000
     },
     "WD_POLLING": {
       "type": "integer",
       "description": "Default watchdog read polling (ms)",
-      "default": 2000
+      "default": 1000
     },
     "WD_WRITE_POLLING": {
       "type": "integer",
       "description": "Default watchdog write polling (ms)",
       "default": 800
-    },
-    "SLOW_REGISTER_POLLING": {
-      "type": "integer",
-      "description": "Default slow register polling (ms)",
-      "default": 5000
-    },
-    "TEST_POLLING": {
-      "type": "integer",
-      "description": "Default test probe polling (ms)",
-      "default": 10000
     },
     "devices": {
       "type": "array",
@@ -61,18 +55,44 @@
       "items": {
         "type": "object",
         "properties": {
-          "name": { "type": "string", "description": "Identifier for the device (e.g. '1')" },
-          "P": { "type": "string", "description": "PV prefix for the device (e.g. 'MODHEL01')" },
-          "IP": { "type": "string", "description": "IP address or hostname for this device" },
+          "name": { "type": "string", "description": "Identifier for the device (e.g. 'MOD01')" },
+          "server": { "type": "string", "description": "IP address or hostname for this device" },
           "SLAVE_ADDR": { "type": "integer", "description": "Modbus slave address", "default": 1 },
-          "TCPPORT": { "type": "integer", "description": "Modbus TCP port for this device", "default": 502 },
-          "POLLING": { "type": "integer", "description": "Polling interval (ms) for this device" },
-          "WD_POLLING": { "type": "integer", "description": "Watchdog read polling (ms)" },
-          "WD_WRITE_POLLING": { "type": "integer", "description": "Watchdog write polling (ms)" },
-          "SLOW_REGISTER_POLLING": { "type": "integer", "description": "Slow register polling (ms)" },
-          "TEST_POLLING": { "type": "integer", "description": "Test probe polling (ms)" }
+          "port": { "type": "integer", "description": "Modbus TCP port for this device", "default": 502 },
+          "polling": { "type": "integer", "description": "Polling interval (ms) for this device" },
+          "wd_polling": { "type": "integer", "description": "Watchdog read polling (ms)" },
+          "wd_write_polling": { "type": "integer", "description": "Watchdog write polling (ms)" },
+          "v_max": { "type": "integer", "description": "CCPS voltage setpoint high operating range" },
+          "pls_width_max": { "type": "integer", "description": "Pulse width setpoint high operating range" },
+          "i_max": { "type": "integer", "description": "Filament current setpoint high operating range" },
+          "pres_warn": { "type": "integer", "description": "Ion pump HIGH alarm threshold" },
+          "pres_alarm": { "type": "integer", "description": "Ion pump HIHI alarm threshold" },
+          "aliases": {
+            "type": "array",
+            "description": "List of aliases for this device",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string", "description": "PV name suffix" },
+                "alias": { "type": "string", "description": "Alias name" }
+              },
+              "required": ["name", "alias"]
+            }
+          },
+          "iocinit": {
+            "type": "array",
+            "description": "List of initial setpoints for this device",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string", "description": "PV name suffix" },
+                "value": { "type": ["string", "number"], "description": "Initial value" }
+              },
+              "required": ["name", "value"]
+            }
+          }
         },
-        "required": ["name", "P"]
+        "required": ["name"]
       },
       "minItems": 1
     }
