@@ -119,12 +119,12 @@ entities:
     {%- if mot.dllm %}
     DLLM: {{mot.dllm}}
     {%- else %}
-    DLLM: {{ motor.dllm | default(-25, true) }}
+    DLLM: {{ motor.dllm | default(0, true) }}
     {%- endif %}
     {%- if mot.dhlm %}
     DHLM: {{mot.dhlm}}
     {%- else %}
-    DHLM: {{ motor.dhlm | default(25, true) }}
+    DHLM: {{ motor.dhlm | default(0, true) }}
     {%- endif %}
     {%- if mot.home %}
     home: {{mot.home}}
