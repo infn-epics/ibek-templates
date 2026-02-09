@@ -1,0 +1,192 @@
+## Day Accumulator Template
+## Accumulates a source PV value into a daily total (DAY:<name>),
+## resets to zero at midnight.
+## Includes an on/off enable switch to allow or inhibit accumulation.
+##
+## Required Jinja2 variables per accumulator entry:
+##   pvname   - the source PV to monitor (full PV name, e.g. "SPARC:DIAG:TEK-BCM:AC1BCM01:CHARGE")
+##   daypv    - the output daily PV name (e.g. "SPARC:DIAG:TEK-BCM:AC1BCM01:CHARGE_DAY")
+##   egu      - engineering units (default "")
+##   prec     - precision (default "6")
+##   scan     - scan period for polling (default "1 second")
+##   desc     - description (default "Daily accumulator")
+
+{% if day_accumulators is defined %}
+{% for acc in day_accumulators %}
+
+{% set pvname   = acc.pvname %}
+{% set daypv    = acc.daypv %}
+{% set egu      = acc.egu | default("") %}
+{% set prec     = acc.prec | default("6") %}
+{% set scan     = acc.scan | default("1 second") %}
+{% set desc     = acc.desc | default("Daily accumulator") %}
+{% set tag      = daypv | replace(":", "_") %}
+
+###############################################################################
+## Day accumulator for {{ pvname }} -> {{ daypv }}
+###############################################################################
+
+# ------------------------------------------------------------------
+# Enable / disable accumulation (bo: ON/OFF)
+# ------------------------------------------------------------------
+record(bo, "{{ daypv }}:ENABLE") {
+    field(DESC, "Enable daily accumulation")
+    field(PINI, "YES")
+    field(ZNAM, "OFF")
+    field(ONAM, "ON")
+    field(VAL,  "1")
+}
+
+# ------------------------------------------------------------------
+# Poll the source PV at the configured scan rate
+# ------------------------------------------------------------------
+record(ai, "{{ daypv }}:poll_") {
+    field(DESC, "Poll source PV")
+    field(DTYP, "Soft Channel")
+    field(INP,  "{{ pvname }} CPP NMS")
+    field(SCAN, "{{ scan }}")
+    field(PREC, "{{ prec }}")
+    field(EGU,  "{{ egu }}")
+    field(FLNK, "{{ daypv }}:accumulate_")
+}
+
+# ------------------------------------------------------------------
+# Accumulate: add |current - previous| to daily total
+#   A = current source value
+#   B = daily total so far
+#   C = previous source value
+#   D = enable flag (1 = ON)
+# Only increment when enabled AND value has changed.
+# ------------------------------------------------------------------
+record(calcout, "{{ daypv }}:accumulate_") {
+    field(DESC, "Accumulate into daily total")
+    field(INPA, "{{ daypv }}:poll_ NPP NMS")
+    field(INPB, "{{ daypv }} NPP NMS")
+    field(INPC, "{{ daypv }}:prev_ NPP NMS")
+    field(INPD, "{{ daypv }}:ENABLE NPP NMS")
+    field(CALC, "(D>0&&A!=C)?(B+ABS(A)):B")
+    field(DOPT, "Use CALC")
+    field(OUT,  "{{ daypv }} PP")
+    field(FLNK, "{{ daypv }}:update_prev_")
+}
+
+# ------------------------------------------------------------------
+# Store previous value for change detection
+# ------------------------------------------------------------------
+record(calcout, "{{ daypv }}:update_prev_") {
+    field(DESC, "Store previous value")
+    field(INPA, "{{ daypv }}:poll_ NPP NMS")
+    field(CALC, "A")
+    field(DOPT, "Use CALC")
+    field(OUT,  "{{ daypv }}:prev_ PP")
+}
+
+record(ai, "{{ daypv }}:prev_") {
+    field(DESC, "Previous source value")
+    field(DTYP, "Soft Channel")
+    field(PREC, "{{ prec }}")
+    field(PINI, "YES")
+    field(VAL,  "0")
+}
+
+# ------------------------------------------------------------------
+# Daily total output PV
+# ------------------------------------------------------------------
+record(ai, "{{ daypv }}") {
+    field(DESC, "{{ desc }}")
+    field(DTYP, "Soft Channel")
+    field(EGU,  "{{ egu }}")
+    field(PREC, "{{ prec }}")
+    field(PINI, "YES")
+    field(VAL,  "0")
+}
+
+# ------------------------------------------------------------------
+# Midnight reset: compare current date with last known date
+# ------------------------------------------------------------------
+record(stringin, "{{ daypv }}:current_date_") {
+    field(DESC, "Current date string")
+    field(DTYP, "Soft Timestamp")
+    field(INP,  "@%Y-%m-%d")
+    field(SCAN, "10 second")
+    field(PINI, "YES")
+    field(FLNK, "{{ daypv }}:check_day_change_")
+}
+
+record(stringin, "{{ daypv }}:last_date_") {
+    field(DESC, "Last recorded date")
+    field(DTYP, "Soft Channel")
+    field(PINI, "YES")
+    field(VAL,  "1970-01-01")
+}
+
+record(scalcout, "{{ daypv }}:check_day_change_") {
+    field(DESC, "Check if day changed")
+    field(INAA, "{{ daypv }}:current_date_ NPP NMS")
+    field(INBB, "{{ daypv }}:last_date_ NPP NMS")
+    field(CALC, "AA!=BB")
+    field(DOPT, "Use CALC")
+    field(OOPT, "When Non-zero")
+    field(OUT,  "{{ daypv }}:reset_daily_ PP")
+    field(FLNK, "{{ daypv }}:update_last_date_")
+}
+
+# Reset daily accumulator to zero
+record(calcout, "{{ daypv }}:reset_daily_") {
+    field(DESC, "Reset daily total to zero")
+    field(CALC, "0")
+    field(DOPT, "Use CALC")
+    field(OUT,  "{{ daypv }} PP")
+    field(FLNK, "{{ daypv }}:reset_prev_")
+}
+
+# Reset previous value after daily reset
+record(calcout, "{{ daypv }}:reset_prev_") {
+    field(DESC, "Reset previous value after day reset")
+    field(CALC, "0")
+    field(DOPT, "Use CALC")
+    field(OUT,  "{{ daypv }}:prev_ PP")
+}
+
+# Update stored date
+record(scalcout, "{{ daypv }}:update_last_date_") {
+    field(DESC, "Update last date record")
+    field(INAA, "{{ daypv }}:current_date_ NPP NMS")
+    field(CALC, "AA")
+    field(DOPT, "Use CALC")
+    field(OUT,  "{{ daypv }}:last_date_ PP")
+}
+
+# ------------------------------------------------------------------
+# Manual reset button
+# ------------------------------------------------------------------
+record(bo, "{{ daypv }}:RESET") {
+    field(DESC, "Manual reset daily total")
+    field(PINI, "NO")
+    field(ZNAM, "Idle")
+    field(ONAM, "Reset")
+    field(VAL,  "0")
+    field(HIGH, "1")
+    field(FLNK, "{{ daypv }}:manual_reset_")
+    field(DOL,  "1")
+    field(OMSL, "supervisory")
+    field(OUT,  "{{ daypv }}:RESET.PROC")
+}
+
+record(calcout, "{{ daypv }}:manual_reset_") {
+    field(DESC, "Execute manual reset")
+    field(CALC, "0")
+    field(DOPT, "Use CALC")
+    field(OUT,  "{{ daypv }} PP")
+    field(FLNK, "{{ daypv }}:manual_reset_prev_")
+}
+
+record(calcout, "{{ daypv }}:manual_reset_prev_") {
+    field(DESC, "Reset prev after manual reset")
+    field(CALC, "0")
+    field(DOPT, "Use CALC")
+    field(OUT,  "{{ daypv }}:prev_ PP")
+}
+
+{% endfor %}
+{% endif %}

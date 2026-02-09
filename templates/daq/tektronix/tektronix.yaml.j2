@@ -147,6 +147,14 @@ entities:
 {%- endif %}
 {%- endfor %}
 
+- type: epics.StartupCommand
+  command: |
+    dbLoadRecords("config/epik8s-version.db","")
+
+- type: epics.StartupCommand
+  command: |
+    dbLoadRecords("config/day-accumulator.db","")
+
 - type: epics.PostStartupCommand 
   command: |
   {%- for param in iocinit %}
