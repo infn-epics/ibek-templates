@@ -36,12 +36,7 @@ entities:
   enable: {{t.enable if t.enable is defined else 1}}
   coeff: {{t.coeff if t.coeff is defined else "1.0"}}
   EGU: {{t.egu if t.egu is defined else "pC"}}
-- type: epics.DbAlias
-  name: "{{iocprefix}}:MEAS{{t.meas | default(t.channel)}}:Value"
-  alias: "{{iocprefix}}:{{t.name}}:VALUE"
-- type: epics.DbAlias
-  name: "{{iocprefix}}:MEAS{{t.meas | default(t.channel)}}:Mean"
-  alias: "{{iocprefix}}:{{t.name}}:MEAN"
+
 
 {#- ASYN channel with waveform acquisition (default for asyn) #}
 {%- else %}
