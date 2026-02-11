@@ -49,6 +49,7 @@ entities:
   samples: {{samples if samples is defined else 10000}}
   {% endif %}
   name: {{t.name}}
+  START: {{t.start if t.start is defined else start | default(1)}}
   coeff: {{t.coeff if t.coeff is defined else "1.0"}}
   CHARGE_EGU: {{t.charge_egu if t.charge_egu is defined else "pC"}}
 
