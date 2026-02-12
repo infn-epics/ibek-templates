@@ -10,17 +10,33 @@
 ##   prec     - precision (default "6")
 ##   scan     - scan period for polling (default "1 second")
 ##   desc     - description (default "Daily accumulator")
+##   pvenable - (optional) external PV to enable/disable accumulation (e.g. "SPARC:LLRF1:app:rf_ctrl")
 
 {% if day_accumulators is defined %}
 {% for acc in day_accumulators %}
 
-{% set pvname   = acc.pvname %}
-{% set daypv    = acc.daypv %}
-{% set egu      = acc.egu | default("") %}
-{% set prec     = acc.prec | default("6") %}
-{% set scan     = acc.scan | default("1 second") %}
-{% set desc     = acc.desc | default("Daily accumulator") %}
-{% set tag      = daypv | replace(":", "_") %}
+{% set pvname_raw = acc.pvname %}
+{% set daypv_raw  = acc.daypv %}
+{% set egu        = acc.egu | default("") %}
+{% set prec       = acc.prec | default("6") %}
+{% set scan       = acc.scan | default("1 second") %}
+{% set desc       = acc.desc | default("Daily accumulator") %}
+{% set pvenable   = acc.pvenable | default("") %}
+
+{# Prepend iocprefix if not already present (check if pvname contains ':') #}
+{% if ':' in pvname_raw %}
+    {% set pvname = pvname_raw %}
+{% else %}
+    {% set pvname = iocprefix ~ ':' ~ pvname_raw %}
+{% endif %}
+
+{% if ':' in daypv_raw %}
+    {% set daypv = daypv_raw %}
+{% else %}
+    {% set daypv = iocprefix ~ ':' ~ daypv_raw %}
+{% endif %}
+
+{% set tag = daypv | replace(":", "_") %}
 
 ###############################################################################
 ## Day accumulator for {{ pvname }} -> {{ daypv }}
@@ -56,6 +72,8 @@ record(ai, "{{ daypv }}:poll_") {
 #   B = daily total so far
 #   C = previous source value
 #   D = enable flag (1 = ON)
+{% if pvenable %}#   E = external enable PV{% endif %}
+
 # Only increment when enabled AND value has changed.
 # ------------------------------------------------------------------
 record(calcout, "{{ daypv }}:accumulate_") {
@@ -64,7 +82,12 @@ record(calcout, "{{ daypv }}:accumulate_") {
     field(INPB, "{{ daypv }} NPP NMS")
     field(INPC, "{{ daypv }}:prev_ NPP NMS")
     field(INPD, "{{ daypv }}:ENABLE NPP NMS")
+{% if pvenable %}
+    field(INPE, "{{ pvenable }} CPP NMS")
+    field(CALC, "(D>0&&E>0&&A!=C)?(B+ABS(A)):B")
+{% else %}
     field(CALC, "(D>0&&A!=C)?(B+ABS(A)):B")
+{% endif %}
     field(DOPT, "Use CALC")
     field(OUT,  "{{ daypv }} PP")
     field(FLNK, "{{ daypv }}:update_prev_")
