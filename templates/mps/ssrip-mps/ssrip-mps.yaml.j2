@@ -1,0 +1,45 @@
+ioc_name: {{iocname}}
+description: SSRIP Machine Protection System TEMPLATE
+
+entities:
+
+- type: mps.ssrip
+  NAME: "MPS_{{mps_id | default(iocroot | default('A'))}}"
+  IP: {{server}}
+  TCPPORT: {{port | default(502)}}
+  SLAVE_ADDR: {{slave_addr | default(1)}}
+  P: "{{iocprefix}}"
+  POLLING: {{polling | default(100)}}
+  TIMEOUT: {{timeout | default(2000)}}
+
+{%- if aliases is defined and aliases %}
+{%- for param in aliases %}
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{param.name}}"
+  alias: "{{param.alias}}"
+{%- endfor %}
+{%- endif %}
+
+- type: epics.PostStartupCommand
+  command: |
+  {%- if iocinit is defined %}
+  {%- for param in iocinit %}
+    dbpf ("{{iocprefix}}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- endif %}
+  {%- if devices is defined %}
+  {%- for dev in devices %}
+  {%- if dev.iocinit is defined %}
+  {%- for param in dev.iocinit %}
+    dbpf ("{{iocprefix}}:{{dev.name}}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- endif %}
+  {%- endfor %}
+  {%- endif %}
+  {%- if iocexit is defined and iocexit %}
+      dbl
+      exit
+  {%- else %}
+      dbl("*") > {{config_dir}}/pvlist.txt           ## dumps PV NAMES
+      dbl
+  {%- endif %}
