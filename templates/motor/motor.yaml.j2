@@ -317,6 +317,115 @@ entities:
 {%- endif %}
 
 
+{%- if devtype == "thorlabs" %}
+{%- set motor = motor | default({}, true) %}
+entities:
+
+  - type: thorlabsApt.AptController
+    controllerName: "{{devtype}}_{{server | default('usb', true) | replace('.', '_') | replace(':', '_')}}"
+    P: "{{iocprefix}}:{{iocroot}}"
+    devicePath: "{{server}}{% if port is defined %}:{{port}}{% endif %}"
+    motorType: "{{ motor.motorType | default('dc', true) }}"
+    numAxes: {{devices | length}}
+    movingPollPeriod: {{ motor.movingPollPeriod | default(0.2, true) }}
+    idlePollPeriod: {{ motor.idlePollPeriod | default(1.0, true) }}
+
+  {% for mot in devices %}
+  - type: thorlabsApt.motorAxis
+    controller: "{{devtype}}_{{server | default('usb', true) | replace('.', '_') | replace(':', '_')}}"
+    M: ":{{mot.name}}"
+    ADDR: {{mot.axid | default(loop.index0)}}
+    {%- if mot.desc is defined %}
+    DESC: "{{mot.desc}}"
+    {%- else %}
+    DESC: "Thorlabs {{mot.name}} axis {{mot.axid | default(loop.index0)}}"
+    {%- endif %}
+    {%- if mot.egu is defined %}
+    EGU: "{{mot.egu}}"
+    {%- else %}
+    EGU: "{{ motor.egu | default('mm', true) }}"
+    {%- endif %}
+    {%- if mot.dir is defined %}
+    DIR: {{mot.dir}}
+    {%- else %}
+    DIR: {{ motor.dir | default('Pos', true) }}
+    {%- endif %}
+    {%- if mot.velo is defined %}
+    VELO: {{mot.velo}}
+    {%- else %}
+    VELO: {{ motor.velo | default(2.3, true) }}
+    {%- endif %}
+    {%- if mot.vbas is defined %}
+    VBAS: {{mot.vbas}}
+    {%- else %}
+    VBAS: {{ motor.vbas | default(0.1, true) }}
+    {%- endif %}
+    {%- if mot.accs is defined %}
+    ACCS: {{mot.accs}}
+    {%- else %}
+    ACCS: {{ motor.accs | default(1.5, true) }}
+    {%- endif %}
+    {%- if mot.bdst is defined %}
+    BDST: {{mot.bdst}}
+    {%- else %}
+    BDST: {{ motor.bdst | default(0, true) }}
+    {%- endif %}
+    {%- if mot.bvel is defined %}
+    BVEL: {{mot.bvel}}
+    {%- else %}
+    BVEL: {{ motor.bvel | default(2.3, true) }}
+    {%- endif %}
+    {%- if mot.bacc is defined %}
+    BACC: {{mot.bacc}}
+    {%- else %}
+    BACC: {{ motor.bacc | default(1.0, true) }}
+    {%- endif %}
+    {%- if mot.mres is defined %}
+    MRES: {{mot.mres}}
+    {%- else %}
+    MRES: {{ motor.mres | default(0.000028939405515, true) }}
+    {%- endif %}
+    {%- if mot.prec is defined %}
+    PREC: {{mot.prec}}
+    {%- else %}
+    PREC: {{ motor.prec | default(4, true) }}
+    {%- endif %}
+    {%- if mot.dhlm is defined %}
+    DHLM: {{mot.dhlm}}
+    {%- else %}
+    DHLM: {{ motor.dhlm | default(25.0, true) }}
+    {%- endif %}
+    {%- if mot.dllm is defined %}
+    DLLM: {{mot.dllm}}
+    {%- else %}
+    DLLM: {{ motor.dllm | default(-0.1, true) }}
+    {%- endif %}
+    {%- if mot.twv is defined %}
+    TWV: {{mot.twv}}
+    {%- else %}
+    TWV: {{ motor.twv | default(1.0, true) }}
+    {%- endif %}
+    {%- if mot.home is defined %}
+    home: {{mot.home}}
+    {%- else %}
+    home: {{ motor.home | default(0, true) }}
+    {%- endif %}
+    
+  {% endfor %}
+
+{%- for mot in devices %}
+{%- if mot.velparams is defined %}
+  - type: thorlabsApt.AptSetVelParams
+    controller: "{{devtype}}_{{server | default('usb', true) | replace('.', '_') | replace(':', '_')}}"
+    axisNum: {{mot.axid | default(loop.index0)}}
+    minVelocity: {{ mot.velparams.minVelocity | default(0) }}
+    acceleration: {{ mot.velparams.acceleration | default(13422) }}
+    maxVelocity: {{ mot.velparams.maxVelocity | default(134218) }}
+{%- endif %}
+{%- endfor %}
+
+{%- endif %}
+
 
   - type: epics.StartupCommand
     command: |
