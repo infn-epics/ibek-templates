@@ -317,15 +317,193 @@ entities:
 {%- endif %}
 
 
+{%- if devtype == "technosoft-asyn" %}
+{%- set motor = motor | default({}, true) %}
+entities:
+
+  - type: technosoftAsyn.TmlController
+    controllerName: "{{devtype}}_{{server | default('local', true) | replace('.', '_') | replace(':', '_') | replace('/', '_')}}"
+    P: "{{iocprefix}}:{{iocroot}}"
+    devicePath: "{% if server is defined %}{{server}}{% if port is defined %}:{{port}}{% endif %}{% else %}{{ motor.devicePath | default('/dev/ttyUSB0', true) }}{% endif %}"
+    numAxes: {{devices | length}}
+    hostId: {{ motor.hostId | default(255, true) }}
+    baudRate: {{ motor.baudRate | default(9600, true) }}
+    movingPollPeriod: {{ motor.movingPollPeriod | default(0.1, true) }}
+    idlePollPeriod: {{ motor.idlePollPeriod | default(1.0, true) }}
+
+  {% for mot in devices %}
+  - type: technosoftAsyn.TmlAxis
+    controller: "{{devtype}}_{{server | default('local', true) | replace('.', '_') | replace(':', '_') | replace('/', '_')}}"
+    M: ":{{mot.name}}"
+    axisNo: {{loop.index0}}
+    {%- if mot.axisId is defined %}
+    axisId: {{mot.axisId}}
+    {%- elif mot.axid is defined %}
+    axisId: {{mot.axid}}
+    {%- else %}
+    axisId: {{ loop.index }}
+    {%- endif %}
+    {%- if mot.setupFile is defined %}
+    setupFile: "{{mot.setupFile}}"
+    {%- elif motor.setupFile is defined %}
+    setupFile: "{{motor.setupFile}}"
+    {%- else %}
+    setupFile: ""
+    {%- endif %}
+    {%- if mot.homingSwitch is defined %}
+    homingSwitch: {{mot.homingSwitch}}
+    {%- elif motor.homingSwitch is defined %}
+    homingSwitch: {{motor.homingSwitch}}
+    {%- else %}
+    homingSwitch: LSN
+    {%- endif %}
+    {%- if mot.desc is defined %}
+    DESC: "{{mot.desc}}"
+    {%- else %}
+    DESC: "TML {{mot.name}} axis {{loop.index0}}"
+    {%- endif %}
+    {%- if mot.egu is defined %}
+    EGU: "{{mot.egu}}"
+    {%- else %}
+    EGU: "{{ motor.egu | default('mm', true) }}"
+    {%- endif %}
+    {%- if mot.dir is defined %}
+    DIR: {{mot.dir}}
+    {%- else %}
+    DIR: {{ motor.dir | default('Pos', true) }}
+    {%- endif %}
+    {%- if mot.velo is defined %}
+    VELO: {{mot.velo}}
+    {%- else %}
+    VELO: {{ motor.velo | default(1.0, true) }}
+    {%- endif %}
+    {%- if mot.vbas is defined %}
+    VBAS: {{mot.vbas}}
+    {%- else %}
+    VBAS: {{ motor.vbas | default(0.1, true) }}
+    {%- endif %}
+    {%- if mot.accl is defined %}
+    ACCL: {{mot.accl}}
+    {%- else %}
+    ACCL: {{ motor.accl | default(0.5, true) }}
+    {%- endif %}
+    {%- if mot.vmax is defined %}
+    VMAX: {{mot.vmax}}
+    {%- elif motor.vmax is defined %}
+    VMAX: {{ motor.vmax }}
+    {%- else %}
+    VMAX: {{ (motor.velo | default(1.0, true)) * 10 }}
+    {%- endif %}
+    {%- if mot.bdst is defined %}
+    BDST: {{mot.bdst}}
+    {%- else %}
+    BDST: {{ motor.bdst | default(0, true) }}
+    {%- endif %}
+    {%- if mot.bvel is defined %}
+    BVEL: {{mot.bvel}}
+    {%- else %}
+    BVEL: {{ motor.bvel | default(1.0, true) }}
+    {%- endif %}
+    {%- if mot.bacc is defined %}
+    BACC: {{mot.bacc}}
+    {%- else %}
+    BACC: {{ motor.bacc | default(0.5, true) }}
+    {%- endif %}
+    {%- if mot.mres is defined %}
+    MRES: {{mot.mres}}
+    {%- else %}
+    MRES: {{ motor.mres | default(0.001, true) }}
+    {%- endif %}
+    {%- if mot.prec is defined %}
+    PREC: {{mot.prec}}
+    {%- else %}
+    PREC: {{ motor.prec | default(3, true) }}
+    {%- endif %}
+    {%- if mot.dhlm is defined %}
+    DHLM: {{mot.dhlm}}
+    {%- else %}
+    DHLM: {{ motor.dhlm | default(100.0, true) }}
+    {%- endif %}
+    {%- if mot.dllm is defined %}
+    DLLM: {{mot.dllm}}
+    {%- else %}
+    DLLM: {{ motor.dllm | default(-100.0, true) }}
+    {%- endif %}
+    {%- if mot.twv is defined %}
+    TWV: {{mot.twv}}
+    {%- else %}
+    TWV: {{ motor.twv | default(0.1, true) }}
+    {%- endif %}
+    
+  {% endfor %}
+
+{%- endif %}
+
+
 {%- if devtype == "thorlabs" %}
 {%- set motor = motor | default({}, true) %}
+{#- Resolve motorType first — needed for type-aware defaults #}
+{%- set _mtype = motor.motorType | default('dc', true) %}
+{#- Motor-type-aware defaults: dc/stepper share linear-stage values,
+    piezo and kim have their own sensible defaults. Per-axis overrides
+    (mot.*) take priority over global motor.* which takes priority
+    over these type defaults. #}
+{%- if _mtype == 'piezo' %}
+  {%- set _def_egu   = 'count' %}
+  {%- set _def_velo  = 0 %}
+  {%- set _def_vbas  = 0 %}
+  {%- set _def_accs  = 0 %}
+  {%- set _def_mres  = 1 %}
+  {%- set _def_prec  = 0 %}
+  {%- set _def_dhlm  = 32767 %}
+  {%- set _def_dllm  = 0 %}
+  {%- set _def_twv   = 100 %}
+  {%- set _def_bvel  = 0 %}
+  {%- set _def_bacc  = 0 %}
+{%- elif _mtype == 'kim' %}
+  {%- set _def_egu   = 'count' %}
+  {%- set _def_velo  = 500 %}
+  {%- set _def_vbas  = 10 %}
+  {%- set _def_accs  = 200 %}
+  {%- set _def_mres  = 1 %}
+  {%- set _def_prec  = 0 %}
+  {%- set _def_dhlm  = 0 %}
+  {%- set _def_dllm  = 0 %}
+  {%- set _def_twv   = 10 %}
+  {%- set _def_bvel  = 10 %}
+  {%- set _def_bacc  = 200 %}
+{%- elif _mtype == 'stepper' %}
+  {%- set _def_egu   = 'mm' %}
+  {%- set _def_velo  = 2.3 %}
+  {%- set _def_vbas  = 0.1 %}
+  {%- set _def_accs  = 1.5 %}
+  {%- set _def_mres  = 0.0000024414 %}
+  {%- set _def_prec  = 4 %}
+  {%- set _def_dhlm  = 25.0 %}
+  {%- set _def_dllm  = -0.1 %}
+  {%- set _def_twv   = 1.0 %}
+  {%- set _def_bvel  = 2.3 %}
+  {%- set _def_bacc  = 1.0 %}
+{%- else %}{# dc (default) #}
+  {%- set _def_egu   = 'mm' %}
+  {%- set _def_velo  = 2.3 %}
+  {%- set _def_vbas  = 0.1 %}
+  {%- set _def_accs  = 1.5 %}
+  {%- set _def_mres  = 0.000028939405515 %}
+  {%- set _def_prec  = 4 %}
+  {%- set _def_dhlm  = 25.0 %}
+  {%- set _def_dllm  = -0.1 %}
+  {%- set _def_twv   = 1.0 %}
+  {%- set _def_bvel  = 2.3 %}
+  {%- set _def_bacc  = 1.0 %}
+{%- endif %}
 entities:
 
   - type: thorlabsApt.AptController
     controllerName: "{{devtype}}_{{server | default('usb', true) | replace('.', '_') | replace(':', '_')}}"
     P: "{{iocprefix}}:{{iocroot}}"
     devicePath: "{{server}}{% if port is defined %}:{{port}}{% endif %}"
-    motorType: "{{ motor.motorType | default('dc', true) }}"
+    motorType: "{{ _mtype }}"
     numAxes: {{devices | length}}
     movingPollPeriod: {{ motor.movingPollPeriod | default(0.2, true) }}
     idlePollPeriod: {{ motor.idlePollPeriod | default(1.0, true) }}
@@ -343,7 +521,7 @@ entities:
     {%- if mot.egu is defined %}
     EGU: "{{mot.egu}}"
     {%- else %}
-    EGU: "{{ motor.egu | default('mm', true) }}"
+    EGU: "{{ motor.egu | default(_def_egu, true) }}"
     {%- endif %}
     {%- if mot.dir is defined %}
     DIR: {{mot.dir}}
@@ -353,17 +531,17 @@ entities:
     {%- if mot.velo is defined %}
     VELO: {{mot.velo}}
     {%- else %}
-    VELO: {{ motor.velo | default(2.3, true) }}
+    VELO: {{ motor.velo | default(_def_velo, true) }}
     {%- endif %}
     {%- if mot.vbas is defined %}
     VBAS: {{mot.vbas}}
     {%- else %}
-    VBAS: {{ motor.vbas | default(0.1, true) }}
+    VBAS: {{ motor.vbas | default(_def_vbas, true) }}
     {%- endif %}
     {%- if mot.accs is defined %}
     ACCS: {{mot.accs}}
     {%- else %}
-    ACCS: {{ motor.accs | default(1.5, true) }}
+    ACCS: {{ motor.accs | default(_def_accs, true) }}
     {%- endif %}
     {%- if mot.bdst is defined %}
     BDST: {{mot.bdst}}
@@ -373,37 +551,37 @@ entities:
     {%- if mot.bvel is defined %}
     BVEL: {{mot.bvel}}
     {%- else %}
-    BVEL: {{ motor.bvel | default(2.3, true) }}
+    BVEL: {{ motor.bvel | default(_def_bvel, true) }}
     {%- endif %}
     {%- if mot.bacc is defined %}
     BACC: {{mot.bacc}}
     {%- else %}
-    BACC: {{ motor.bacc | default(1.0, true) }}
+    BACC: {{ motor.bacc | default(_def_bacc, true) }}
     {%- endif %}
     {%- if mot.mres is defined %}
     MRES: {{mot.mres}}
     {%- else %}
-    MRES: {{ motor.mres | default(0.000028939405515, true) }}
+    MRES: {{ motor.mres | default(_def_mres, true) }}
     {%- endif %}
     {%- if mot.prec is defined %}
     PREC: {{mot.prec}}
     {%- else %}
-    PREC: {{ motor.prec | default(4, true) }}
+    PREC: {{ motor.prec | default(_def_prec, true) }}
     {%- endif %}
     {%- if mot.dhlm is defined %}
     DHLM: {{mot.dhlm}}
     {%- else %}
-    DHLM: {{ motor.dhlm | default(25.0, true) }}
+    DHLM: {{ motor.dhlm | default(_def_dhlm, true) }}
     {%- endif %}
     {%- if mot.dllm is defined %}
     DLLM: {{mot.dllm}}
     {%- else %}
-    DLLM: {{ motor.dllm | default(-0.1, true) }}
+    DLLM: {{ motor.dllm | default(_def_dllm, true) }}
     {%- endif %}
     {%- if mot.twv is defined %}
     TWV: {{mot.twv}}
     {%- else %}
-    TWV: {{ motor.twv | default(1.0, true) }}
+    TWV: {{ motor.twv | default(_def_twv, true) }}
     {%- endif %}
     {%- if mot.home is defined %}
     home: {{mot.home}}
