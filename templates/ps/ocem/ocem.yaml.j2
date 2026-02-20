@@ -11,7 +11,8 @@ entities:
     IMAX: {{alim.imax | default(100)}}
     VMAX: {{alim.vmax | default(16)}}
     TCPPORT: {{alim.port | default(502)}}
-    CORRECTION: {{alim.correction | default(1.8)}}   
+    CORRECTION: {{alim.correction | default(1.8)}}  
+    CORRECTIONSET: {{alim.correctionset | default(1)}} 
 {%- endfor %}
 {%- endif %}
 
