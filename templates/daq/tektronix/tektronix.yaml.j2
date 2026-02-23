@@ -9,8 +9,16 @@ entities:
   TCPPORT: {{port |default(4000)}}
   P: "{{iocprefix}}"
 {%- if devtype == "mso58lp-asyn" %}
-  NUM_CHANNELS: {{num_channels | default(4)}}
-  NUM_MEASUREMENTS: {{num_measurements | default(4)}}
+{%- set ns = namespace(num_channels=0, num_measurements=0) %}
+{%- for t in devices %}
+{%- if t.devtype is defined and t.devtype == "measurement" %}
+{%- set ns.num_measurements = ns.num_measurements + 1 %}
+{%- else %}
+{%- set ns.num_channels = ns.num_channels + 1 %}
+{%- endif %}
+{%- endfor %}
+  NUM_CHANNELS: {{ns.num_channels}}
+  NUM_MEASUREMENTS: {{ns.num_measurements}}
   SAMPLES: {{samples | default(10000)}}
   POLL_TIME: {{poll_time | default(0.1)}}
   CA_MAX_ARRAY_BYTES: {{ca_max_array_bytes | default(3000000)}}
