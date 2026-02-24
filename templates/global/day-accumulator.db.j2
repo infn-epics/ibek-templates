@@ -23,18 +23,8 @@
 {% set desc       = acc.desc | default("Daily accumulator") %}
 {% set pvenable   = acc.pvenable | default("") %}
 
-{# Prepend iocprefix if not already present (check if pvname contains ':') #}
-{% if ':' in pvname_raw %}
-    {% set pvname = pvname_raw %}
-{% else %}
-    {% set pvname = iocprefix ~ ':' ~ pvname_raw %}
-{% endif %}
-
-{% if ':' in daypv_raw %}
-    {% set daypv = daypv_raw %}
-{% else %}
-    {% set daypv = iocprefix ~ ':' ~ daypv_raw %}
-{% endif %}
+{% set pvname = iocprefix ~ ':' ~ pvname_raw %}
+{% set daypv = iocprefix ~ ':' ~ daypv_raw %}
 
 {% set tag = daypv | replace(":", "_") %}
 
