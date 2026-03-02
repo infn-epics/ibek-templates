@@ -1,0 +1,106 @@
+ioc_name: {{iocname}}
+description: Menlo {{devtype | upper}} laser synchronization TEMPLATE
+
+entities:
+# ============================================================================
+# TCP/IP Connection with Menlo HRT binary protocol framing
+# ============================================================================
+- type: menlo.tcp
+  NAME: "MENLO_PORT"
+  IP: {{ server if server is defined else "192.168.197.128" }}
+  PORT: {{ port if port is defined else 4001 }}
+  TIMEOUT: {{ timeout if timeout is defined else 1 }}
+
+# ============================================================================
+# Menlo Device Instance
+# ============================================================================
+{%- if devtype == "lac1550" %}
+- type: menlo.lac1550
+  NAME: "{{iocname}}_DEV"
+  P: "{{iocprefix}}"
+  PORT: "MENLO_PORT"
+  SCAN: "{{ scan if scan is defined else '1 second' }}"
+  SRC: {{ src_id if src_id is defined else 17 }}
+  DST: {{ dst_id if dst_id is defined else 66 }}
+{%- elif devtype == "lfc" %}
+- type: menlo.lfc
+  NAME: "{{iocname}}_DEV"
+  P: "{{iocprefix}}"
+  PORT: "MENLO_PORT"
+  SCAN: "{{ scan if scan is defined else '1 second' }}"
+  SRC: {{ src_id if src_id is defined else 17 }}
+  DST: {{ dst_id if dst_id is defined else 66 }}
+{%- elif devtype == "syncro_fls" %}
+- type: menlo.syncro_fls
+  NAME: "{{iocname}}_DEV"
+  P: "{{iocprefix}}"
+  PORT: "MENLO_PORT"
+  SCAN: "{{ scan if scan is defined else '1 second' }}"
+  SRC: {{ src_id if src_id is defined else 17 }}
+  DST: {{ dst_id if dst_id is defined else 66 }}
+{%- elif devtype == "syncro_theta" %}
+- type: menlo.syncro_theta
+  NAME: "{{iocname}}_DEV"
+  P: "{{iocprefix}}"
+  PORT: "MENLO_PORT"
+  SCAN: "{{ scan if scan is defined else '1 second' }}"
+  SRC: {{ src_id if src_id is defined else 17 }}
+  DST: {{ dst_id if dst_id is defined else 66 }}
+{%- else %}
+{# default: standard syncro #}
+- type: menlo.syncro
+  NAME: "{{iocname}}_DEV"
+  P: "{{iocprefix}}"
+  PORT: "MENLO_PORT"
+  SCAN: "{{ scan if scan is defined else '1 second' }}"
+  SRC: {{ src_id if src_id is defined else 17 }}
+  DST: {{ dst_id if dst_id is defined else 66 }}
+{%- endif %}
+
+# ============================================================================
+# Asyn Debug (optional)
+# ============================================================================
+{%- if debug is defined and debug %}
+- type: epics.StartupCommand
+  command: |
+    asynSetTraceIOTruncateSize("MENLO_PORT", -1, 1024)
+    asynSetTraceIOMask("MENLO_PORT", 0, 4)
+    asynSetTraceMask("MENLO_PORT", 0, 9)
+{%- endif %}
+
+# ============================================================================
+# StreamDevice configuration
+# ============================================================================
+- type: epics.StartupCommand
+  command: |
+    var streamError 1
+    var streamDebug {{ stream_debug if stream_debug is defined else 1 }}
+    var streamErrorDeadTime 30
+    var streamMsgTimeStamped 1
+
+# ============================================================================
+# POST-STARTUP COMMANDS
+# ============================================================================
+- type: epics.PostStartupCommand
+  command: |
+{%- if iocinit is defined %}
+{%- for param in iocinit %}
+    dbpf ("{{iocprefix}}:{{param.name}}","{{param.value}}")
+{%- endfor %}
+{%- endif %}
+{%- if devices is defined %}
+{%- for dev in devices %}
+{%- if dev.iocinit is defined %}
+{%- for param in dev.iocinit %}
+    dbpf ("{{iocprefix}}:{{dev.name}}:{{param.name}}","{{param.value}}")
+{%- endfor %}
+{%- endif %}
+{%- endfor %}
+{%- endif %}
+{%- if iocexit is defined and iocexit %}
+    dbl
+    exit
+{%- else %}
+    dbl("*") > {{config_dir}}/pvlist.txt
+    dbl
+{%- endif %}
