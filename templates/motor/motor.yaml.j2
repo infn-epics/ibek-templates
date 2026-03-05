@@ -324,7 +324,7 @@ entities:
   - type: technosoftAsyn.TmlController
     controllerName: "{{devtype}}_{{server | default('local', true) | replace('.', '_') | replace(':', '_') | replace('/', '_')}}"
     P: "{{iocprefix}}:{{iocroot}}"
-    devicePath: "{% if server is defined %}{{server}}{% if port is defined %}:{{port}}{% endif %}{% else %}{{ motor.devicePath | default('/dev/ttyUSB0', true) }}{% endif %}"
+    devicePath: "{% if server is defined %}{{server}}{% if port is defined %}:{{port}}{% endif %}{% else %}{{ serial.ptty | default('/var/tmp/ttyV0', true) }}{% endif %}"
     numAxes: {{devices | length}}
     hostId: {{ motor.hostId | default(255, true) }}
     baudRate: {{ motor.baudRate | default(9600, true) }}
@@ -334,7 +334,7 @@ entities:
   {% for mot in devices %}
   - type: technosoftAsyn.TmlAxis
     controller: "{{devtype}}_{{server | default('local', true) | replace('.', '_') | replace(':', '_') | replace('/', '_')}}"
-    M: ":{{mot.name}}"
+    M: "{{mot.name}}"
     axisNo: {{loop.index0}}
     {%- if mot.axisId is defined %}
     axisId: {{mot.axisId}}
