@@ -326,9 +326,9 @@ entities:
     P: "{{iocprefix}}:{{iocroot}}"
     devicePath: "{% if server is defined %}{{server}}{% if port is defined %}:{{port}}{% endif %}{% else %}{{ serial.ptty | default('/var/tmp/ttyV0', true) }}{% endif %}"
     numAxes: {{devices | length}}
-    hostId: {{ motor.hostId | default(255, true) }}
+    hostId: {{ motor.hostid }}
     baudRate: {{ motor.baudRate | default(9600, true) }}
-    movingPollPeriod: {{ motor.movingPollPeriod | default(0.1, true) }}
+    movingPollPeriod: {{ motor.movingPollPeriod | default(0.2, true) }}
     idlePollPeriod: {{ motor.idlePollPeriod | default(1.0, true) }}
 
   {% for mot in devices %}
