@@ -357,6 +357,20 @@ entities:
     {%- else %}
     homingSwitch: LSN
     {%- endif %}
+    {%- if mot.ignoreLSP is defined %}
+    ignoreLSP: {{mot.ignoreLSP}}
+    {%- elif motor.ignoreLSP is defined %}
+    ignoreLSP: {{motor.ignoreLSP}}
+    {%- else %}
+    ignoreLSP: 0
+    {%- endif %}
+    {%- if mot.ignoreLSN is defined %}
+    ignoreLSN: {{mot.ignoreLSN}}
+    {%- elif motor.ignoreLSN is defined %}
+    ignoreLSN: {{motor.ignoreLSN}}
+    {%- else %}
+    ignoreLSN: 0
+    {%- endif %}
     {%- if mot.desc is defined %}
     DESC: "{{mot.desc}}"
     {%- else %}
@@ -382,17 +396,10 @@ entities:
     {%- else %}
     VBAS: {{ motor.vbas | default(0.1, true) }}
     {%- endif %}
-    {%- if mot.accl is defined %}
-    ACCL: {{mot.accl}}
+    {%- if mot.accs is defined %}
+    ACCS: {{mot.accs}}
     {%- else %}
-    ACCL: {{ motor.accl | default(0.5, true) }}
-    {%- endif %}
-    {%- if mot.vmax is defined %}
-    VMAX: {{mot.vmax}}
-    {%- elif motor.vmax is defined %}
-    VMAX: {{ motor.vmax }}
-    {%- else %}
-    VMAX: {{ (motor.velo | default(1.0, true)) * 10 }}
+    ACCS: {{ motor.accs | default(0.5, true) }}
     {%- endif %}
     {%- if mot.bdst is defined %}
     BDST: {{mot.bdst}}
