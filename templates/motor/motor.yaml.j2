@@ -371,6 +371,14 @@ entities:
     {%- else %}
     ignoreLSN: 0
     {%- endif %}
+    {%- if mot.scrValue is defined %}
+    scrValue: {{mot.scrValue}}
+    {%- elif motor.scrValue is defined %}
+    scrValue: {{motor.scrValue}}
+    {%- else %}
+    scrValue: 0x4338
+    {%- endif %}
+    {%- endif %}
     {%- if mot.desc is defined %}
     DESC: "{{mot.desc}}"
     {%- else %}
