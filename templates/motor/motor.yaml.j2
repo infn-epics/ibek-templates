@@ -385,8 +385,10 @@ entities:
     {%- endif %}
     {%- if mot.egu is defined %}
     EGU: "{{mot.egu}}"
+    {%- elif mot.egu2mm is defined %}
+    EGU: "mm"
     {%- else %}
-    EGU: "{{ motor.egu | default('mm', true) }}"
+    EGU: "{{ motor.egu | default('ustep', true) }}"
     {%- endif %}
     {%- if mot.dir is defined %}
     DIR: {{mot.dir}}
@@ -425,8 +427,10 @@ entities:
     {%- endif %}
     {%- if mot.mres is defined %}
     MRES: {{mot.mres}}
+    {%- elif mot.egu2mm is defined %}
+    MRES: {{ mot.egu2mm }}
     {%- else %}
-    MRES: {{ motor.mres | default(0.001, true) }}
+    MRES: {{ motor.mres | default(1.0, true) }}
     {%- endif %}
     {%- if mot.prec is defined %}
     PREC: {{mot.prec}}
