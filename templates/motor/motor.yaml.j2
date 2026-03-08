@@ -330,6 +330,7 @@ entities:
     baudRate: {{ motor.baudRate | default(9600, true) }}
     movingPollPeriod: {{ motor.movingPollPeriod | default(0.2, true) }}
     idlePollPeriod: {{ motor.idlePollPeriod | default(1.0, true) }}
+    debug: {{ motor.debug | default(1) }}
 
   {% for mot in devices %}
   - type: technosoftAsyn.TmlAxis
@@ -440,17 +441,17 @@ entities:
     {%- if mot.dhlm is defined %}
     DHLM: {{mot.dhlm}}
     {%- else %}
-    DHLM: {{ motor.dhlm | default(100.0, true) }}
+    DHLM: {{ motor.dhlm | default(1000000.0) }}
     {%- endif %}
     {%- if mot.dllm is defined %}
     DLLM: {{mot.dllm}}
     {%- else %}
-    DLLM: {{ motor.dllm | default(-100.0, true) }}
+    DLLM: {{ motor.dllm | default(-1000000.0) }}
     {%- endif %}
     {%- if mot.twv is defined %}
     TWV: {{mot.twv}}
     {%- else %}
-    TWV: {{ motor.twv | default(0.1, true) }}
+    TWV: {{ motor.twv | default(0.1) }}
     {%- endif %}
     
   {% endfor %}
