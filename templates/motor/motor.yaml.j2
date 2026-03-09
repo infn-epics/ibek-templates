@@ -9,7 +9,7 @@ entities:
 
   - type: micos.pollux
     controllerName: "{{devtype}}_001"
-    P: "{{iocprefix}}:{{iocroot}}"
+    P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}"
     IP: "{{server}}"
     TCPPORT: {{port}}
     numAxes: {{devices | length}}
@@ -102,7 +102,7 @@ entities:
 
   - type: motorNewport.SMC100CreateController
     controllerName: "{{devtype}}_{{server}}"
-    P: "{{iocprefix}}:{{iocroot}}"
+    P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}"
     IP: {{server}}
     TCPPORT: {{port}}
     numAxes: {{devices | length}}
@@ -217,7 +217,7 @@ shared:
 entities:
   - type: motorTML.CreateController
     controllerName: "{{devtype}}_001"
-    P: "{{iocprefix}}"
+    P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}"
     TTY: {{serial.ptty}}
     hostid: {{ motor.hostid | default('', true) }}
   
@@ -323,7 +323,7 @@ entities:
 
   - type: technosoftAsyn.TmlController
     controllerName: "{{devtype}}_{{server | default('local', true) | replace('.', '_') | replace(':', '_') | replace('/', '_')}}"
-    P: "{{iocprefix}}:{{iocroot}}"
+    P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}"
     devicePath: "{% if server is defined %}{{server}}{% if port is defined %}:{{port}}{% endif %}{% else %}{{ serial.ptty | default('/var/tmp/ttyV0', true) }}{% endif %}"
     numAxes: {{devices | length}}
     hostId: {{ motor.hostid }}
@@ -520,7 +520,7 @@ entities:
 
   - type: thorlabsApt.AptController
     controllerName: "{{devtype}}_{{server | default('usb', true) | replace('.', '_') | replace(':', '_')}}"
-    P: "{{iocprefix}}:{{iocroot}}"
+    P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}"
     devicePath: "{{server}}{% if port is defined %}:{{port}}{% endif %}"
     motorType: "{{ _mtype }}"
     numAxes: {{devices | length}}
@@ -632,8 +632,8 @@ entities:
 
 {%- for param in dev.aliases %}
   - type: epics.DbAlias
-    name: "{{iocprefix}}:{{iocroot}}:{{param.name}}"
-    alias: "{{iocprefix}}:{{iocroot}}:{{param.alias}}"
+    name: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}:{{param.name}}"
+    alias: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}:{{param.alias}}"
 {%- endfor %}
 {%- endfor %}
 
@@ -641,7 +641,7 @@ entities:
   - type: epics.PostStartupCommand 
     command: |
   {%- for param in iocinit %}
-      dbpf ("{{iocprefix}}:{{iocroot}}:{{param.name}}","{{param.value}}")
+      dbpf ("{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}:{{param.name}}","{{param.value}}")
   {%- endfor %}
   {%- for dev in devices %}
   {%- for param in dev.iocinit %}

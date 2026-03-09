@@ -16,7 +16,7 @@ entities:
   name: "CHILLER01"
   IP: {{server}}
   TCPPORT: {{port | default(4001) }}
-  P: "{{iocprefix}}:{{iocroot}}"
+  P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}"
   DEV_ID: "{{id | default("01")}}"
 {%- endif %}
 

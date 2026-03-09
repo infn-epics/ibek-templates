@@ -15,7 +15,7 @@ entities:
     name: "POLYSCI01"
     IP: {{server}}
     TCPPORT: {{port | default(4001)}}
-    P: "{{iocprefix}}:{{iocroot}}"
+    P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}"
 {%- endif %}
 
 {%- if aliases is defined and aliases %}

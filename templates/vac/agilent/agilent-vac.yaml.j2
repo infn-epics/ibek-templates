@@ -11,12 +11,12 @@ entities:
   name: "AGILENT001-{{server}}"
   IP: {{server}}
   TCPPORT: {{port}}
-  P: "{{iocprefix}}:{{iocroot}}"
+  P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}"
 {%- for t in devices %}
 {%- if t.devtype == "img" %}
 - type: agilent.xgs600.imgsensor
   controller: "AGILENT001-{{server}}"
-  P: "{{iocprefix}}:{{iocroot}}:{{ t.name }}"
+  P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}:{{ t.name }}"
   sensor: {{ t.sensor }}
   tcauto: {{ t.tcauto }}
 - type: epics.DbAlias
@@ -26,7 +26,7 @@ entities:
 {%- if t.devtype == "cnv" %}
 - type: agilent.{{devtype}}.cnvsensor
   controller: "AGILENT001-{{server}}"
-  P: "{{iocprefix}}:{{iocroot}}:{{ t.name }}"
+  P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}:{{ t.name }}"
   sensor: {{ t.sensor }}
 - type: epics.DbAlias
   name: "{{iocprefix}}:{{iocroot}}:{{t.name}}:PRES"
@@ -35,7 +35,7 @@ entities:
 {%- if t.devtype == "setpoint" %}
 - type: agilent.{{devtype}}.setpoint
   controller: "AGILENT001-{{server}}"
-  P: "{{iocprefix}}:{{iocroot}}:{{ t.name }}"
+  P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}:{{ t.name }}"
   sensor: {{ t.sensor }}
   number: {{ t.number }}
 {%- endif %}
@@ -47,7 +47,7 @@ entities:
   name: "AGILENT_PUMP-{{server}}"
   IP: {{server}}
   TCPPORT: {{port}}
-  P: "{{iocprefix}}:{{iocroot}}"
+  P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}"
 {%- for t in devices %}
 - type: agilent.{{devtype}}.pump
   controller: "AGILENT_PUMP-{{server}}"
