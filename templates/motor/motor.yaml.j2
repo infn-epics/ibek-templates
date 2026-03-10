@@ -335,7 +335,7 @@ entities:
   {% for mot in devices %}
   - type: technosoftAsyn.TmlAxis
     controller: "{{devtype}}_{{server | default('local', true) | replace('.', '_') | replace(':', '_') | replace('/', '_')}}"
-    M: "{{mot.name}}"
+    M: ":{{mot.name}}"
     axisNo: {{loop.index0}}
     {%- if mot.axisId is defined %}
     axisId: {{mot.axisId}}
