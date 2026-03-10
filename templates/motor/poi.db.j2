@@ -14,8 +14,8 @@
 {%- for mot in devices %}
 {%- if mot.poi is defined and mot.poi|length > 0 %}
 
-{%- set motor_val_suffix = '.VAL' if (mot.devtype is defined and mot.devtype != 'tml') or (devtype is defined and devtype != 'tml') else ':VAL' %}
-{%- set motor_rbv_suffix = '.RBV' if (mot.devtype is defined and mot.devtype != 'tml') or (devtype is defined and devtype != 'tml') else ':RBV' %}
+{%- set motor_val_suffix = '.VAL' %}
+{%- set motor_rbv_suffix = '.RBV' %}
 
 # Motor: {{ mot.name }} - POI Configuration
 # Number of POIs defined: {{ mot.poi|length }}

@@ -441,12 +441,12 @@ entities:
     {%- if mot.dhlm is defined %}
     DHLM: {{mot.dhlm}}
     {%- else %}
-    DHLM: {{ motor.dhlm | default(1000000.0) }}
+    DHLM: {{ motor.dhlm | default(500000000.0) }}
     {%- endif %}
     {%- if mot.dllm is defined %}
     DLLM: {{mot.dllm}}
     {%- else %}
-    DLLM: {{ motor.dllm | default(-1000000.0) }}
+    DLLM: {{ motor.dllm | default(-500000000.0) }}
     {%- endif %}
     {%- if mot.twv is defined %}
     TWV: {{mot.twv}}
