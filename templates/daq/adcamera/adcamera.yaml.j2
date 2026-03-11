@@ -20,7 +20,7 @@ entities:
   - type: ADSimDetector.simDetector
   {%- else %}
   - type: ADAravis.aravisCamera
-    ID: {{camera.id}}
+    ID: "{{camera.id}}"
     CLASS: AutoADGenICam    #{{camera.devtype}}
   {%- endif %}
     PORT: {{camera.name}}
