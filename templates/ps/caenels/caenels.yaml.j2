@@ -11,6 +11,8 @@ entities:
 {%- if devtype == "fastps" %}
     rangeI: {{alim.rangeI | default(30)}}
     rangeV: {{alim.rangeV | default(20)}}
+    rampI: {{alim.rampI | default(0)}}
+    rampV: {{alim.rampV | default(0)}}
 {%- else %}
     range: {{alim.range | default(30)}}
 {%- endif %}
