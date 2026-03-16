@@ -18,6 +18,10 @@ entities:
   
   {%- if camera.devtype == "camerasim" or devtype == "camerasim" %}
   - type: ADSimDetector.simDetector
+    WIDTH: {{camera.width | default(1280)}}
+    HEIGHT: {{camera.height | default(1024)}}
+    DATATYPE: {{camera.datatype | default(1)}}
+        
   {%- else %}
   - type: ADAravis.aravisCamera
     ID: "{{camera.id}}"
@@ -43,8 +47,8 @@ entities:
     NDARRAY_PORT: {{camera.name}}
     BUFFERS: {{camera.buffers | default(50)}}
     HTTP_PORT: 8082  
-    MAXH: 1200
-    MAXW: 1600
+    MAXH: {{camera.height | default(1024)}}
+    MAXW: {{camera.width | default(1280)}}
     MEMORY: 0
     NDARRAY_ADDR: 0
     BLOCK: 0
@@ -111,7 +115,8 @@ entities:
     R: ":Proc1:Pva1:"
     NDARRAY_PORT: {{camera.name}}.PROC
     ENABLED: 1
-  
+
+  {%- if stdarray_enable |default (True) %}
   - type: ADCore.NDStdArrays
     P: "{{iocprefix}}:{{camera.name}}"
     R: ":image2:"
@@ -121,6 +126,7 @@ entities:
     FTVL: {{camera.CAMERA_FTVL | default("USHORT")}}
     NELEMENTS: {{camera.pixels | default(camera_elements)}}
     ENABLED: 1
+  {%- endif %}
   
   {%- if stats_enable %}
 
@@ -174,6 +180,7 @@ entities:
     NDARRAY_PORT: {{camera.name}}
     ENABLED: 1
 
+  {%- if stdarray_enable | default(True) %}
   - type: ADCore.NDStdArrays
     P: "{{iocprefix}}:{{camera.name}}"
     R: ":image1:"
@@ -183,6 +190,7 @@ entities:
     FTVL: {{camera.CAMERA_FTVL | default("USHORT")}}
     NELEMENTS: {{camera_elements}}
     ENABLED: 1
+  {%- endif %}
 
 {%- if stats_enable %}
 
