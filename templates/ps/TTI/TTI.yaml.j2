@@ -1,0 +1,25 @@
+ioc_name: {{ iocname }}
+description: TTI Power Supply TEMPLATE
+
+entities:
+{%- for device in devices %}
+- type: TTI.device
+  NAME: "{{ device.name | default('TTI1') }}"
+  P: "{{ iocprefix }}:"
+  R: "{{ device.r | default('TTI:') }}"
+  IP: "{{ device.ip | default('192.168.197.49') }}"
+  PORT: {{ device.port | default(4001) }}
+  TIMEOUT: {{ device.timeout | default(1000) }}
+  DISCONNECT_ON_TIMEOUT: {{ device.disconnect_on_timeout | default(true) }}
+{%- endfor %}
+
+- type: epics.PostStartupCommand
+  command: |
+    epicsThreadSleep 1.0
+{%- if iocexit %}
+    dbl
+    exit
+{%- else %}
+    dbl("*") > {{ config_dir }}/pvlist.txt
+    dbl
+{%- endif %}
