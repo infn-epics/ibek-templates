@@ -6,11 +6,11 @@ entities:
 - type: TTI.device
   NAME: "{{ device.name | default('TTI1') }}"
   P: "{{ iocprefix }}:"
-  R: "{{ device.r | default('TTI:') }}"
-  IP: "{{ device.ip | default('192.168.197.49') }}"
+  R: "{{ device.name }}:"
+  IP: "{{ server }}"
   PORT: {{ device.port | default(4001) }}
-  TIMEOUT: {{ device.timeout | default(1000) }}
-  DISCONNECT_ON_TIMEOUT: {{ device.disconnect_on_timeout | default(true) }}
+  TIMEOUT: {{ timeout | default(1000) }}
+  DISCONNECT_ON_TIMEOUT: {{ disconnect_on_timeout | default(true) }}
 {%- endfor %}
 
 - type: epics.PostStartupCommand
