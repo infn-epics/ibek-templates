@@ -1,0 +1,48 @@
+ioc_name: {{iocname}}
+description: Bergoz BCM-RF-E Beam Charge Monitor
+
+# Connection type is determined by the presence of 'server' (IP) or 'device' (serial).
+# 'server' can be an IP/hostname for TCP mode, or omitted when 'device' is set.
+#
+# TCP/IP example (recommended — via ser2net):
+#   type: ip
+#   server: 192.168.1.100
+#   port: 4001            # optional, default 4001
+#   iocprefix: BCM:RF:01
+#   scan: "1 second"      # optional
+#
+# Direct serial example:
+#   type: serial
+#   device: /dev/ttyACM0  # optional, default /dev/ttyACM0
+#   baud: 9600             # optional, default 9600
+#   iocprefix: BCM:RF:01
+#   scan: "1 second"      # optional
+
+{%- set _scan  = scan  | default("1 second", true) %}
+{%- set _type  = type  | default("ip", true) %}
+{%- set _pname = iocname | replace("-", "_") | replace(":", "_") | upper %}
+
+entities:
+
+{%- if _type == "serial" %}
+  - type: bergozBcm.serialDevice
+    NAME: "{{_pname}}_PORT"
+    P: "{{iocprefix}}"
+    DEVICE: "{{ device | default('/dev/ttyACM0', true) }}"
+    BAUD: {{ baud | default(9600, true) }}
+    SCAN: "{{_scan}}"
+
+{%- else %}
+  - type: bergozBcm.ipDevice
+    NAME: "{{_pname}}_PORT"
+    P: "{{iocprefix}}"
+    HOST: "{{server}}"
+    TCPPORT: {{ port | default(4001, true) }}
+    SCAN: "{{_scan}}"
+
+{%- endif %}
+
+  - type: epics.PostStartupCommand
+    command: |
+      dbl("*") > {{config_dir | default("/config")}}/pvlist.txt
+      dbl
