@@ -4,9 +4,9 @@ description: TTI Power Supply TEMPLATE
 entities:
 {%- for device in devices %}
 - type: TTI.device
-  NAME: "{{ device.name | default('TTI1') }}"
-  P: "{{ iocprefix }}:"
-  R: "{{ device.name }}:"
+  NAME: "{{ device.name}}"
+  P: "{{ iocprefix }}"
+  R: "{{ device.name }}"
   IP: "{{ server }}"
   PORT: {{ device.port | default(4001) }}
   TIMEOUT: {{ timeout | default(1000) }}
