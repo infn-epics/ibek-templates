@@ -721,6 +721,56 @@ entities:
 {%- endif %}
 
 
+{%- if devtype == "motorsim" or devtype == "motorSim" or devtype == "motorMotorSim" %}
+{%- set motor = motor | default({}, true) %}
+entities:
+
+  - type: motorSim.simMotorController
+    controllerName: "{{devtype}}_001"
+    P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}"
+    numAxes: {{devices | length}}
+
+  {% for mot in devices %}
+  - type: motorSim.simMotorAxis
+    controller: "{{devtype}}_001"
+    M: ":{{mot.name}}"
+    ADDR: {{mot.axid | default(loop.index0)}}
+    {%- if mot.desc is defined %}
+    DESC: "{{mot.desc}}"
+    {%- else %}
+    DESC: "MotorSim {{mot.name}} axis {{mot.axid | default(loop.index0)}}"
+    {%- endif %}
+    {%- if mot.dllm is defined %}
+    DLLM: {{mot.dllm}}
+    {%- else %}
+    DLLM: {{ motor.dllm | default(-20000, true) }}
+    {%- endif %}
+    {%- if mot.dhlm is defined %}
+    DHLM: {{mot.dhlm}}
+    {%- else %}
+    DHLM: {{ motor.dhlm | default(20000, true) }}
+    {%- endif %}
+    {%- if mot.home is defined %}
+    home: {{mot.home}}
+    {%- else %}
+    home: {{ motor.home | default(0, true) }}
+    {%- endif %}
+    {%- if mot.start is defined %}
+    start: {{mot.start}}
+    {%- else %}
+    start: {{ motor.start | default(0, true) }}
+    {%- endif %}
+    {%- if mot.dir is defined %}
+    DIR: {{mot.dir}}
+    {%- else %}
+    DIR: {{ motor.dir | default('Pos', true) }}
+    {%- endif %}
+
+  {% endfor %}
+
+{%- endif %}
+
+
   - type: epics.StartupCommand
     command: |
       dbLoadRecords("config/poi.db","")
