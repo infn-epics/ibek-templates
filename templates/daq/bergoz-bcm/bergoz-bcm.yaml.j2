@@ -17,6 +17,11 @@ description: Bergoz BCM-RF-E Beam Charge Monitor
 #   baud: 9600             # optional, default 9600
 #   iocprefix: BCM:RF:01
 #   scan: "1 second"      # optional
+#
+# Optional aliases:
+#   aliases:
+#     - name: CHARGE
+#       alias: CHARGE_RB
 
 {%- set _scan  = scan  | default("1 second", true) %}
 {%- set _type  = type  | default("ip", true) %}
@@ -40,6 +45,14 @@ entities:
     TCPPORT: {{ port | default(4001, true) }}
     SCAN: "{{_scan}}"
 
+{%- endif %}
+
+{%- if aliases is defined and aliases %}
+{%- for param in aliases %}
+  - type: epics.DbAlias
+    name: "{{iocprefix}}:{{param.name}}"
+    alias: "{{iocprefix}}:{{param.alias}}"
+{%- endfor %}
 {%- endif %}
 
   - type: epics.PostStartupCommand
