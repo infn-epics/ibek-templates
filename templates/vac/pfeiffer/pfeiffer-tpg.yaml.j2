@@ -17,7 +17,7 @@ entities:
   name: "{{ t.name }}"
   channel: {{ t.channel }}
 {%- endfor %}
-{%- else %}{# tpg366 – one controller per VGC unit, one sensor entity per active channel #}
+{%- elif devtype == 'tpg366' %}{# pfeiffer.tpg366 (tpg300_500 package) – one controller, one sensor entity per active channel #}
 - type: pfeiffer.tpg366.controller
   name: PFEIFFER_CTRL_PORT
   P: "{{iocprefix}}"
@@ -28,8 +28,28 @@ entities:
   controller: PFEIFFER_CTRL_PORT
   name: "{{iocprefix}}:{{ dev.name }}"
   channel: "{{ dev.channel | replace('A', '') }}"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{ dev.name }}:PRESSURE"
+  alias: "{{iocprefix}}:{{ dev.name }}:PRES_RB"
 {%- endfor %}
 - type: pfeiffer.tpg366.setpoints
+  controller: PFEIFFER_CTRL_PORT
+{%- else %}{# TPG366 – standalone package (baltig.infn.it/lnf-da-control/TPG366) #}
+- type: TPG366.controller
+  name: PFEIFFER_CTRL_PORT
+  P: "{{iocprefix}}"
+  IP: {{server}}
+  TCPPORT: {{port}}
+{%- for dev in devices %}
+- type: TPG366.sensor
+  controller: PFEIFFER_CTRL_PORT
+  name: "{{iocprefix}}:{{ dev.name }}"
+  channel: "{{ dev.channel | replace('A', '') }}"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{ dev.name }}:PRESSURE"
+  alias: "{{iocprefix}}:{{ dev.name }}:PRES_RB"
+{%- endfor %}
+- type: TPG366.setpoints
   controller: PFEIFFER_CTRL_PORT
 {%- endif %}
 
