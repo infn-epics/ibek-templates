@@ -32,6 +32,15 @@ entities:
   name: "{{iocprefix}}:{{ dev.name }}:PRESSURE"
   alias: "{{iocprefix}}:{{ dev.name }}:PRES_RB"
 {%- endfor %}
+{%- set active_channels = devices | map(attribute='channel') | map('string') | map('replace', 'A', '') | list %}
+{%- for channel in ['1', '2', '3', '4', '5', '6'] %}
+{%- if channel not in active_channels %}
+- type: pfeiffer.tpg366.sensor
+  controller: PFEIFFER_CTRL_PORT
+  name: "{{iocprefix}}:CH{{ channel }}"
+  channel: "{{ channel }}"
+{%- endif %}
+{%- endfor %}
 - type: pfeiffer.tpg366.setpoints
   controller: PFEIFFER_CTRL_PORT
 {%- else %}{# TPG366 – standalone package (baltig.infn.it/lnf-da-control/TPG366) #}
