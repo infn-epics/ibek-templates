@@ -29,6 +29,8 @@ entities:
   name: "{{iocprefix}}:{{ dev.name }}"
   channel: "{{ dev.channel | replace('A', '') }}"
 {%- endfor %}
+- type: pfeiffer.tpg366.setpoints
+  controller: PFEIFFER_CTRL_PORT
 {%- endif %}
 
 
