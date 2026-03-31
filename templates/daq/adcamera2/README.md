@@ -27,7 +27,8 @@ Camera (Raw) ──┬─► [if roi_enable] ──► ROI ──┬─► [if p
                │
                ├─► PVA (always)
                ├─► StdArrays (always)
-               └─► [if stream_enable] ──► ffmpegStream (parallel, not in chain)
+               ├─► [if stream_enable]  ──► ffmpegStream  Stream1 (parallel, from raw camera)
+               └─► [if stream2_enable] ──► ffmpegStream  Stream2 (parallel, from last chain output)
 ```
 
 ### Data Flow Examples
@@ -81,7 +82,8 @@ Camera → TIFF1
 | `stats_enable` | Boolean | Enable NDStats (statistics) | false | Yes (3rd) |
 | `overlay_enable` | Boolean | Enable NDOverlay (graphics) | false | Yes (4th) |
 | `tiff_enable` | Boolean | Enable per-plugin TIFF writers | false | Parallel |
-| `stream_enable` | Boolean | Enable HTTP streaming | false | Parallel |
+| `stream_enable` | Boolean | Enable HTTP stream from raw camera | false | Parallel |
+| `stream2_enable` | Boolean | Enable HTTP stream from last chain output | false | Parallel |
 
 ### Switch Dependencies
 
@@ -98,6 +100,7 @@ Camera → TIFF1
 | Camera PVA | `{camera.name}.PVA` | `{camera.name}` | `:Pva1:` |
 | Camera StdArrays | `{camera.name}.NTD` | `{camera.name}` | `:image1:` |
 | Stream | `{camera.name}.STREAM` | `{camera.name}` | `:Stream1:` |
+| Stream2 | `{camera.name}.STREAM2` | `{current_source}` (last chain plugin) | `:Stream2:` |
 | ROI | `{camera.name}.ROI1` | `{current_source}` | `:Roi1:` |
 | ROI PVA | `{camera.name}.ROI.PVA` | `{camera.name}.ROI1` | `:Roi1:Pva1:` |
 | ROI TIFF | `{camera.name}.ROI.TIFF` | `{camera.name}.ROI1` | `:Roi1:TIFF:` |
@@ -316,10 +319,13 @@ stats_enable: true
 overlay_enable: true
 tiff_enable: true
 stream_enable: true
+stream2_enable: true
 ```
 
 **Chain**: `Camera → ROI → Proc → Stats → Overlay → TIFF1`
-**Parallel**: `Camera → Stream` (HTTP)
+**Parallel**:
+- `Camera → Stream1` (HTTP, raw)
+- `Overlay → Stream2` (HTTP, post-overlay)
 **TIFF Writers**:
 - `ROI.TIFF`
 - `PROC.TIFF`
@@ -330,6 +336,24 @@ stream_enable: true
 **PVA Publishers**: Camera, ROI, Proc, Stats, Overlay (5 total)
 
 ---
+
+### Overlay + Stream2 (processed HTTP stream)
+
+```yaml
+roi_enable: false
+proc_enable: false
+stats_enable: false
+overlay_enable: true
+tiff_enable: false
+stream_enable: false
+stream2_enable: true
+```
+
+**Chain**: `Camera → Overlay → TIFF1`
+**Parallel**: `Overlay → Stream2` (HTTP, with overlaid graphics)
+**Stream2 source**: Overlay (last chain plugin)
+
+**Use-case**: stream annotated images over HTTP without storing raw frames.
 
 ### Processing Without ROI
 

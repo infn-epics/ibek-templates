@@ -68,8 +68,8 @@ entities:
     NDARRAY_PORT: {{camera.name}}
     BUFFERS: {{camera.buffers | default(50)}}
     HTTP_PORT: 8082  
-    MAXH: 1200
-    MAXW: 1600
+    MAXH: {{camera.height | default(1200)}}
+    MAXW: {{camera.width | default(1600)}}
     MEMORY: 0
     NDARRAY_ADDR: 0
     BLOCK: 0
@@ -216,6 +216,29 @@ entities:
   {%- set current_source = camera.name ~ ".OVERLAY1" %}
   {%- set current_prefix = "Overlay1:" %}
   {% endif %}
+
+  {# Optional stream2 plugin (parallel, reads from last chain output) #}
+  {%- if stream2_enable %}
+  - type: ffmpegServer.ffmpegStream
+    PORT: {{camera.name}}.STREAM2
+    P: "{{iocprefix}}:{{camera.name}}"
+    R: ":Stream2:"
+    NDARRAY_PORT: {{current_source}}
+    BUFFERS: {{camera.buffers | default(50)}}
+    HTTP_PORT: 8083
+    MAXH: {{camera.height | default(1200)}}
+    MAXW: {{camera.width | default(1600)}}
+    MEMORY: 0
+    NDARRAY_ADDR: 0
+    BLOCK: 0
+    PRIORITY: 0
+    QUALITY: 100
+    QUEUE: 2
+    SCANRATE: I/O Intr
+    SETH: 0
+    SETW: 0
+    STACKSIZE: 0
+  {%- endif %}
 
   {# TIFF1: Always connects to the final active plugin in the chain #}
   - type: ADCore.NDFileTIFF

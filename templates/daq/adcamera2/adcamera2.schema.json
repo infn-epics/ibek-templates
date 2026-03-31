@@ -34,6 +34,10 @@
             "type": "boolean",
             "description": "Enable or disable statistics plugins."
         },
+        "stream2_enable": {
+            "type": "boolean",
+            "description": "Enable a second HTTP stream (ffmpegStream) connected to the last active plugin in the chain (after overlay if enabled)."
+        },
         "cameras": {
             "type": "array",
             "description": "List of cameras to configure.",
