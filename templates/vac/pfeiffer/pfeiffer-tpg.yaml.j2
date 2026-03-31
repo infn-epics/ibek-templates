@@ -1,10 +1,11 @@
 
 # yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
 ioc_name: {{iocname}}
-description:  Pfeiffer TPG Gauge Conntrollers TEMPLATE
+description: Pfeiffer TPG Gauge Controllers TEMPLATE
 
 entities:
 
+{%- if devtype == 'tpg300' or devtype == 'tpg500' %}
 - type: pfeiffer.{{devtype}}.controller
   name: PFEIFFER_CTRL_PORT
   IP: {{server}}
@@ -16,14 +17,27 @@ entities:
   name: "{{ t.name }}"
   channel: {{ t.channel }}
 {%- endfor %}
+{%- else %}{# tpg366 – one controller per VGC unit, one sensor entity per active channel #}
+- type: pfeiffer.tpg366.controller
+  name: PFEIFFER_CTRL_PORT
+  P: "{{iocprefix}}"
+  IP: {{server}}
+  TCPPORT: {{port}}
+{%- for dev in devices %}
+- type: pfeiffer.tpg366.sensor
+  controller: PFEIFFER_CTRL_PORT
+  name: "{{iocprefix}}:{{ dev.name }}"
+  channel: "{{ dev.channel | replace('A', '') }}"
+{%- endfor %}
+{%- endif %}
 
 
 {%- for dev in devices %}
 
 {%- for param in dev.aliases %}
 - type: epics.DbAlias
-  name: "{{iocprefix}}:{{iocroot}}:{{param.name}}"
-  alias: "{{iocprefix}}:{{iocroot}}:{{param.alias}}"
+  name: "{{iocprefix}}:{{dev.name}}:{{param.name}}"
+  alias: "{{iocprefix}}:{{dev.name}}:{{param.alias}}"
 {%- endfor %}
 {%- endfor %}
 
