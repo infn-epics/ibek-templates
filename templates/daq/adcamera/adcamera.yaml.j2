@@ -39,27 +39,6 @@ entities:
     camera: {{camera.name}}
   {%- endif %}
 
-  {%- if stream_enable %}
-  - type: ffmpegServer.ffmpegStream
-    PORT: {{camera.name}}.STREAM
-    P: "{{iocprefix}}:{{camera.name}}"
-    R: ":Stream1:"
-    NDARRAY_PORT: {{camera.name}}
-    BUFFERS: {{camera.buffers | default(50)}}
-    HTTP_PORT: 8082  
-    MAXH: {{camera.height | default(1024)}}
-    MAXW: {{camera.width | default(1280)}}
-    MEMORY: 0
-    NDARRAY_ADDR: 0
-    BLOCK: 0
-    PRIORITY: 0
-    QUALITY: 100
-    QUEUE: 2
-    SCANRATE: I/O Intr
-    SETH: 0
-    SETW: 0
-    STACKSIZE: 0
-  {%- endif %}
   {%- if roi_enable %}
   - type: ADCore.NDROI
     PORT: {{camera.name}}.ROI1
@@ -172,6 +151,27 @@ entities:
     R: ":Overlay1:TIFF1:"
     ENABLED: 1
   {%- endif %}
+  {%- if stream_enable %}
+  - type: ffmpegServer.ffmpegStream
+    PORT: {{camera.name}}.STREAM
+    P: "{{iocprefix}}:{{camera.name}}"
+    R: ":Stream1:"
+    NDARRAY_PORT: {{camera.name}}{% if overlay_enable %}.OVERLAY1{% endif %}
+    BUFFERS: {{camera.buffers | default(50)}}
+    HTTP_PORT: {{camera.stream_port | default(8080)}}  
+    MAXH: {{camera.height | default(1024)}}
+    MAXW: {{camera.width | default(1280)}}
+    MEMORY: 0
+    NDARRAY_ADDR: 0
+    BLOCK: 0
+    PRIORITY: 0
+    QUALITY: 100
+    QUEUE: 2
+    SCANRATE: I/O Intr
+    SETH: 0
+    SETW: 0
+    STACKSIZE: 0
+  {%- endif %}
   - type: ADCore.NDPvxsPlugin
     PORT: {{camera.name}}.PVA
     PVNAME: "{{iocprefix}}:{{camera.name}}:PVA:OUTPUT"
@@ -267,13 +267,16 @@ entities:
       dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:TIFF1:FileTemplate","%s%s_overlay_%3.3d.tiff")
       dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:TIFF1:FileName","{{camera.name}}")
       dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:EnableCallbacks","1")
-      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:Use","1")
-      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:Shape","1")
-      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:Red","255")
-      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:Green","255")
-      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:Blue","255")
-      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:WidthX","2")
-      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:WidthY","2")
+
+      {%- for overlay in range(1, 9) %}
+      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:{{overlay}}:Use","1")
+      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:{{overlay}}:Shape","1")
+      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:{{overlay}}:Red","255")
+      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:{{overlay}}:Green","255")
+      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:{{overlay}}:Blue","255")
+      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:{{overlay}}:WidthX","2")
+      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:{{overlay}}:WidthY","2")
+      {%- endfor %}
       {% endif %}
 
       ## common initializations

@@ -67,7 +67,7 @@ entities:
     R: ":Stream1:"
     NDARRAY_PORT: {{camera.name}}
     BUFFERS: {{camera.buffers | default(50)}}
-    HTTP_PORT: 8082  
+    HTTP_PORT: {{camera.stream_port | default(8080)}}  
     MAXH: {{camera.height | default(1200)}}
     MAXW: {{camera.width | default(1600)}}
     MEMORY: 0
@@ -225,7 +225,7 @@ entities:
     R: ":Stream2:"
     NDARRAY_PORT: {{current_source}}
     BUFFERS: {{camera.buffers | default(50)}}
-    HTTP_PORT: 8083
+    HTTP_PORT: {{camera.stream_port | default(8081)}}
     MAXH: {{camera.height | default(1200)}}
     MAXW: {{camera.width | default(1600)}}
     MEMORY: 0
@@ -343,13 +343,17 @@ entities:
       
       ## Overlay graphics settings
       dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:EnableCallbacks","1")
-      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:Use","1")
-      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:Shape","1")
-      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:Red","255")
-      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:Green","255")
-      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:Blue","255")
-      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:WidthX","2")
-      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:WidthY","2")
+      
+      
+      {%- for overlay in range(1, 9) %}
+      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:{{overlay}}:Use","1")
+      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:{{overlay}}:Shape","1")
+      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:{{overlay}}:Red","255")
+      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:{{overlay}}:Green","255")
+      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:{{overlay}}:Blue","255")
+      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:{{overlay}}:WidthX","2")
+      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:{{overlay}}:WidthY","2")
+      {%- endfor %}
       {%- endif %}
       
       {%- endif %}

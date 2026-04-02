@@ -68,10 +68,17 @@ The template provides five main boolean switches to control plugin chains:
 ### Stream Plugin Chain (stream_enable)
 
 ```
+overlay_enable=false:
 Camera ──┬─► ffmpegServer.ffmpegStream
          │   PORT: {camera.name}.STREAM
          │   HTTP_PORT: 8082
          │   R: :Stream1:
+
+overlay_enable=true:
+Camera ──┬─► NDOverlay (OVERLAY1) ──► ffmpegServer.ffmpegStream
+         │                          PORT: {camera.name}.STREAM
+         │                          HTTP_PORT: 8082
+         │                          R: :Stream1:
 ```
 
 **When `stream_enable=true`:**
@@ -80,6 +87,7 @@ Camera ──┬─► ffmpegServer.ffmpegStream
   - Accessible via HTTP on port 8082
   - Max resolution: 1600x1200 (configurable)
   - JPEG quality: 100
+  - Uses `NDARRAY_PORT={camera.name}.OVERLAY1` when `overlay_enable=true`, otherwise the raw camera port
 
 ---
 
