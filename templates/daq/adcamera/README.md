@@ -25,6 +25,7 @@ The template provides five main boolean switches to control plugin chains:
 | `proc_enable` | Boolean | Enable NDProcess plugin for image processing | User-defined |
 | `overlay_enable` | Boolean | Enable NDOverlay for graphics overlay | User-defined |
 | `stats_enable` | Boolean | Enable NDStats plugins at various points | User-defined |
+| `tiff_enable` | Boolean | Enable NDFileTIFF plugins and related startup initialization | `true` when omitted |
 
 ### Additional Configuration Switches
 
@@ -58,9 +59,9 @@ The template provides five main boolean switches to control plugin chains:
 **Always Created Plugins:**
 - **NDPvxsPlugin** (PORT: `.PVA`) - PVAccess server publishing camera output
 - **NDStdArrays** (PORT: `.NTD`) - Standard array plugin for waveform PVs
-- **NDFileTIFF** (PORT: `.TIFF`) - TIFF file writer
 
 **Conditionally Created:**
+- **NDFileTIFF** (PORT: `.TIFF`) - TIFF file writer [requires `tiff_enable=true` or omitted]
 - **NDStats** (PORT: `.STATS`) - Statistics computation [requires `stats_enable=true`]
 
 ---
@@ -107,8 +108,8 @@ Camera ──┬─► NDROI (ROI1)
 **When `roi_enable=true`:**
 - **NDROI** (PORT: `.ROI1`) - Region of interest selector
 - **NDPvxsPlugin** (PORT: `.PVA3`) - PVAccess for ROI output
-- **NDFileTIFF** (PORT: `.TIFFREAD`) - TIFF reader/writer ⚠️ PV prefix shows `:Proc1:TIFF:` (appears to be naming inconsistency)
-- **NDFileTIFF** (PORT: `.TIFF3`) - TIFF writer for ROI
+- **NDFileTIFF** (PORT: `.TIFFREAD`) - TIFF reader/writer [requires `tiff_enable=true` or omitted] ⚠️ PV prefix shows `:Proc1:TIFF:` (appears to be naming inconsistency)
+- **NDFileTIFF** (PORT: `.TIFF3`) - TIFF writer for ROI [requires `tiff_enable=true` or omitted]
 - **NDStats** (PORT: `.STATS3`) - Statistics on ROI [requires `stats_enable=true`]
 
 **File Output Pattern:** `{filename}_roi_{number}.tiff`
@@ -117,10 +118,10 @@ Camera ──┬─► NDROI (ROI1)
 
 ### Process Plugin Chain (proc_enable)
 
-⚠️ **Important Dependency:** `proc_enable` requires `roi_enable=true` because NDProcess reads from `ROI1`
+When ROI is disabled, `NDProcess` now reads directly from the base camera port.
 
 ```
-ROI1 ──► NDProcess (PROC)
+ROI1 or Camera ──► NDProcess (PROC)
          PORT: {camera.name}.PROC
          ├─► NDPvxsPlugin (PVA2)    ─► :Proc1:Pva1: → PROC:OUTPUT
          ├─► NDStdArrays (NTD2)     ─► :image2:
@@ -128,12 +129,12 @@ ROI1 ──► NDProcess (PROC)
          └─► NDStats (STATS2) [if stats_enable] ─► :Proc1:Stats1:
 ```
 
-**When `proc_enable=true` AND `roi_enable=true`:**
+**When `proc_enable=true`:**
 - **NDProcess** (PORT: `.PROC`) - Image processing (filters, transforms, arithmetic)
-  - Input source: `{camera.name}.ROI1`
+  - Input source: `{camera.name}.ROI1` when `roi_enable=true`, otherwise `{camera.name}`
 - **NDPvxsPlugin** (PORT: `.PVA2`) - PVAccess for processed output
 - **NDStdArrays** (PORT: `.NTD2`) - Array plugin for processed images
-- **NDFileTIFF** (PORT: `.TIFF2`) - TIFF writer for processed images
+- **NDFileTIFF** (PORT: `.TIFF2`) - TIFF writer for processed images [requires `tiff_enable=true` or omitted]
 - **NDStats** (PORT: `.STATS2`) - Statistics on processed images [requires `stats_enable=true`]
 
 **File Output Pattern:** `{camera.name}_proc_{number}.tiff`
@@ -156,7 +157,7 @@ Camera ──► NDOverlay (OVERLAY1)
   - Configurable RGB colors
   - Default: White cross (255,255,255), 2x2 pixels
 - **NDPvxsPlugin** (PORT: `.PVA4`) - PVAccess for overlay output
-- **NDFileTIFF** (PORT: `.TIFF4`) - TIFF writer for overlay images
+- **NDFileTIFF** (PORT: `.TIFF4`) - TIFF writer for overlay images [requires `tiff_enable=true` or omitted]
 
 **File Output Pattern:** `{camera.name}_overlay_{number}.tiff`
 
@@ -179,19 +180,19 @@ Camera ──► NDOverlay (OVERLAY1)
     │
     ├─[roi_enable]─────► NDROI (.ROI1)
     │                    ├─► NDPvxsPlugin (.PVA3) ──► ROI1:OUTPUT
-    │                    ├─► NDFileTIFF (.TIFFREAD)
-    │                    ├─► NDFileTIFF (.TIFF3)  ──► roi TIFFs
+    │                    ├─[tiff_enable]─► NDFileTIFF (.TIFFREAD)
+    │                    ├─[tiff_enable]─► NDFileTIFF (.TIFF3)  ──► roi TIFFs
     │                    ├─[stats_enable]─► NDStats (.STATS3)
     │                    │
     │                    └─[proc_enable]─► NDProcess (.PROC)
     │                                       ├─► NDPvxsPlugin (.PVA2) ──► PROC:OUTPUT
     │                                       ├─► NDStdArrays (.NTD2)
-    │                                       ├─► NDFileTIFF (.TIFF2)  ──► proc TIFFs
+    │                                       ├─[tiff_enable]─► NDFileTIFF (.TIFF2)  ──► proc TIFFs
     │                                       └─[stats_enable]─► NDStats (.STATS2)
     │
     ├─► NDPvxsPlugin (.PVA) ────────────► PVA:OUTPUT (always)
     ├─► NDStdArrays (.NTD) ─────────────► :image1: (always)
-    ├─► NDFileTIFF (.TIFF) ─────────────► base TIFFs (always)
+    ├─[tiff_enable]─► NDFileTIFF (.TIFF) ─► base TIFFs
     └─[stats_enable]─► NDStats (.STATS) ─► :Stats1:
 ```
 
@@ -241,7 +242,7 @@ Camera ──► NDOverlay (OVERLAY1)
 - `{iocprefix}:{camera.name}:Roi1:Stats1:` - ROI statistics (if stats_enable)
 - `{iocprefix}:{camera.name}:Roi1:Pva1:` - ROI PVA plugin
 
-### Process PVs (proc_enable + roi_enable)
+### Process PVs (proc_enable)
 
 - `{iocprefix}:{camera.name}:Proc1:` - Process controls (filters, operations)
 - `{iocprefix}:{camera.name}:image2:` - Processed image waveform
@@ -276,10 +277,8 @@ All TIFF writers are initialized with post-startup commands:
 | `stream_enable` | None | Independent |
 | `roi_enable` | None | Independent |
 | `overlay_enable` | None | Independent |
-| `proc_enable` | **`roi_enable=true`** | ⚠️ PROC reads from ROI1 |
+| `proc_enable` | None | Uses ROI output when available, otherwise raw camera |
 | `stats_enable` | None | Adds stats at multiple points |
-
-**Critical:** If `proc_enable=true` but `roi_enable=false`, the NDProcess plugin will have no input source and will fail!
 
 ## Configuration Examples
 
@@ -291,9 +290,10 @@ roi_enable: false
 proc_enable: false
 overlay_enable: false
 stats_enable: false
+tiff_enable: false
 ```
 
-**Result:** Camera + PVA + StdArrays + TIFF only
+**Result:** Camera + PVA + StdArrays only
 
 ### Full Processing Pipeline
 
@@ -303,6 +303,7 @@ roi_enable: true       # Enable ROI
 proc_enable: true      # Enable image processing (depends on ROI)
 overlay_enable: true   # Enable graphics overlay
 stats_enable: true     # Enable statistics at all levels
+tiff_enable: true      # Enable TIFF writers
 ```
 
 **Result:** All plugins active, maximum flexibility
@@ -315,6 +316,7 @@ roi_enable: true
 proc_enable: false
 overlay_enable: false
 stats_enable: true
+tiff_enable: true
 ```
 
 **Result:** Camera + ROI with stats + Base stats + TIFF outputs
@@ -412,7 +414,7 @@ The template loops over `devices`, so multiple cameras can be configured in one 
 ## Best Practices
 
 1. **Start Simple**: Begin with base camera only, then add plugins incrementally
-2. **Test Dependencies**: Always test `proc_enable` with `roi_enable=true`
+2. **Test Processing Paths**: Verify whether `Proc1` should consume ROI output or the raw camera in your beamline configuration
 3. **Monitor Memory**: Large arrays require proper `EPICS_CA_MAX_ARRAY_BYTES` configuration
 4. **Use Stats Wisely**: Enable statistics only where needed to reduce CPU load
 5. **File Management**: Ensure `data_dir` has sufficient space for TIFF files

@@ -15,6 +15,7 @@ entities:
   {%- elif "Basler-a2A2600" in camera.devtype %}
     {%- set camera_elements = 5616000 %}
   {%- endif %}
+  {%- set proc_input_port = camera.name ~ ".ROI1" if roi_enable else camera.name %}
   
   {%- if camera.devtype == "camerasim" or devtype == "camerasim" %}
   - type: ADSimDetector.simDetector
@@ -65,6 +66,7 @@ entities:
     ENABLED: 1
   {%- endif %}
 
+  {%- if tiff_enable | default(True) %}
   - type: ADCore.NDFileTIFF
     PORT: {{camera.name}}.TIFFREAD
     NDARRAY_PORT: {{camera.name}}.ROI1
@@ -79,12 +81,13 @@ entities:
     R: ":Roi1:TIFF1:"
     ENABLED: 1
   {%- endif %}
+  {%- endif %}
   {%- if proc_enable %}
   - type: ADCore.NDProcess
     PORT: {{camera.name}}.PROC
     P: "{{iocprefix}}:{{camera.name}}"
     R: ":Proc1:"
-    NDARRAY_PORT: {{camera.name}}.ROI1
+    NDARRAY_PORT: {{proc_input_port}}
     ENABLED: 1
 
   - type: ADCore.NDPvxsPlugin
@@ -120,12 +123,14 @@ entities:
     ENABLED: 1
   {%-endif %}
 
+  {%- if tiff_enable | default(True) %}
   - type: ADCore.NDFileTIFF
     PORT: {{camera.name}}.TIFF2
     NDARRAY_PORT: {{camera.name}}.PROC
     P: "{{iocprefix}}:{{camera.name}}"
     R: ":Proc1:TIFF1:"
     ENABLED: 1
+  {%- endif %}
   {%- endif %}
 
   {%- if overlay_enable %}
@@ -144,12 +149,14 @@ entities:
     NDARRAY_PORT: {{camera.name}}.OVERLAY1
     ENABLED: 1
   
+  {%- if tiff_enable | default(True) %}
   - type: ADCore.NDFileTIFF
     PORT: {{camera.name}}.TIFF4
     NDARRAY_PORT: {{camera.name}}.OVERLAY1
     P: "{{iocprefix}}:{{camera.name}}"
     R: ":Overlay1:TIFF1:"
     ENABLED: 1
+  {%- endif %}
   {%- endif %}
   {%- if stream_enable %}
   - type: ffmpegServer.ffmpegStream
@@ -205,12 +212,14 @@ entities:
     ENABLED: 1
 {%- endif %}
 
+  {%- if tiff_enable | default(True) %}
   - type: ADCore.NDFileTIFF
     PORT: {{camera.name}}.TIFF
     NDARRAY_PORT: {{camera.name}}
     P: "{{iocprefix}}:{{camera.name}}"
     R: ":TIFF1:"
     ENABLED: 1
+  {%- endif %}
 
 {%- endfor %}
 
@@ -237,6 +246,7 @@ entities:
 
       ############## camera {{camera.name}} initializations
 
+      {%- if tiff_enable | default(True) %}
       dbpf("{{iocprefix}}:{{camera.name}}:TIFF1:FilePath", "{{data_dir}}")
       dbpf("{{iocprefix}}:{{camera.name}}:TIFF1:FileWriteMode",2)
       dbpf("{{iocprefix}}:{{camera.name}}:TIFF1:FileName","camera")
@@ -266,6 +276,9 @@ entities:
       dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:TIFF1:FileWriteMode",2)
       dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:TIFF1:FileTemplate","%s%s_overlay_%3.3d.tiff")
       dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:TIFF1:FileName","{{camera.name}}")
+      {%- endif %}
+      {%- endif %}
+      {%- if overlay_enable %}
       dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:EnableCallbacks","1")
 
       {%- for overlay in range(1, 9) %}
