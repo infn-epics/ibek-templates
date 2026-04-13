@@ -8,14 +8,14 @@ entities:
 
 {%- if devtype == "xgs600" %}
 - type: agilent.{{devtype}}.controller
-  name: "AGILENT001-{{server}}"
+  name: "AG-{{server}}"
   IP: {{server}}
   TCPPORT: {{port}}
   P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}"
 {%- for t in devices %}
 {%- if t.devtype == "img" %}
 - type: agilent.xgs600.imgsensor
-  controller: "AGILENT001-{{server}}"
+  controller: "AG-{{server}}"
   P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}:{{ t.name }}"
   sensor: {{ t.sensor }}
   tcauto: {{ t.tcauto }}
@@ -25,7 +25,7 @@ entities:
 {%- endif %}
 {%- if t.devtype == "cnv" %}
 - type: agilent.{{devtype}}.cnvsensor
-  controller: "AGILENT001-{{server}}"
+  controller: "AG-{{server}}"
   P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}:{{ t.name }}"
   sensor: {{ t.sensor }}
 - type: epics.DbAlias
@@ -34,7 +34,7 @@ entities:
 {%- endif %}
 {%- if t.devtype == "setpoint" %}
 - type: agilent.{{devtype}}.setpoint
-  controller: "AGILENT001-{{server}}"
+  controller: "AG-{{server}}"
   P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}:{{ t.name }}"
   sensor: {{ t.sensor }}
   number: {{ t.number }}
@@ -44,13 +44,13 @@ entities:
 ## pumps
 {%- else %}
 - type: agilent.{{devtype}}.controller
-  name: "AGILENT_PUMP-{{server}}"
+  name: "AP-{{server}}"
   IP: {{server}}
   TCPPORT: {{port}}
   P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}"
 {%- for t in devices %}
 - type: agilent.{{devtype}}.pump
-  controller: "AGILENT_PUMP-{{server}}"
+  controller: "AP-{{server}}"
   name: "{{ t.name }}"
   channel: {{ t.channel }}
   interlock: {{ t.interlock if t.interlock is defined else 0 }}
