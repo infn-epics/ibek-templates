@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+ioc_name: {{iocname}}
+description: Varian MidiVac ion pump controller TEMPLATE
+
+entities:
+- type: midivac.controller
+  name: MIDIVAC_CTRL
+  P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}"
+  R: ":"
+  IP: {{server}}
+  TCPPORT: {{port if port is defined else 4001}}
+  ASYNPRIO: {{asynprio if asynprio is defined else 0}}
+  AUTOCONNECT: {{autoconnect if autoconnect is defined else 0}}
+  NOPRECESSESOS: {{noprecesseos if noprecesseos is defined else 0}}
+  ECHO_OFF: {{echo_off if echo_off is defined else true}}
+
+- type: epics.PostStartupCommand
+  command: |
+  {%- if iocinit is defined %}
+  {%- for param in iocinit %}
+  dbpf ("{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- endif %}
+  {%- if iocexit %}
+      dbl
+      exit
+  {%- else %}
+      dbl("*") > {{config_dir}}/pvlist.txt
+      dbl
+  {%- endif %}
