@@ -3,6 +3,20 @@ ioc_name: {{iocname}}
 description: Varian MidiVac ion pump controller TEMPLATE
 
 entities:
+{%- if devices is defined and devices %}
+{%- for dev in devices %}
+- type: midivac.controller
+  name: "MIDIVAC_{{ dev.name }}"
+  P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}:"
+  R: "{{ dev.name }}"
+  IP: {{dev.server if dev.server is defined else server}}
+  TCPPORT: {{dev.port if dev.port is defined else (port if port is defined else 4001)}}
+  ASYNPRIO: {{dev.asynprio if dev.asynprio is defined else (asynprio if asynprio is defined else 0)}}
+  AUTOCONNECT: {{dev.autoconnect if dev.autoconnect is defined else (autoconnect if autoconnect is defined else 0)}}
+  NOPRECESSESOS: {{dev.noprecesseos if dev.noprecesseos is defined else (noprecesseos if noprecesseos is defined else 0)}}
+  ECHO_OFF: {{dev.echo_off if dev.echo_off is defined else (echo_off if echo_off is defined else true)}}
+{%- endfor %}
+{%- else %}
 - type: midivac.controller
   name: MIDIVAC_CTRL
   P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}"
@@ -13,10 +27,17 @@ entities:
   AUTOCONNECT: {{autoconnect if autoconnect is defined else 0}}
   NOPRECESSESOS: {{noprecesseos if noprecesseos is defined else 0}}
   ECHO_OFF: {{echo_off if echo_off is defined else true}}
+{%- endif %}
 
 - type: epics.PostStartupCommand
   command: |
-  {%- if iocinit is defined %}
+  {%- if devices is defined and devices %}
+  {%- for dev in devices %}
+  {%- for param in dev.iocinit %}
+  dbpf ("{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}:{{dev.name}}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- endfor %}
+  {%- elif iocinit is defined %}
   {%- for param in iocinit %}
   dbpf ("{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}:{{param.name}}","{{param.value}}")
   {%- endfor %}
