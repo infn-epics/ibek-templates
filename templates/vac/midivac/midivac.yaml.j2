@@ -8,7 +8,7 @@ entities:
 - type: midivac.controller
   name: "MIDIVAC_{{ dev.name }}"
   P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}:"
-  R: "{{ dev.name }}"
+  R: "{{ dev.name }}:"
   IP: {{dev.server if dev.server is defined else server}}
   TCPPORT: {{dev.port if dev.port is defined else (port if port is defined else 4001)}}
   ASYNPRIO: {{dev.asynprio if dev.asynprio is defined else (asynprio if asynprio is defined else 0)}}
