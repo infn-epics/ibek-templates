@@ -9,21 +9,21 @@ description: Bergoz BCM-RF-E Beam Charge Monitor
 #   server: 192.168.1.100
 #   port: 4001            # optional, default 4001
 #   iocprefix: BCM:RF:01
-#   scan: "1 second"      # optional
+#   scan: ".2 second"    # optional, default from IOC startup
 #
 # Direct serial example:
 #   type: serial
 #   device: /dev/ttyACM0  # optional, default /dev/ttyACM0
-#   baud: 9600             # optional, default 9600
+#   baud: 9600            # optional, default 9600
 #   iocprefix: BCM:RF:01
-#   scan: "1 second"      # optional
+#   scan: ".2 second"    # optional, default from IOC startup
 #
 # Optional aliases:
 #   aliases:
 #     - name: CHARGE
 #       alias: CHARGE_RB
 
-{%- set _scan  = scan  | default("1 second", true) %}
+{%- set _scan  = scan  | default(".2 second", true) %}
 {%- set _type  = type  | default("ip", true) %}
 {%- set _pname = iocname | replace("-", "_") | replace(":", "_") | upper %}
 
