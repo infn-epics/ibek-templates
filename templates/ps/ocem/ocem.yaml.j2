@@ -16,6 +16,39 @@ entities:
 {%- endfor %}
 {%- endif %}
 
+{% if devtype == "modbusps4chan" %}
+{% set ways = ["WAYA", "WAYB", "WAYC", "WAYD"] %}
+{%- for alim in devices %}
+  - type: ocem.modbusps4chan
+    P: "{{iocprefix}}" 
+    R: "{{alim.name}}"
+    IP: {{alim.ip}}
+    IMAX: {{alim.imax | default(30)}}
+    VMAX: {{alim.vmax | default(16)}}
+    TCPPORT: {{alim.port | default(502)}}
+{%- for chn in alim.channels %}
+{%- set way = ways[loop.index0] %}
+
+  - type: epics.DbAlias
+    name: "{{iocprefix}}:{{alim.name}}:{{way}}:CURRENT_RB"
+    alias: "{{iocprefix}}:{{alim.name}}:{{chn.channel_name}}:CURRENT_RB"
+  - type: epics.DbAlias
+    name: "{{iocprefix}}:{{alim.name}}:{{way}}:CURRENT_SP"
+    alias: "{{iocprefix}}:{{alim.name}}:{{chn.channel_name}}:CURRENT_SP"
+  - type: epics.DbAlias
+    name: "{{iocprefix}}:{{alim.name}}:{{way}}:STATE_RB"
+    alias: "{{iocprefix}}:{{alim.name}}:{{chn.channel_name}}:STATE_RB"
+  - type: epics.DbAlias
+    name: "{{iocprefix}}:{{alim.name}}:{{way}}:STATE_RB"
+    alias: "{{iocprefix}}:{{alim.name}}:{{chn.channel_name}}:STATE_RB"    
+{%- endfor %}
+
+
+{%- endfor %}
+{%- endif %}
+
+
+
 {% if devtype == "E642" %}
 
   # Controller entity
