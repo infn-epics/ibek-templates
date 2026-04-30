@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+ioc_name: {{iocname}}
+description: DANFYSIK HALL PROBES TEMPLATE
+
+entities:
+{%- for dev in devices %}
+- type: Danfysik_HallProbes.hallprobe
+  NAME: "{{dev.name}}_PORT"
+  P: "{{iocprefix}}:"
+  R: "{{dev.name}}:"
+  IP: "{{dev.ip}}"
+  TCPPORT: {{dev.port | default(4002)}}
+{%- endfor %}
+
+- type: epics.PostStartupCommand
+  command: |
+  {%- if iocexit %}
+    dbl
+    exit
+  {%- else %}
+    dbl("*") > {{config_dir | default('/epics/iocs')}}/pvlist.txt
+    dbl
+  {%- endif %}
