@@ -28,7 +28,7 @@ entities:
     TCPPORT: {{alim.port | default(502)}}
 {%- for chn in alim.channels %}
 {%- set way = ways[loop.index0] %}
-
+{% if chn.channel_name %}
   - type: epics.DbAlias
     name: "{{iocprefix}}:{{alim.name}}:{{way}}:CURRENT_RB"
     alias: "{{iocprefix}}:{{alim.name}}:{{chn.channel_name}}:CURRENT_RB"
@@ -36,11 +36,12 @@ entities:
     name: "{{iocprefix}}:{{alim.name}}:{{way}}:CURRENT_SP"
     alias: "{{iocprefix}}:{{alim.name}}:{{chn.channel_name}}:CURRENT_SP"
   - type: epics.DbAlias
-    name: "{{iocprefix}}:{{alim.name}}:{{way}}:STATE_RB"
-    alias: "{{iocprefix}}:{{alim.name}}:{{chn.channel_name}}:STATE_RB"
+    name: "{{iocprefix}}:{{alim.name}}:{{way}}:STATE_SP"
+    alias: "{{iocprefix}}:{{alim.name}}:{{chn.channel_name}}:STATE_SP"
   - type: epics.DbAlias
     name: "{{iocprefix}}:{{alim.name}}:{{way}}:STATE_RB"
-    alias: "{{iocprefix}}:{{alim.name}}:{{chn.channel_name}}:STATE_RB"    
+    alias: "{{iocprefix}}:{{alim.name}}:{{chn.channel_name}}:STATE_RB"
+{%- endif %}    
 {%- endfor %}
 
 
