@@ -11,6 +11,9 @@ entities:
   SLAVE_ADDR: {{modulator.SLAVE_ADDR | default(SLAVE_ADDR | default(1))}}
   IP: {{modulator.server | default(server)}}
   TCPPORT: {{modulator.port | default(port | default(502))}}
+  POLLING: {{modulator.POLLING | default(POLLING | default(500))}}
+  POLLING_FAST: {{modulator.POLLING_FAST | default(POLLING_FAST | default(100))}}
+  WD_POLLING: {{modulator.WD_POLLING | default(WD_POLLING | default(250))}}
 
 {%- endfor %}
 

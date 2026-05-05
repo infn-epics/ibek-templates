@@ -39,6 +39,21 @@
       "description": "Default Modbus slave address (can be overridden per device).",
       "default": 1
     },
+    "POLLING": {
+      "type": "integer",
+      "description": "Default standard polling interval in ms (can be overridden per device).",
+      "default": 500
+    },
+    "POLLING_FAST": {
+      "type": "integer",
+      "description": "Default fast polling interval in ms (can be overridden per device).",
+      "default": 100
+    },
+    "WD_POLLING": {
+      "type": "integer",
+      "description": "Default watchdog polling interval in ms (can be overridden per device).",
+      "default": 250
+    },
     "devices": {
       "type": "array",
       "description": "Array of Scandinova K400 modulators to configure.",
@@ -62,6 +77,21 @@
             "type": "integer",
             "description": "Modbus TCP port for this device",
             "default": 502
+          },
+          "POLLING": {
+            "type": "integer",
+            "description": "Standard polling interval in ms",
+            "default": 500
+          },
+          "POLLING_FAST": {
+            "type": "integer",
+            "description": "Fast polling interval in ms",
+            "default": 100
+          },
+          "WD_POLLING": {
+            "type": "integer",
+            "description": "Watchdog polling interval in ms",
+            "default": 250
           },
           "aliases": {
             "type": "array",
