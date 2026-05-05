@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "$id": "https://github.com/infn-epics/ibek-templates/releases/download/v1/pfeiffer-hiscroll6.schema.json",
+  "allOf": [
+    {
+      "$ref": "../../schemas/ioc.schema.json"
+    }
+  ],
+  "properties": {
+    "template": {
+      "const": "pfeiffer-hiscroll6",
+      "description": "The template type for Pfeiffer HiScroll 6 pump startup."
+    },
+    "devtype": {
+      "const": "pfeiffer-hiscroll6",
+      "description": "Device type name used by the IBEK support module."
+    },
+    "devgroup": {
+      "const": "vac",
+      "description": "Device group classification."
+    },
+    "version": {
+      "type": "string",
+      "description": "IOC version string for iocAdmin."
+    },
+    "server": {
+      "type": "string",
+      "description": "Default IP address for devices (can be overridden per device).",
+      "default": "127.0.0.1"
+    },
+    "port": {
+      "type": "integer",
+      "description": "Default TCP port for devices (can be overridden per device).",
+      "default": 4001
+    },
+    "devices": {
+      "type": "array",
+      "description": "Array of Pfeiffer HiScroll 6 pump devices to configure.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Identifier for the device, used as asyn port name (e.g. 'hiscroll-01')."
+          },
+          "server": {
+            "type": "string",
+            "description": "IP address or hostname of the TCP/serial converter for this device."
+          },
+          "port": {
+            "type": "integer",
+            "description": "TCP port of the serial converter for this device.",
+            "default": 4001
+          },
+          "addr": {
+            "type": "string",
+            "description": "Pfeiffer serial address as 3-digit string (e.g. '002').",
+            "default": "002"
+          },
+          "aliases": {
+            "type": "array",
+            "description": "List of PV aliases for this device.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string", "description": "PV name suffix." },
+                "alias": { "type": "string", "description": "Alias target." }
+              },
+              "required": ["name", "alias"]
+            }
+          },
+          "iocinit": {
+            "type": "array",
+            "description": "List of initial setpoints for this device.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string", "description": "PV name suffix." },
+                "value": { "type": ["string", "number"], "description": "Initial value." }
+              },
+              "required": ["name", "value"]
+            }
+          }
+        },
+        "required": ["name"]
+      },
+      "minItems": 1
+    }
+  },
+  "required": ["iocprefix", "template", "devices"]
+}

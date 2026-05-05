@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+ioc_name: {{iocname}}
+description: Pfeiffer HiScroll 6 Pump Template
+
+entities:
+
+{%- for pump in devices %}
+- type: pfeiffer-hiscroll6.pump
+  name: "{{pump.name}}"
+  P: "{{iocprefix}}:{{pump.name}}"
+  ADDR: "{{pump.addr | default('002')}}"
+  IP: {{pump.server | default(server)}}
+  TCPPORT: {{pump.port | default(port | default(4001))}}
+
+{%- endfor %}
+
+
+{%- if aliases is defined %}
+- type: epics.StartupCommand
+  command: |
+  {%- for param in aliases %}
+    alias("{{iocprefix}}:{{param.name}}","{{param.alias}}")
+  {%- endfor %}
+{%- endif %}
+
+{%- for pump in devices %}
+{%- if pump.aliases is defined %}
+- type: epics.StartupCommand
+  command: |
+  {%- for param in pump.aliases %}
+    alias("{{iocprefix}}:{{pump.name}}:{{param.name}}","{{param.alias}}")
+  {%- endfor %}
+{%- endif %}
+{%- endfor %}
+
+- type: epics.StartupCommand
+  command: |
+    dbLoadRecords("config/epik8s-version.db","")
+
+- type: epics.PostStartupCommand
+  command: |
+  {%- if iocinit is defined %}
+  {%- for param in iocinit %}
+    dbpf ("{{iocprefix}}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- endif %}
+  {%- for pump in devices %}
+  {%- if pump.iocinit is defined %}
+  {%- for param in pump.iocinit %}
+    dbpf ("{{iocprefix}}:{{pump.name}}:{{param.name}}","{{param.value}}")
+  {%- endfor %}
+  {%- endif %}
+  {%- endfor %}
+  {%- if iocexit %}
+    dbl
+    exit
+  {%- else %}
+    dbl("*") > {{config_dir | default('/epics/iocs')}}/pvlist.txt
+    dbl
+  {%- endif %}

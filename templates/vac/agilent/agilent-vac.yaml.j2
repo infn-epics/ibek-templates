@@ -42,6 +42,20 @@ entities:
 {%- endfor %}
 
 ## pumps
+{%- elif devtype == "twistorr305" %}
+- type: agilent.twistorr305.controller
+  name: "AT-{{server}}"
+  IP: {{server}}
+  TCPPORT: {{port if port is defined else 4005}}
+  P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}"
+{%- for t in devices %}
+- type: agilent.twistorr305.pump
+  controller: "AT-{{server}}"
+  name: "{{ t.name }}"
+  addr: "{{ t.addr if t.addr is defined else '0x80' }}"
+{%- endfor %}
+
+## pumps
 {%- else %}
 - type: agilent.{{devtype}}.controller
   name: "AP-{{server}}"

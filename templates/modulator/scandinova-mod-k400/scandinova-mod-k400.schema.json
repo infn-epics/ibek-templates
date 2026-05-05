@@ -1,0 +1,124 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "$id": "https://github.com/infn-epics/ibek-templates/releases/download/v1/scandinova-mod-k400.schema.json",
+  "allOf": [
+    {
+      "$ref": "../../schemas/ioc.schema.json"
+    }
+  ],
+  "properties": {
+    "template": {
+      "const": "scandinova-mod-k400",
+      "description": "The template type for Scandinova Modulator K400 startup."
+    },
+    "devtype": {
+      "const": "scandinova-mod-k400",
+      "description": "Device type name used by the IBEK support module."
+    },
+    "devgroup": {
+      "const": "modulator",
+      "description": "Device group classification."
+    },
+    "version": {
+      "type": "string",
+      "description": "IOC version string for iocAdmin."
+    },
+    "server": {
+      "type": "string",
+      "description": "Default IP address for devices (can be overridden per device).",
+      "default": "127.0.0.1"
+    },
+    "port": {
+      "type": "integer",
+      "description": "Default Modbus TCP port (can be overridden per device).",
+      "default": 502
+    },
+    "SLAVE_ADDR": {
+      "type": "integer",
+      "description": "Default Modbus slave address (can be overridden per device).",
+      "default": 1
+    },
+    "devices": {
+      "type": "array",
+      "description": "Array of Scandinova K400 modulators to configure.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Identifier for the device (e.g. '1', '2')."
+          },
+          "server": {
+            "type": "string",
+            "description": "IP address or hostname for this device"
+          },
+          "SLAVE_ADDR": {
+            "type": "integer",
+            "description": "Modbus slave address",
+            "default": 1
+          },
+          "port": {
+            "type": "integer",
+            "description": "Modbus TCP port for this device",
+            "default": 502
+          },
+          "aliases": {
+            "type": "array",
+            "description": "List of aliases for this device",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "PV name suffix"
+                },
+                "alias": {
+                  "type": "string",
+                  "description": "Alias name"
+                }
+              },
+              "required": [
+                "name",
+                "alias"
+              ]
+            }
+          },
+          "iocinit": {
+            "type": "array",
+            "description": "List of initial setpoints for this device",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "PV name suffix"
+                },
+                "value": {
+                  "type": [
+                    "string",
+                    "number"
+                  ],
+                  "description": "Initial value"
+                }
+              },
+              "required": [
+                "name",
+                "value"
+              ]
+            }
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "iocprefix",
+    "template",
+    "devices"
+  ]
+}
