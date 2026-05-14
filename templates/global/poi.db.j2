@@ -113,7 +113,7 @@ record(stringin, "{{PREFIX}}:{{ mot.name }}:POI_CURR") {
 # POI position tolerance (usteps) - how close to be considered "at" POI
 record(longout, "{{PREFIX}}:{{ mot.name }}:POI_TOL") {
     field(DESC, "POI position tolerance")
-    field(VAL, "{{ mot.poi_tolerance|default(100) }}")
+    field(VAL, "{% if poi_tollerance is defined %}{{ poi_tollerance }}{% elif mot.poi_tolerance is defined %}{{ mot.poi_tolerance }}{% else %}100{% endif %}")
     field(EGU, "ustep")
     field(PINI, "YES")
 }
