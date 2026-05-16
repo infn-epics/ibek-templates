@@ -1,51 +1,34 @@
 ioc_name: {{iocname}}
 description: Bergoz BCM-RF-E Beam Charge Monitor
 
-# Connection type is determined by the presence of 'server' (IP) or 'device' (serial).
-# 'server' can be an IP/hostname for TCP mode, or omitted when 'device' is set.
+# Uses the native bcmAsynMon driver over TCP/IP.
+# The driver manages the connection and protocol parsing internally.
 #
-# TCP/IP example (recommended — via ser2net):
-#   type: ip
+# TCP/IP example:
 #   server: 192.168.1.100
 #   port: 4001            # optional, default 4001
+#   reconnect_ms: 1000    # optional, default 1000
 #   iocprefix: BCM:RF:01
-#   scan: ".2 second"    # optional, default from IOC startup
-#
-# Direct serial example:
-#   type: serial
-#   device: /dev/ttyACM0  # optional, default /dev/ttyACM0
-#   baud: 9600            # optional, default 9600
-#   iocprefix: BCM:RF:01
-#   scan: ".2 second"    # optional, default from IOC startup
+#   scan: ".2 second"     # optional, default ".2 second"
 #
 # Optional aliases:
 #   aliases:
 #     - name: CHARGE
 #       alias: CHARGE_RB
 
-{%- set _scan  = scan  | default(".2 second", true) %}
-{%- set _type  = type  | default("ip", true) %}
+{%- set _scan         = scan         | default(".2 second", true) %}
+{%- set _reconnect_ms = reconnect_ms | default(1000, true) %}
 {%- set _pname = iocname | replace("-", "_") | replace(":", "_") | upper %}
 
 entities:
 
-{%- if _type == "serial" %}
-  - type: bergozBcm.serialDevice
-    NAME: "{{_pname}}_PORT"
-    P: "{{iocprefix}}"
-    DEVICE: "{{ device | default('/dev/ttyACM0', true) }}"
-    BAUD: {{ baud | default(9600, true) }}
-    SCAN: "{{_scan}}"
-
-{%- else %}
   - type: bergozBcm.ipDevice
     NAME: "{{_pname}}_PORT"
     P: "{{iocprefix}}"
     HOST: "{{server}}"
     TCPPORT: {{ port | default(4001, true) }}
+    RECONNECT_MS: {{_reconnect_ms}}
     SCAN: "{{_scan}}"
-
-{%- endif %}
 
 {%- if aliases is defined and aliases %}
 {%- for param in aliases %}
