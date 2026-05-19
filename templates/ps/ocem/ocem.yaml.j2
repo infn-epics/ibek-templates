@@ -40,6 +40,12 @@ entities:
   - type: epics.DbAlias
     name: "{{iocprefix}}:{{cratename}}:{{way}}:STATE_RB"
     alias: "{{iocprefix}}:{{alim.name}}:STATE_RB"
+
+  - file: OCEM4chanParent.db
+    args:
+      P: "{{iocprefix}}"
+      CHANNEL: "{{alim.name}}"
+      CRATE: "{{cratename}}"
 {%- endif %}    
 {%- endfor %}
 
