@@ -41,11 +41,18 @@ entities:
     name: "{{iocprefix}}:{{cratename}}:{{way}}:STATE_RB"
     alias: "{{iocprefix}}:{{alim.name}}:STATE_RB"
 
-  - file: OCEM4chanParent.db
-    args:
-      P: "{{iocprefix}}"
-      CHANNEL: "{{alim.name}}"
-      CRATE: "{{cratename}}"
+  - type: epics.DbLine
+    line: 'record(stringin, \"{{iocprefix}}:{{alim.name}}:PARENT\") {'
+
+  - type: epics.DbLine
+    line: '    field(VAL, \"{{iocprefix}}:{{cratename}}\")'
+
+  - type: epics.DbLine
+    line: '    field(PINI, \"YES\")'
+
+  - type: epics.DbLine
+    line: '}'
+    
 {%- endif %}    
 {%- endfor %}
 
