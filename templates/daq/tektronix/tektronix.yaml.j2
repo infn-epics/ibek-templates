@@ -137,6 +137,11 @@ entities:
 
 - type: epics.PostStartupCommand 
   command: |
+  {%- if devtype == "mso58lp-asyn" %}
+  dbpf ("{{iocprefix}}:Store:Path","{{store_path if store_path is defined else (data_dir if data_dir is defined else '/tmp')}}")
+  dbpf ("{{iocprefix}}:Store:Basename","{{basename if basename is defined else iocname}}")
+  dbpf ("{{iocprefix}}:Store:NumAcq","{{num_acq | default(1)}}")
+  {%- endif %}
   {%- for param in iocinit %}
   dbpf ("{{iocprefix}}:{{param.name}}","{{param.value}}")
   {%- endfor %}
