@@ -15,6 +15,16 @@ entities:
     numAxes: {{devices | length}}
     mapAxes: "{% for dev in devices %}{{ dev.axid }}{% if not loop.last %},{% endif %}{% endfor %}"
     EGUXSTEP: "{{ eguxstep | default(0.00005, true) }}"
+    {%- if motor.configFile is defined %}
+    configFile: "{{ motor.configFile }}"
+    {%- elif configFile is defined %}
+    configFile: "{{ configFile }}"
+    {%- endif %}
+    {%- if motor.sendVelAccel is defined %}
+    sendVelAccel: {{ motor.sendVelAccel }}
+    {%- elif sendVelAccel is defined %}
+    sendVelAccel: {{ sendVelAccel }}
+    {%- endif %}
     debug: {{ debug | default(1, true) }}
 
   {% for mot in devices %}
