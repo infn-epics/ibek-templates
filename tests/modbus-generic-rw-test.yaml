@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+iocname: "modbus-rw-test"
+asset: "test"
+iocprefix: "TEST:MODBUS"
+template: "modbus-generic"
+devgroup: io
+devtype: modbus-generic
+config_dir: "."
+iocexit: true
+server: "127.0.0.1"
+port: 502
+
+connections:
+  - name: plc1
+    slaves:
+      - name: PLC1_HOLDING
+        func_code: 3
+        start_addr: 0
+        length: 8
+        registers:
+          - name: setpoint_f
+            offset: 0
+            type: float
+            access: write
+            desc: "Float Setpoint"
+            egu: V
+          - name: setpoint_i
+            offset: 2
+            type: int
+            access: write
+            desc: "Int Setpoint"
+      - name: PLC1_COILS
+        func_code: 1
+        start_addr: 0
+        length: 4
+        registers:
+          - name: run_status
+            offset: 0
+            type: coil
+            desc: "Run Status"
+          - name: run_cmd
+            offset: 1
+            type: coil
+            access: write
+            desc: "Run Command"

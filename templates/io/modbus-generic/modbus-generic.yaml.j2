@@ -1,0 +1,121 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+ioc_name: {{iocname}}
+description: Generic Modbus TCP device TEMPLATE
+
+{%- set P = iocprefix ~ (":" ~ iocroot if iocroot is defined else "") %}
+
+entities:
+
+{%- for conn in connections %}
+
+# ============================================================================
+# Modbus TCP connection: {{conn.name}}
+# ============================================================================
+- type: modbus.modbusPortConfigure
+  ASYNPORT: "{{conn.name}}"
+  IP: "{{conn.server if conn.server is defined else server}}"
+  TCPPORT: {{conn.port if conn.port is defined else (port if port is defined else 502)}}
+
+{%- for slave in conn.slaves %}
+
+- type: modbus.modbusAsynConfigure
+  MODBUSPORT: "{{slave.name}}"
+  ASYNPORT: "{{conn.name}}"
+  SERVER_ADDR: {{slave.slave_id if slave.slave_id is defined else 1}}
+  FUNC_CODE: {{slave.func_code if slave.func_code is defined else 4}}
+  STARTADDR: {{slave.start_addr if slave.start_addr is defined else 0}}
+  DATA_LENGTH: {{slave.length if slave.length is defined else 52}}
+  DATA_TYPE: {{slave.data_type if slave.data_type is defined else 7}}
+  POLL_DELAY: {{slave.poll_delay if slave.poll_delay is defined else 1000}}
+
+{%- for reg in slave.registers %}
+{%- set access = reg.access if reg.access is defined else "read" %}
+{%- set rtype = reg.type if reg.type is defined else "float" %}
+{%- set R = reg.r if reg.r is defined else (":" ~ reg.name) %}
+
+{%- if rtype == "float" and access == "read" %}
+- type: modbus.modbusFloatReadout
+  PORT: "{{slave.name}}"
+  P: "{{P}}"
+  R: "{{R}}"
+  OFFSET: {{reg.offset}}
+  DESC: "{{reg.desc if reg.desc is defined else reg.name}}"
+  EGU: "{{reg.egu if reg.egu is defined else "None"}}"
+  HOPR: {{reg.hopr if reg.hopr is defined else 0.0}}
+  LOPR: {{reg.lopr if reg.lopr is defined else 0.0}}
+  PREC: {{reg.prec if reg.prec is defined else 0}}
+
+{%- elif rtype == "float" and access == "write" %}
+- type: modbus.modbusFloatSetpoint
+  PORT: "{{slave.name}}"
+  P: "{{P}}"
+  R: "{{R}}"
+  OFFSET: {{reg.offset}}
+  DESC: "{{reg.desc if reg.desc is defined else reg.name}}"
+  HOPR: {{reg.hopr if reg.hopr is defined else 0.0}}
+  LOPR: {{reg.lopr if reg.lopr is defined else 0.0}}
+  PREC: {{reg.prec if reg.prec is defined else 0}}
+  PINI: "{{reg.pini if reg.pini is defined else "NO"}}"
+
+{%- elif rtype == "int" and access == "read" %}
+- type: modbus.modbusIntReadout
+  PORT: "{{slave.name}}"
+  P: "{{P}}"
+  R: "{{R}}"
+  OFFSET: {{reg.offset}}
+  DESC: "{{reg.desc if reg.desc is defined else reg.name}}"
+  EGU: "{{reg.egu if reg.egu is defined else "None"}}"
+  HOPR: {{reg.hopr if reg.hopr is defined else 0}}
+  LOPR: {{reg.lopr if reg.lopr is defined else 0}}
+  PREC: {{reg.prec if reg.prec is defined else 0}}
+  SCAN: "{{reg.scan if reg.scan is defined else "I/O Intr"}}"
+
+{%- elif rtype == "int" and access == "write" %}
+- type: modbus.modbusIntSetpoint
+  PORT: "{{slave.name}}"
+  P: "{{P}}"
+  R: "{{R}}"
+  OFFSET: {{reg.offset}}
+  DESC: "{{reg.desc if reg.desc is defined else reg.name}}"
+  PINI: "{{reg.pini if reg.pini is defined else "NO"}}"
+
+{%- elif rtype == "coil" and access == "read" %}
+- type: modbus.modbusCoilReadout
+  PORT: "{{slave.name}}"
+  P: "{{P}}"
+  R: "{{R}}"
+  OFFSET: {{reg.offset}}
+  DESC: "{{reg.desc if reg.desc is defined else reg.name}}"
+  SCAN: "{{reg.scan if reg.scan is defined else "I/O Intr"}}"
+  ZNAM: "{{reg.znam if reg.znam is defined else "Off"}}"
+  ONAM: "{{reg.onam if reg.onam is defined else "On"}}"
+
+{%- elif rtype == "coil" and access == "write" %}
+- type: modbus.modbusCoilWrite
+  PORT: "{{slave.name}}"
+  P: "{{P}}"
+  R: "{{R}}"
+  OFFSET: {{reg.offset}}
+  DESC: "{{reg.desc if reg.desc is defined else reg.name}}"
+  ZNAM: "{{reg.znam if reg.znam is defined else "Off"}}"
+  ONAM: "{{reg.onam if reg.onam is defined else "On"}}"
+{%- endif %}
+{%- endfor %}
+{%- endfor %}
+{%- endfor %}
+
+# ============================================================================
+# POST-STARTUP COMMANDS
+# ============================================================================
+- type: epics.PostStartupCommand
+  command: |
+  {%- for param in iocinit %}
+    dbpf("{{P}}{{param.name}}", "{{param.value}}")
+  {%- endfor %}
+  {%- if iocexit %}
+    dbl
+    exit
+  {%- else %}
+    dbl("*") > {{config_dir}}/pvlist.txt
+    dbl
+  {%- endif %}

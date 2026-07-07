@@ -1,0 +1,185 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "$id": "https://github.com/infn-epics/ibek-templates/releases/download/v1/modbus-generic.schema.json",
+  "allOf": [
+    {
+      "$ref": "../../../schemas/ioc.schema.json"
+    }
+  ],
+  "properties": {
+    "template": {
+      "const": "modbus-generic",
+      "description": "The template type for a generic Modbus TCP device."
+    },
+    "devtype": {
+      "const": "modbus-generic",
+      "description": "Device type name used by the IBEK support module."
+    },
+    "devgroup": {
+      "type": "string",
+      "description": "Device group classification."
+    },
+    "server": {
+      "type": "string",
+      "description": "Default IP address for connections (can be overridden per connection).",
+      "default": "127.0.0.1"
+    },
+    "port": {
+      "type": "integer",
+      "description": "Default Modbus TCP port (can be overridden per connection).",
+      "default": 502
+    },
+    "connections": {
+      "type": "array",
+      "description": "List of Modbus TCP connections (physical devices/PLCs).",
+      "items": {
+        "$ref": "#/definitions/connection"
+      }
+    }
+  },
+  "required": ["connections"],
+  "definitions": {
+    "connection": {
+      "type": "object",
+      "description": "A single Modbus TCP connection, shared by all its slaves/register blocks.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Asyn port name for this Modbus TCP connection."
+        },
+        "server": {
+          "type": "string",
+          "description": "IP address of the device (overrides the IOC-level default)."
+        },
+        "port": {
+          "type": "integer",
+          "description": "Modbus TCP port (overrides the IOC-level default)."
+        },
+        "slaves": {
+          "type": "array",
+          "description": "List of register blocks (one modbusAsynConfigure per contiguous block) on this connection.",
+          "items": {
+            "$ref": "#/definitions/slave"
+          }
+        }
+      },
+      "required": ["name", "slaves"]
+    },
+    "slave": {
+      "type": "object",
+      "description": "A contiguous Modbus register/coil block, read or written as one unit.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Unique Modbus port name for this register block (MODBUSPORT)."
+        },
+        "slave_id": {
+          "type": "integer",
+          "description": "Modbus slave/unit id (SERVER_ADDR). Default: 1",
+          "default": 1
+        },
+        "func_code": {
+          "type": "integer",
+          "description": "Modbus function code: 1/2 read coils/discrete inputs, 3/4 read registers, 5/15 write coils, 6/16 write registers. Default: 4",
+          "default": 4
+        },
+        "start_addr": {
+          "type": "integer",
+          "description": "Start address of the block (STARTADDR). Default: 0",
+          "default": 0
+        },
+        "length": {
+          "type": "integer",
+          "description": "Length of the block in bits (coil function codes) or 16-bit words (register function codes). Default: 52",
+          "default": 52
+        },
+        "data_type": {
+          "type": "integer",
+          "description": "Modbus register data type (see modbus module docs). Default: 7",
+          "default": 7
+        },
+        "poll_delay": {
+          "type": "integer",
+          "description": "Polling delay in ms. Default: 1000",
+          "default": 1000
+        },
+        "registers": {
+          "type": "array",
+          "description": "Individual PVs within this block, at an OFFSET relative to start_addr.",
+          "items": {
+            "$ref": "#/definitions/register"
+          }
+        }
+      },
+      "required": ["name", "registers"]
+    },
+    "register": {
+      "type": "object",
+      "description": "A single PV mapped onto a register or coil within a slave block.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name used to build the PV suffix (R = \":<name>\") unless 'r' is given."
+        },
+        "r": {
+          "type": "string",
+          "description": "Explicit PV suffix override, including leading ':'."
+        },
+        "offset": {
+          "type": "integer",
+          "description": "Offset (word or bit, depending on func_code) relative to the slave's start_addr."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["float", "int", "coil"],
+          "description": "Register data kind: 32-bit float, 32-bit int, or single coil/discrete bit. Default: float",
+          "default": "float"
+        },
+        "access": {
+          "type": "string",
+          "enum": ["read", "write"],
+          "description": "Whether this creates a readout or a setpoint/write. Default: read",
+          "default": "read"
+        },
+        "desc": {
+          "type": "string",
+          "description": "Record DESC field. Defaults to the register name."
+        },
+        "egu": {
+          "type": "string",
+          "description": "Engineering units (float/int readouts only)."
+        },
+        "hopr": {
+          "type": "number",
+          "description": "High operating range (float/int types)."
+        },
+        "lopr": {
+          "type": "number",
+          "description": "Low operating range (float/int types)."
+        },
+        "prec": {
+          "type": "integer",
+          "description": "Display precision (float/int types)."
+        },
+        "scan": {
+          "type": "string",
+          "description": "SCAN field (int readouts and coil readouts). Default: I/O Intr"
+        },
+        "pini": {
+          "type": "string",
+          "description": "PINI field for setpoints (float/int writes). Default: NO"
+        },
+        "znam": {
+          "type": "string",
+          "description": "Coil zero-state name. Default: Off"
+        },
+        "onam": {
+          "type": "string",
+          "description": "Coil one-state name. Default: On"
+        }
+      },
+      "required": ["name", "offset"]
+    }
+  }
+}

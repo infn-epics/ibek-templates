@@ -355,6 +355,69 @@ stream2_enable: true
 
 **Use-case**: stream annotated images over HTTP without storing raw frames.
 
+---
+
+### ELI Profile A: Full Chain Enabled
+
+This matches:
+
+```yaml
+- name: "overlay_enable"
+   value: true
+- name: "stats_enable"
+   value: true
+- name: "proc_enable"
+   value: true
+- name: "tiff_enable"
+   value: true
+- name: "roi_enable"
+   value: true
+```
+
+**Effective chain**: `Camera -> ROI -> Proc -> Stats -> Overlay -> TIFF1`
+
+**What is created**:
+- Base plugins: Camera + PVA + StdArrays + TIFF1
+- Chain plugins: ROI + Proc + Stats + Overlay
+- Per-plugin TIFF writers: `Roi1:TIFF`, `Proc1:TIFF`, `Stats1:TIFF`, `Overlay1:TIFF`
+- PVA publishers at each stage: Camera, ROI, Proc, Stats, Overlay
+
+**Important behavior**:
+- `TIFF1` writes the final overlay output (last active plugin)
+- If `stream_enable=true`, `Stream1` reads raw camera output
+- If `stream2_enable=true`, `Stream2` reads overlay output (last chain stage)
+
+---
+
+### ELI Profile B: Stats on Raw Camera (No ROI/Proc/Overlay)
+
+This matches:
+
+```yaml
+- name: "overlay_enable"
+   value: false
+- name: "stats_enable"
+   value: true
+- name: "proc_enable"
+   value: false
+- name: "tiff_enable"
+   value: true
+- name: "roi_enable"
+   value: false
+```
+
+**Effective chain**: `Camera -> Stats -> TIFF1`
+
+**What is created**:
+- Base plugins: Camera + PVA + StdArrays + TIFF1
+- Chain plugin: Stats only
+- Per-plugin TIFF writer: `Stats1:TIFF` (because `tiff_enable=true` and stats is enabled)
+
+**Important behavior**:
+- `TIFF1` writes the stats-stage output (the last active stage)
+- No ROI, Proc, or Overlay PV trees are created
+- Stats values come from full-frame camera data (no ROI cropping, no Proc filtering)
+
 ### Processing Without ROI
 
 ```yaml

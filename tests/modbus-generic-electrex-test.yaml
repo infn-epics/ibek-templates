@@ -1,0 +1,130 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+iocname: "electrex-plc"
+asset: "https://baltig.infn.it/chaos-lnf-control/iocsh-dt-modbusdev"
+iocprefix: "DT"
+iocroot: "kilo"
+template: "modbus-generic"
+devgroup: io
+devtype: modbus-generic
+config_dir: "."
+iocexit: true
+
+connections:
+  - name: electrex
+    server: "192.168.146.107"
+    port: 502
+    slaves:
+      - name: ELECTREX1
+        slave_id: 1
+        start_addr: 277
+        length: 8
+        poll_delay: 5000
+        registers:
+          - name: ced_nd_p
+            offset: 0
+            type: float
+            desc: "Instantaneous Power"
+            egu: KW
+      - name: ELECTREX12
+        slave_id: 1
+        start_addr: 413
+        length: 8
+        poll_delay: 5000
+        registers:
+          - name: ced_nd_ea
+            offset: 0
+            type: int
+            desc: "Average Energy"
+            egu: KWh
+
+      - name: ELECTREX2
+        slave_id: 2
+        start_addr: 277
+        length: 8
+        poll_delay: 5000
+        registers:
+          - name: ced_priv_p
+            offset: 0
+            type: float
+            desc: "Instantaneous Power"
+            egu: KW
+      - name: ELECTREX22
+        slave_id: 2
+        start_addr: 413
+        length: 8
+        poll_delay: 5000
+        registers:
+          - name: ced_priv_ea
+            offset: 0
+            type: int
+            desc: "Average Energy"
+            egu: KWh
+
+      - name: ELECTREX3
+        slave_id: 3
+        start_addr: 277
+        length: 8
+        poll_delay: 5000
+        registers:
+          - name: ced_norm_p
+            offset: 0
+            type: float
+            desc: "Instantaneous Power"
+            egu: KW
+      - name: ELECTREX32
+        slave_id: 3
+        start_addr: 413
+        length: 8
+        poll_delay: 5000
+        registers:
+          - name: ced_norm_ea
+            offset: 0
+            type: int
+            desc: "Average Energy"
+            egu: KWh
+
+      - name: ELECTREX4
+        slave_id: 4
+        start_addr: 277
+        length: 8
+        poll_delay: 5000
+        registers:
+          - name: ced_ups_sc1_p
+            offset: 0
+            type: float
+            desc: "Instantaneous Power"
+            egu: KW
+      - name: ELECTREX42
+        slave_id: 4
+        start_addr: 413
+        length: 8
+        poll_delay: 5000
+        registers:
+          - name: ced_ups_sc1_ea
+            offset: 0
+            type: int
+            desc: "Average Energy"
+            egu: KWh
+
+      - name: ELECTREX5
+        slave_id: 5
+        start_addr: 277
+        length: 8
+        poll_delay: 5000
+        registers:
+          - name: ced_ups_sc2_p
+            offset: 0
+            type: float
+            desc: "Instantaneous Power"
+            egu: KW
+      - name: ELECTREX52
+        slave_id: 5
+        start_addr: 413
+        length: 8
+        poll_delay: 5000
+        registers:
+          - name: ced_ups_sc2_ea
+            offset: 0
+            type: int
+            desc: "Average Energy"
+            egu: KWh

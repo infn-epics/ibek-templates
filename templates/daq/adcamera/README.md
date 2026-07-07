@@ -333,6 +333,64 @@ stats_enable: false
 
 **Result:** Camera + HTTP stream + Overlay graphics + Base outputs
 
+---
+
+### ELI Profile A: ROI + Proc + Stats + Overlay + TIFF
+
+This matches:
+
+```yaml
+- name: "overlay_enable"
+  value: true
+- name: "stats_enable"
+  value: true
+- name: "proc_enable"
+  value: true
+- name: "tiff_enable"
+  value: true
+- name: "roi_enable"
+  value: true
+```
+
+**Resulting plugin layout (adcamera)**:
+- Base path: Camera -> PVA + StdArrays + TIFF + STATS
+- ROI path: Camera -> ROI -> ROI PVA + ROI TIFF + ROI STATS
+- Proc path: ROI -> PROC -> Proc PVA + Proc StdArrays + Proc TIFF + Proc STATS
+- Overlay path: Camera -> OVERLAY -> Overlay PVA + Overlay TIFF
+- Stream path (only if enabled): from OVERLAY when `overlay_enable=true`, otherwise from Camera
+
+**Important behavior**:
+- In this template, Overlay is not chained after Proc/Stats; it reads directly from Camera
+- Stats plugins are created at multiple points (base, ROI, Proc)
+- TIFF outputs are produced from multiple branches (base, ROI, Proc, Overlay)
+
+---
+
+### ELI Profile B: Stats + TIFF on Raw Camera
+
+This matches:
+
+```yaml
+- name: "overlay_enable"
+  value: false
+- name: "stats_enable"
+  value: true
+- name: "proc_enable"
+  value: false
+- name: "tiff_enable"
+  value: true
+- name: "roi_enable"
+  value: false
+```
+
+**Resulting plugin layout (adcamera)**:
+- Base path only: Camera -> PVA + StdArrays + TIFF + STATS
+
+**Important behavior**:
+- No ROI, Proc, or Overlay plugins are created
+- One Stats plugin is active at base camera level (`:Stats1:`)
+- Main TIFF writer is base `:TIFF1:` and writes raw camera frames
+
 ## Common Issues and Notes
 
 ### 1. ⚠️ PV Naming Inconsistency
