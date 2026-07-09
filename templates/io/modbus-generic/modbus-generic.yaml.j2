@@ -31,6 +31,7 @@ entities:
 {%- for reg in slave.registers %}
 {%- set access = reg.access if reg.access is defined else "read" %}
 {%- set rtype = reg.type if reg.type is defined else "float" %}
+{%- set format = reg.format if reg.format is defined else "LE" %}
 {%- set R = reg.r if reg.r is defined else (":" ~ reg.name) %}
 
 {%- if rtype == "float" and access == "read" %}
@@ -44,6 +45,7 @@ entities:
   HOPR: {{reg.hopr if reg.hopr is defined else 0.0}}
   LOPR: {{reg.lopr if reg.lopr is defined else 0.0}}
   PREC: {{reg.prec if reg.prec is defined else 0}}
+  FORMAT: "{{format}}"
 
 {%- elif rtype == "float" and access == "write" %}
 - type: modbus.modbusFloatSetpoint
@@ -56,6 +58,7 @@ entities:
   LOPR: {{reg.lopr if reg.lopr is defined else 0.0}}
   PREC: {{reg.prec if reg.prec is defined else 0}}
   PINI: "{{reg.pini if reg.pini is defined else "NO"}}"
+  FORMAT: "{{format}}"
 
 {%- elif rtype == "int" and access == "read" %}
 - type: modbus.modbusIntReadout
@@ -69,6 +72,7 @@ entities:
   LOPR: {{reg.lopr if reg.lopr is defined else 0}}
   PREC: {{reg.prec if reg.prec is defined else 0}}
   SCAN: "{{reg.scan if reg.scan is defined else "I/O Intr"}}"
+  FORMAT: "{{format}}"
 
 {%- elif rtype == "int" and access == "write" %}
 - type: modbus.modbusIntSetpoint
@@ -78,6 +82,21 @@ entities:
   OFFSET: {{reg.offset}}
   DESC: "{{reg.desc if reg.desc is defined else reg.name}}"
   PINI: "{{reg.pini if reg.pini is defined else "NO"}}"
+  FORMAT: "{{format}}"
+
+{%- elif rtype == "uint" and access == "read" %}
+- type: modbus.modbusUIntReadout
+  PORT: "{{slave.name}}"
+  P: "{{P}}"
+  R: "{{R}}"
+  OFFSET: {{reg.offset}}
+  DESC: "{{reg.desc if reg.desc is defined else reg.name}}"
+  EGU: "{{reg.egu if reg.egu is defined else "None"}}"
+  HOPR: {{reg.hopr if reg.hopr is defined else 0}}
+  LOPR: {{reg.lopr if reg.lopr is defined else 0}}
+  PREC: {{reg.prec if reg.prec is defined else 0}}
+  SCAN: "{{reg.scan if reg.scan is defined else "I/O Intr"}}"
+  FORMAT: "{{format}}"
 
 {%- elif rtype == "coil" and access == "read" %}
 - type: modbus.modbusCoilReadout

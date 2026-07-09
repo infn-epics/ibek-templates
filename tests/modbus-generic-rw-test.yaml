@@ -43,3 +43,25 @@ connections:
             type: coil
             access: write
             desc: "Run Command"
+      - name: PLC1_COUNTERS
+        func_code: 3
+        start_addr: 20
+        length: 8
+        registers:
+          - name: energy_total
+            offset: 0
+            type: uint
+            desc: "Cumulative Energy (unsigned counter)"
+            egu: KWh
+          - name: energy_total_be
+            offset: 2
+            type: uint
+            format: BE
+            desc: "Cumulative Energy, big-endian device"
+            egu: KWh
+          - name: setpoint_f_be
+            offset: 4
+            type: float
+            format: BE
+            access: write
+            desc: "Float Setpoint, big-endian device"

@@ -132,14 +132,20 @@
         },
         "type": {
           "type": "string",
-          "enum": ["float", "int", "coil"],
-          "description": "Register data kind: 32-bit float, 32-bit int, or single coil/discrete bit. Default: float",
+          "enum": ["float", "int", "uint", "coil"],
+          "description": "Register data kind: 32-bit float, 32-bit signed int, 32-bit unsigned int (read-only), or single coil/discrete bit. Default: float",
           "default": "float"
+        },
+        "format": {
+          "type": "string",
+          "enum": ["LE", "BE"],
+          "description": "Word order of the 32-bit register (float/int/uint only). Default: LE",
+          "default": "LE"
         },
         "access": {
           "type": "string",
           "enum": ["read", "write"],
-          "description": "Whether this creates a readout or a setpoint/write. Default: read",
+          "description": "Whether this creates a readout or a setpoint/write. 'uint' only supports read. Default: read",
           "default": "read"
         },
         "desc": {

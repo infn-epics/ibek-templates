@@ -27,15 +27,29 @@ connections:                # one entry per physical Modbus TCP link (asyn port)
         registers:                    # PVs within this block
           - name: <suffix used to build R>
             offset: <int>             # relative to start_addr
-            type: float | int | coil  # default float
-            access: read | write      # default read
+            type: float | int | uint | coil  # default float
+            format: LE | BE           # word order, default LE (float/int/uint only)
+            access: read | write      # default read ('uint' is read-only)
             desc: ...
             egu: ...
-            hopr / lopr / prec: ...   # float/int only
-            scan: ...                 # int/coil readouts only
+            hopr / lopr / prec: ...   # float/int/uint only
+            scan: ...                 # int/uint/coil readouts only
             pini: ...                 # float/int writes only
             znam / onam: ...          # coil only
 ```
+
+`type: uint` reads a 32-bit register as an *unsigned* integer. The modbus
+module itself only supports signed `INT32_LE`/`INT32_BE` reads, so a genuine
+unsigned counter (e.g. a cumulative energy register) whose top bit is set
+would otherwise read back negative. `modbus.modbusUIntReadout` works around
+this by reading the raw signed value into a hidden `<R>_raw` PV and
+correcting it (adding 2^32 when negative) into the public PV — see
+`modbus.ibek.support.yaml` / `modbusUInt32.template`. There is no `uint`
+write support, since the driver has no native unsigned write either.
+
+`format: BE` selects big-endian word order for a 32-bit float/int/uint
+register (maps to the driver's `*_BE` data types); omit it, or set `LE`,
+for the default little-endian order.
 
 `P` is built once as `{{iocprefix}}{{":" + iocroot if iocroot is defined}}`.
 Each register's PV is `P + R`, where `R` defaults to `:<name>` or can be
