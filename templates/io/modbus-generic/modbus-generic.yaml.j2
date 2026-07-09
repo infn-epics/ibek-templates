@@ -90,11 +90,6 @@ entities:
   P: "{{P}}"
   R: "{{R}}"
   OFFSET: {{reg.offset}}
-  DESC: "{{reg.desc if reg.desc is defined else reg.name}}"
-  EGU: "{{reg.egu if reg.egu is defined else "None"}}"
-  HOPR: {{reg.hopr if reg.hopr is defined else 0}}
-  LOPR: {{reg.lopr if reg.lopr is defined else 0}}
-  PREC: {{reg.prec if reg.prec is defined else 0}}
   SCAN: "{{reg.scan if reg.scan is defined else "I/O Intr"}}"
   FORMAT: "{{format}}"
 

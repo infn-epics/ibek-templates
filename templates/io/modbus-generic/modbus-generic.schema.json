@@ -150,27 +150,27 @@
         },
         "desc": {
           "type": "string",
-          "description": "Record DESC field. Defaults to the register name."
+          "description": "Record DESC field. Defaults to the register name. Not applicable to 'uint' (int64in.template has no DESC macro)."
         },
         "egu": {
           "type": "string",
-          "description": "Engineering units (float/int readouts only)."
+          "description": "Engineering units. Not applicable to 'uint'."
         },
         "hopr": {
           "type": "number",
-          "description": "High operating range (float/int types)."
+          "description": "High operating range. Not applicable to 'uint'."
         },
         "lopr": {
           "type": "number",
-          "description": "Low operating range (float/int types)."
+          "description": "Low operating range. Not applicable to 'uint'."
         },
         "prec": {
           "type": "integer",
-          "description": "Display precision (float/int types)."
+          "description": "Display precision. Not applicable to 'uint'."
         },
         "scan": {
           "type": "string",
-          "description": "SCAN field (int readouts and coil readouts). Default: I/O Intr"
+          "description": "SCAN field (int/uint/coil readouts). Default: I/O Intr"
         },
         "pini": {
           "type": "string",

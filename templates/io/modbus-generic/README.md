@@ -28,24 +28,30 @@ connections:                # one entry per physical Modbus TCP link (asyn port)
           - name: <suffix used to build R>
             offset: <int>             # relative to start_addr
             type: float | int | uint | coil  # default float
-            format: LE | BE           # word order, default LE (float/int/uint only)
+            format: LE | BE           # word order, default LE (float/int only; uint too)
             access: read | write      # default read ('uint' is read-only)
-            desc: ...
-            egu: ...
-            hopr / lopr / prec: ...   # float/int/uint only
+            desc: ...                 # not applicable to uint
+            egu: ...                  # not applicable to uint
+            hopr / lopr / prec: ...   # float/int only, not applicable to uint
             scan: ...                 # int/uint/coil readouts only
             pini: ...                 # float/int writes only
             znam / onam: ...          # coil only
 ```
 
-`type: uint` reads a 32-bit register as an *unsigned* integer. The modbus
-module itself only supports signed `INT32_LE`/`INT32_BE` reads, so a genuine
-unsigned counter (e.g. a cumulative energy register) whose top bit is set
-would otherwise read back negative. `modbus.modbusUIntReadout` works around
-this by reading the raw signed value into a hidden `<R>_raw` PV and
-correcting it (adding 2^32 when negative) into the public PV — see
-`modbus.ibek.support.yaml` / `modbusUInt32.template`. There is no `uint`
-write support, since the driver has no native unsigned write either.
+`type: uint` reads a 32-bit register as a genuine *unsigned* integer, for
+counters (e.g. a cumulative energy register) whose top bit can be set.
+Reading such a register as signed `INT32_LE`/`INT32_BE` (`type: int`) would
+read back negative once it exceeds 2^31. The modbus driver does have a
+native `UINT32_LE`/`UINT32_BE` data type, but delivering it through the
+`asynInt32` interface (as `ai`/`longin` records do) would still truncate the
+result back into a signed 32-bit container and go negative again above 2^31.
+`modbus.modbusUIntReadout` avoids this by using the module's own
+`int64in.template` (`asynInt64`), which has enough range to carry the full
+unsigned 32-bit value without wraparound — see `modbus.ibek.support.yaml`.
+Because `int64in.template` only exposes `DTYP`/`INP`/`SCAN` macros,
+`desc`/`egu`/`hopr`/`lopr`/`prec` are not settable for `uint` registers.
+There is no `uint` write support, since the driver has no unsigned write
+counterpart either.
 
 `format: BE` selects big-endian word order for a 32-bit float/int/uint
 register (maps to the driver's `*_BE` data types); omit it, or set `LE`,
