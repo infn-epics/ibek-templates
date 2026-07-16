@@ -646,8 +646,8 @@ entities:
     numAxes: {{devices | length}}
     movingPollPeriod: {{ movingPollPeriod | default(100, true) }}
     idlePollPeriod: {{ idlePollPeriod | default(1000, true) }}
-    yesNoRefFlag: {{yesNoRefFlag | default(0, true)}}
-    configFile: {{configFile | default("", true)}}
+    yesNoRefFlag: {{ yesNoRefFlag | default(0, true) }}
+    configFile: "{{ configFile | default("", true) }}"
     ASYNPRIO: {{ ASYNPRIO | default(0, true) }}
     AUTOCONNECT: {{ AUTOCONNECT | default(0, true) }}
     NOPROCESSEOS: {{ NOPROCESSEOS | default(0, true) }}
