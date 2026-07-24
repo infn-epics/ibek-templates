@@ -19,7 +19,7 @@ entities:
   MAX_CURR: {{ t.max_curr if t.max_curr is defined else 330000 }}
   MIN_CURR: {{ t.min_curr if t.min_curr is defined else -330000 }}
   SW_MODE: {{ t.sw_mode if t.sw_mode is defined else 1 }}
-  POLARITY_VIA_SIGN: {{ t.polarity_via_sign if t.polarity_via_sign is defined else 0 }}
+  POLARITY_VIA_SIGN: {{ t.bipolar if t.bipolar is defined else 0 }}
 
 {%- endfor %}
 
