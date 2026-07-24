@@ -14,12 +14,14 @@ entities:
   TIMEOUT: {{ timeout if timeout is defined else 1000 }}
   WDELAY: {{ wdelay if wdelay is defined else 200 }}
 
+{%- set ioc_ps = (ps if ps is defined else {}) %}
 {%- for t in devices %}
+{%- set dev_ps = t.get('ps', {}) %}
 - type: hazemeyer.ps
   serctrl: "HAZEMEYER001"
   R: "{{t.name}}"
-  VMAX: {{ t.vmax if t.vmax is defined else 110 }}
-  IMAX: {{ t.imax if t.imax is defined else 200 }}
+  VMAX: {{ dev_ps.get('voltage', {}).get('max', ioc_ps.get('voltage', {}).get('max', 110)) }}
+  IMAX: {{ dev_ps.get('current', {}).get('max', ioc_ps.get('current', {}).get('max', 200)) }}
   ID: {{ t.id}}
   WPOLL: {{ t.wpoll if t.wpoll is defined else 200 }}
   RPOLL: {{ t.rpoll if t.rpoll is defined else 2000 }}

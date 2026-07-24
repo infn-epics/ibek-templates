@@ -2,22 +2,27 @@ ioc_name: {{iocname}}
 description: Caenels template {{devtype}}
 
 entities:
+{%- set ioc_ps = (ps if ps is defined else {}) %}
 {%- for alim in devices %}
+{%- set dev_ps = alim.get('ps', {}) %}
   - type: caenels.{{devtype}}
-    P: "{{iocprefix}}:" 
+    P: "{{iocprefix}}:"
     R: "{{alim.name}}:"
     IP: {{alim.ip}}
     TCPPORT: {{alim.port | default(10001)}}
 {%- if devtype == "fastps" %}
-    rangeI: {{alim.rangeI | default(30)}}
-    rangeV: {{alim.rangeV | default(20)}}
-    rampI: {{alim.rampI | default(0)}}
-    rampV: {{alim.rampV | default(0)}}
+    rangeI: {{dev_ps.get('current', {}).get('max', ioc_ps.get('current', {}).get('max', 30))}}
+    rangeV: {{dev_ps.get('voltage', {}).get('max', ioc_ps.get('voltage', {}).get('max', 20))}}
+    rampI: {{dev_ps.get('current', {}).get('ramp', ioc_ps.get('current', {}).get('ramp', 0))}}
+    rampV: {{dev_ps.get('voltage', {}).get('ramp', ioc_ps.get('voltage', {}).get('ramp', 0))}}
 {%- else %}
-    range: {{alim.range | default(30)}}
+    range: {{dev_ps.get('current', {}).get('max', ioc_ps.get('current', {}).get('max', 30))}}
 {%- endif %}
-    OMAX: {{alim.omax | default(0)}}
-    IMAX: {{alim.imax | default(0)}}
+    # OMAX/IMAX are an additional software safety clamp layered on top of
+    # range/rangeI, independent of it (0 = disabled, matching prior behavior).
+    # No polarity parameter exists on this entity - ps.polarity stays informational.
+    OMAX: {{dev_ps.get('voltage', {}).get('limit', ioc_ps.get('voltage', {}).get('limit', 0))}}
+    IMAX: {{dev_ps.get('current', {}).get('limit', ioc_ps.get('current', {}).get('limit', 0))}}
 {%- endfor %}
 
 

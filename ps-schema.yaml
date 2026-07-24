@@ -1,0 +1,210 @@
+# ps-schema.yaml
+#
+# Human-readable reference for the `ps:` block shared by every power-supply
+# (PS) devtype under devgroup: mag (ocem/E642/modbusps/modbusps4chan,
+# danfysik/sys8x00, maccaferriPS/maccaferri, psEEI/eei,
+# caenels/{fastps,easydriver,histar}, hazemeyer/{haz-ser,haz-iocast},
+# sigmaphi, ibilt/biltitest/bilt-itest).
+#
+# This file documents the same shape that is ENFORCED (IDE-validated, CI
+# tested) by schemas/ioc.schema.json - see the `ps` and `psRange` definitions
+# there, published at:
+#   https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+# Reference it from a values.yaml or test fixture with:
+#   # yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+#
+# Precedent: mirrors the existing top-level `motor:` block already used for
+# TML/technosoft-asyn devices - `ps:` is the equivalent structured block for
+# power supplies, replacing the ad hoc flat fields (imax, vmax, max_curr,
+# min_curr, rangeI, range, rampI, ramp_rate, monopolar, bipolar, max) that
+# previously meant a handful of concepts under many different names.
+#
+# Nest `ps:` either:
+#   - at IOC level, when every device on that IOC shares the same rating/mode
+#     (the common case - see caenels/easydriver, hazemeyer, sigmaphi below), or
+#   - per-device under devices[], when devices on the same IOC differ.
+# Device-level `ps:` fields override IOC-level ones field-by-field (not
+# block-by-block) - e.g. a device can override just `polarity.mode` while
+# still inheriting `current.max` from the IOC-level default.
+
+# ---------------------------------------------------------------------------
+# Shape
+# ---------------------------------------------------------------------------
+shape:
+  ps:
+    polarity:
+      mode: unipolar | bipolar-native | bipolar-switched | unspecified
+      sign: positive | negative              # required when mode: unipolar
+      switch:                                 # required when mode: bipolar-switched
+        settle_time_s: <number>               # dwell time in standby before/after the polarity relay flips
+        zero_threshold: <number>              # |current| below which it is safe to flip
+    control_mode: current | voltage           # which quantity is the regulated setpoint
+    current:
+      min: <number>
+      max: <number>
+      ramp: <number|null>                     # A/s
+      limit: <number|null>                    # additional software safety clamp (caenels IMAX; 0/null = disabled)
+    voltage:
+      min: <number>
+      max: <number>
+      ramp: <number|null>                     # V/s
+      limit: <number|null>                    # additional software safety clamp (caenels OMAX)
+
+# ---------------------------------------------------------------------------
+# Global defaults - omit these two fields entirely rather than writing them
+# ---------------------------------------------------------------------------
+# `polarity.mode` defaults to "unspecified" and `control_mode` defaults to
+# "current" (see the "default" keyword on both in schemas/ioc.schema.json).
+# Neither is ever branched on by literal value in any of the 6 PS Jinja
+# templates except psEEI's POLARITY_VIA_SIGN, which checks
+# `mode in ['bipolar-native','bipolar-switched']` - an entirely absent
+# ps.polarity/ps block falls through the template's `.get(..., '')` chain to
+# '', which also fails that check. So omitting the key is behaviorally
+# identical to writing `mode: unspecified` / `control_mode: current` out.
+#
+# Do NOT write `ps: {polarity: {mode: unspecified}}` or
+# `ps: {control_mode: current}` in a values.yaml (iocDefaults, IOC, or
+# device) - leave the key out and let the schema default apply globally.
+# Only declare `polarity` when you actually know the hardware's behavior
+# (unipolar+sign, bipolar-native, or bipolar-switched+switch), and only
+# declare `control_mode: voltage` for the (currently nonexistent) case of a
+# genuinely voltage-regulated PS.
+#
+# This is what "global default, per-device override" means in practice for
+# this schema: the default lives once, in the schema, not repeated per
+# template or per instance - and any IOC or device can still override it by
+# setting the field explicitly, exactly as before.
+
+# ---------------------------------------------------------------------------
+# Per-devtype migration/mapping table, corrected against the actual Jinja
+# entity parameters in templates/ps/*.yaml.j2 (not just the old values.yaml
+# field names - several were dead/unused before this refactor)
+# ---------------------------------------------------------------------------
+migration:
+  - devtype: E642                    # template: ocem
+    old_fields: [imax, vmax]
+    new_path: { current.max: imax, voltage.max: vmax }
+    polarity: unspecified            # never declared in source data; entity has no polarity input at all
+
+  - devtype: modbusps                # template: ocem, devtype: modbusps branch
+    old_fields: [imax, vmax]
+    new_path: { current.max: imax, voltage.max: vmax }
+    note: "correction/correctionset are unrelated to ps: and untouched"
+
+  - devtype: modbusps4chan           # template: ocem, devtype: modbusps4chan branch
+    old_fields: [imax, vmax]         # IOC-level only, not per-device
+    new_path: { current.max: imax, voltage.max: vmax }
+
+  - devtype: sys8x00                 # template: danfysik
+    old_fields: [imax, vmax, monopolar]
+    new_path:
+      current.max: imax
+      voltage.max: vmax
+      polarity.mode: unipolar
+      polarity.sign: "positive if monopolar > 0 else negative"
+    note: >
+      monopolar was never actually read by danfysik.yaml.j2 before this
+      refactor (dead data) - ps.polarity is still informational only here,
+      since the danfysik.ps IBEK entity has no signed-polarity parameter.
+
+  - devtype: maccaferri               # template: maccaferriPS
+    old_fields: [imax, vmax]          # NOTE: vmax was always dead - no such
+                                       # entity parameter exists on maccaferriPS.ps
+    new_path: { current.max: "max_curr equivalent", current.min: "-max_curr (entity default)" }
+    polarity: bipolar-native           # inferred from the entity's own symmetric
+                                        # -500/+500 default - not invented, but
+                                        # worth confirming against hardware docs
+    note: "vmax dropped during migration - was never consumed by any template"
+
+  - devtype: eei                      # template: psEEI
+    old_fields: [max_curr, min_curr, bipolar, ramp_rate]
+    new_path:
+      current.max: max_curr
+      current.min: min_curr
+      current.ramp: ramp_rate
+      polarity.mode: "bipolar-native if bipolar: true else unspecified"
+
+  - devtype: fastps                   # template: caenels
+    old_fields: [rangeI, rangeV, rampI, rampV, imax, omax]
+    new_path:
+      current.max: rangeI
+      voltage.max: rangeV
+      current.ramp: rampI
+      voltage.ramp: rampV
+      current.limit: imax    # separate software clamp, coexists with rangeI
+      voltage.limit: omax    # separate software clamp, coexists with rangeV
+    polarity: unspecified
+
+  - devtype: easydriver / histar      # template: caenels, non-fastps branch
+    old_fields: [range, imax, omax]
+    new_path: { current.max: range, current.limit: imax, voltage.limit: omax }
+    polarity: unspecified
+
+  - devtype: haz-ser                  # template: hazemeyer
+    old_fields: [imax, vmax]          # sometimes quoted strings on SPARC - fixed during migration
+    new_path: { current.max: imax, voltage.max: vmax }
+    polarity: unspecified
+
+  - devtype: haz-iocast                # template: hazemeyer
+    old_fields: []                     # never read imax/vmax - nothing to migrate
+    new_path: {}
+
+  - devtype: sigmaphi                  # template: sigmaphi
+    old_fields: [max]
+    new_path: { current.max: max }
+    polarity: unspecified
+    note: no fallback default in the template on purpose - a hardware current limit should fail loudly, not silently, if omitted
+
+  - devtype: biltitest / bilt-itest    # template: ibilt (path: templates/ps/iTest/ibilt.yaml.j2)
+    old_fields: [max]
+    new_path: { current.max: max }
+    polarity: unspecified
+    note: correctors typically steer both directions (suggesting bipolar), but since source data never declared polarity, this refactor does not assert it
+
+  - devtype: tti                       # template: TTI
+    old_fields: []
+    new_path: {}
+    note: this entity has NO current/voltage/ramp parameters at all - TTI was not touched by this refactor
+
+# ---------------------------------------------------------------------------
+# Worked examples
+# ---------------------------------------------------------------------------
+examples:
+
+  unipolar_negative_rail:
+    # control_mode omitted - defaults to current, which is what this is
+    ps:
+      polarity: { mode: unipolar, sign: negative }
+      current: { max: 100, ramp: 0.5 }
+
+  bipolar_native_asymmetric:
+    ps:
+      polarity: { mode: bipolar-native }
+      current: { min: -10, max: 30, ramp: 0.2 }
+      voltage: { min: 0, max: 40 }
+
+  bipolar_switched_via_relay:
+    ps:
+      polarity:
+        mode: bipolar-switched
+        switch: { settle_time_s: 2.0, zero_threshold: 0.05 }
+      current: { min: -100, max: 100, ramp: 0.2 }
+
+  ioc_level_default_with_device_override:
+    # IOC level (applies to every device on this IOC unless overridden).
+    # polarity/control_mode both omitted here - see "Global defaults" above.
+    ps:
+      current: { max: 100 }
+    # a single device on the same IOC overriding just current.max
+    device_ps_override:
+      ps:
+        current: { max: 700 }
+
+  polarity_unconfirmed:
+    # what most existing mag PS instances actually look like today: no
+    # polarity or control_mode key at all. That IS "unspecified" / "current"
+    # by schema default (see Global defaults above) - honest, not a guess,
+    # and no boilerplate needed. Only add polarity once it's confirmed
+    # against the hardware.
+    ps:
+      current: { max: 176 }

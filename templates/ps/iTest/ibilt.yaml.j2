@@ -10,12 +10,14 @@ entities:
     IP: {{server}}
     TCPPORT: {{port | default(5025) }}
 
+{%- set ioc_ps = (ps if ps is defined else {}) %}
 {%- for t in devices %}
+{%- set dev_ps = t.get('ps', {}) %}
   - type: biltItest.device
     controller: BILT_CTRL_PORT
     P: "{{ t.name }}"
     id: {{ t.channel }}
-    max: {{ t.max | default(10)}}
+    max: {{ dev_ps.get('current', {}).get('max', ioc_ps.get('current', {}).get('max', 10)) }}
 {%- endfor %}
 
   

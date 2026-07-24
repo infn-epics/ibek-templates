@@ -58,6 +58,11 @@
             "description": "Connection parameters for the IOC.",
             "$ref": "#/definitions/connection"
         },
+        "ps": {
+            "type": "object",
+            "description": "IOC-wide default power-supply rating/polarity block, overridable per device.",
+            "$ref": "#/definitions/ps"
+        },
         "devices": {
             "type": "array",
             "description": "List of devices to configure.",
@@ -127,9 +132,88 @@
                     "type": "object",
                     "description": "Connection parameters for the device.",
                     "$ref": "#/definitions/connection"
+                },
+                "ps": {
+                    "type": "object",
+                    "description": "Per-device power-supply rating/polarity block. Overrides any IOC-level ps: block field-by-field.",
+                    "$ref": "#/definitions/ps"
                 }
             },
             "required": ["name"]
+        },
+        "ps": {
+            "type": "object",
+            "description": "Power-supply rating, control mode and polarity behavior, shared by every PS devtype under devgroup: mag (ocem/E642, danfysik/sys8x00, maccaferriPS, psEEI/eei, caenels/{fastps,easydriver,histar}, hazemeyer, sigmaphi, ibilt/biltitest).",
+            "properties": {
+                "polarity": {
+                    "type": "object",
+                    "description": "Physical polarity behavior of the supply.",
+                    "properties": {
+                        "mode": {
+                            "type": "string",
+                            "enum": ["unipolar", "bipolar-native", "bipolar-switched", "unspecified"],
+                            "default": "unspecified",
+                            "description": "unipolar: fixed to one sign, requires 'sign'. bipolar-native: true four-quadrant, signed setpoint direct. bipolar-switched: monopolar hardware + polarity relay, requires 'switch'. unspecified: polarity behavior not yet confirmed against hardware - MUST NOT be treated as unipolar by consumers. This is the global default when polarity (or the whole ps: block) is omitted entirely - no PS devtype's Jinja template branches on the literal 'unspecified' string, so omitting it is behaviorally identical to writing it out. Only set mode explicitly once it's actually confirmed against the hardware."
+                        },
+                        "sign": {
+                            "type": "string",
+                            "enum": ["positive", "negative"],
+                            "description": "Required when mode == unipolar: which rail this supply is wired to."
+                        },
+                        "switch": {
+                            "type": "object",
+                            "description": "Required when mode == bipolar-switched.",
+                            "properties": {
+                                "settle_time_s": {
+                                    "type": "number",
+                                    "description": "Dwell time in standby before/after the polarity relay flips, in seconds."
+                                },
+                                "zero_threshold": {
+                                    "type": "number",
+                                    "description": "|current| (or |voltage|, per control_mode) below which it is safe to flip the polarity relay."
+                                }
+                            }
+                        }
+                    }
+                },
+                "control_mode": {
+                    "type": "string",
+                    "enum": ["current", "voltage"],
+                    "default": "current",
+                    "description": "Which quantity is the regulated setpoint. The other block, if present, is a compliance limit only. Every PS devtype in this repo is current-regulated today, so 'current' is the global default when omitted - no need to repeat it in iocDefaults or on individual devices. Set explicitly only for a genuinely voltage-regulated PS."
+                },
+                "current": {
+                    "type": "object",
+                    "description": "Current rating/limits. A/s for ramp.",
+                    "$ref": "#/definitions/psRange"
+                },
+                "voltage": {
+                    "type": "object",
+                    "description": "Voltage rating/limits. V/s for ramp.",
+                    "$ref": "#/definitions/psRange"
+                }
+            }
+        },
+        "psRange": {
+            "type": "object",
+            "properties": {
+                "min": {
+                    "type": "number",
+                    "description": "Lower bound of the achievable envelope (symmetric bipolar: min = -max)."
+                },
+                "max": {
+                    "type": "number",
+                    "description": "Upper bound of the achievable envelope."
+                },
+                "ramp": {
+                    "type": ["number", "null"],
+                    "description": "Rate-of-change limit. null = not ramp-limited or not applicable."
+                },
+                "limit": {
+                    "type": ["number", "null"],
+                    "description": "Additional software safety clamp layered on top of min/max (devtype-specific; seen on caenels as IMAX/OMAX). null/0 conventionally means disabled for devtypes that support it."
+                }
+            }
         }
     }
 }

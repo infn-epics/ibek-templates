@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+
+iocname: "ps-ocem-test"
+asset: "https://confluence.infn.it/x/test"
+devtype: E642
+template: "ocem"
+devgroup: mag
+iocprefix: "TEST:MAG:OCEME642"
+name: "OCEM_TEST"
+server: "192.168.1.1"
+port: 4001
+ps:
+  current:
+    max: 280
+  voltage:
+    max: 40
+devices:
+  - name: "DHTEST01"
+    id: 1
+    ps:
+      current:
+        max: 650
+      voltage:
+        max: 40
+  - name: "DHTEST02"
+    id: 2

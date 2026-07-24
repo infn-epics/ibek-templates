@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+
+iocname: "ps-hazemeyer-test"
+asset: "https://confluence.infn.it/x/test"
+devtype: haz-ser
+template: "hazemeyer"
+devgroup: mag
+iocprefix: "TEST:MAG:HAZ"
+iocroot: "HAZ"
+server: "192.168.1.7"
+port: 4001
+ps:
+  current:
+    max: 200
+  voltage:
+    max: 110
+devices:
+  - name: "DHTEST01"
+    id: 1
+    ps:
+      current:
+        max: 250
+      voltage:
+        max: 120
+  - name: "DHTEST02"
+    id: 2

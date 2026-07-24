@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+
+iocname: "ps-danfysik-test"
+asset: "https://confluence.infn.it/x/test"
+devtype: sys8x00
+template: "danfysik"
+devgroup: mag
+iocprefix: "TEST:MAG:DANFYSIK"
+server: "192.168.1.2"
+port: 4005
+ps:
+  current:
+    max: 100
+  voltage:
+    max: 25
+devices:
+  - name: "QUATEST01"
+    id: 10
+    ps:
+      polarity:
+        mode: unipolar
+        sign: positive
+      current:
+        max: 100
+      voltage:
+        max: 100
+  - name: "QUATEST02"
+    id: 11
+    ps:
+      polarity:
+        mode: unipolar
+        sign: negative

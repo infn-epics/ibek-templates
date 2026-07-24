@@ -3,13 +3,15 @@ description: OCEM template {{devtype}}
 
 entities:
 {% if devtype == "modbusps" %}
+{%- set ioc_ps = (ps if ps is defined else {}) %}
 {%- for alim in devices %}
+{%- set dev_ps = alim.get('ps', {}) %}
   - type: ocem.modbusps
-    P: "{{iocprefix}}" 
+    P: "{{iocprefix}}"
     R: "{{alim.name}}"
     IP: {{alim.ip}}
-    IMAX: {{alim.imax | default(100)}}
-    VMAX: {{alim.vmax | default(16)}}
+    IMAX: {{dev_ps.get('current', {}).get('max', ioc_ps.get('current', {}).get('max', 100))}}
+    VMAX: {{dev_ps.get('voltage', {}).get('max', ioc_ps.get('voltage', {}).get('max', 16))}}
     TCPPORT: {{alim.port | default(502)}}
     CORRECTION: {{alim.correction | default(1.8)}}  
     CORRECTIONSET: {{alim.correctionset | default(1)}} 
@@ -17,12 +19,13 @@ entities:
 {%- endif %}
 
 {% if devtype == "modbusps4chan" %}
+{%- set ioc_ps = (ps if ps is defined else {}) %}
   - type: ocem.modbusps4chan
-    P: "{{iocprefix}}" 
+    P: "{{iocprefix}}"
     R: "{{cratename}}"
     IP: {{ip}}
-    IMAX: {{imax | default(30)}}
-    VMAX: {{vmax | default(16)}}
+    IMAX: {{ioc_ps.get('current', {}).get('max', 30)}}
+    VMAX: {{ioc_ps.get('voltage', {}).get('max', 16)}}
     TCPPORT: {{port | default(502)}}
 {% set ways = ["WAYA", "WAYB", "WAYC", "WAYD"] %}
 {%- for alim in devices %}
@@ -77,14 +80,16 @@ entities:
     DEBUG_LEVEL: {{debug_level | default(0)}}
 
   # Slave entities
+  {%- set ioc_ps = (ps if ps is defined else {}) %}
   {%- for sl in devices %}
+  {%- set dev_ps = sl.get('ps', {}) %}
   - type: ocem.E642
     P: "{{iocprefix}}"
     R: "{{sl.name}}"
     NAME: "{{name}}"
     ADDR: {{sl.id}}
-    IMAX: {{sl.imax | default(280)}}
-    VMAX: {{sl.vmax | default(40)}}
+    IMAX: {{dev_ps.get('current', {}).get('max', ioc_ps.get('current', {}).get('max', 280))}}
+    VMAX: {{dev_ps.get('voltage', {}).get('max', ioc_ps.get('voltage', {}).get('max', 40))}}
     SET_TOLERANCE: {{sl.set_tolerance | default(set_tolerance) | default(1.8)}}
     ZERO_TOLERANCE: {{sl.zero_tolerance | default(zero_tolerance) | default(1.8)}}
     SET_TIMEOUT_S: {{sl.set_timeout_s | default(set_timeout_s) | default(60.0)}}

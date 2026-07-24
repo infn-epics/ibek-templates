@@ -10,11 +10,17 @@ entities:
     IP: {{server}}
     TCPPORT: {{port | default(502) }}
 
+{%- set ioc_ps = (ps if ps is defined else {}) %}
 {%- for t in devices %}
+{%- set dev_ps = t.get('ps', {}) %}
+  # NOTE: no fallback numeric default on purpose (matches original template
+  # behavior, which had none either) - this is a hardware current limit, and
+  # a silently-wrong default is worse than a loud failure if ps.current.max
+  # was never set for this device.
   - type: sigmaPhiStart.device
     controller: START
     P: {{t.name}}
-    max: {{t.max}}
+    max: {{dev_ps.get('current', {}).get('max', ioc_ps.get('current', {}).get('max', none)) }}
 {%- endfor %}
 
 

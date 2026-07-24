@@ -5,7 +5,9 @@ entities:
 # ============================================================================
 # Modbus RTU over TCP - Maccaferri Power Supplies
 # ============================================================================
+{%- set ioc_ps = (ps if ps is defined else {}) %}
 {%- for t in devices %}
+{%- set dev_ps = t.get('ps', {}) %}
 
 - type: maccaferriPS.ps
   server: "{{ t.server if t.server is defined else server }}"
@@ -16,8 +18,11 @@ entities:
   timeout: {{ t.timeout if t.timeout is defined else 2000 }}
   fast_poll: {{ t.fast_poll if t.fast_poll is defined else 500 }}
   slow_poll: {{ t.slow_poll if t.slow_poll is defined else 1000 }}
-  max_curr: {{ t.max_curr if t.max_curr is defined else 500 }}
-  min_curr: {{ t.min_curr if t.min_curr is defined else -500 }}
+  # NOTE: this entity's own defaults are symmetric (-500/+500), i.e. it is
+  # bipolar by design - devices on this template should generally declare
+  # ps.polarity.mode: bipolar-native rather than leaving it unspecified.
+  max_curr: {{ dev_ps.get('current', {}).get('max', ioc_ps.get('current', {}).get('max', 500)) }}
+  min_curr: {{ dev_ps.get('current', {}).get('min', ioc_ps.get('current', {}).get('min', -500)) }}
 
 {%- endfor %}
 

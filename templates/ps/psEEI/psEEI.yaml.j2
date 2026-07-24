@@ -5,7 +5,9 @@ entities:
 # ============================================================================
 # TCP/IP MODE - Direct Modbus TCP connection per device
 # ============================================================================
+{%- set ioc_ps = (ps if ps is defined else {}) %}
 {%- for t in devices %}
+{%- set dev_ps = t.get('ps', {}) %}
 
 - type: EEI.ps
   IP: {{ t.ip }}
@@ -16,10 +18,10 @@ entities:
   RPOLL: {{ t.rpoll if t.rpoll is defined else 1000 }}
   WPOLL: {{ t.wpoll if t.wpoll is defined else 0 }}
   TIMEOUT: {{ t.timeout if t.timeout is defined else 1000 }}
-  MAX_CURR: {{ t.max_curr if t.max_curr is defined else 330000 }}
-  MIN_CURR: {{ t.min_curr if t.min_curr is defined else -330000 }}
+  MAX_CURR: {{ dev_ps.get('current', {}).get('max', ioc_ps.get('current', {}).get('max', 330000)) }}
+  MIN_CURR: {{ dev_ps.get('current', {}).get('min', ioc_ps.get('current', {}).get('min', -330000)) }}
   SW_MODE: {{ t.sw_mode if t.sw_mode is defined else 1 }}
-  POLARITY_VIA_SIGN: {{ t.bipolar if t.bipolar is defined else 0 }}
+  POLARITY_VIA_SIGN: {{ 1 if dev_ps.get('polarity', {}).get('mode', ioc_ps.get('polarity', {}).get('mode', '')) in ['bipolar-native','bipolar-switched'] else 0 }}
 
 {%- endfor %}
 
@@ -40,17 +42,20 @@ entities:
 # --- Initialize PV values ---
 # RAMP_RATE_SET has no db-level default and resets to 0 on every IOC
 # restart, so a device is silently un-ramped until someone sets it. There's
-# no safe universal default (it varies per magnet), so set `ramp_rate:` on a
-# device below to have it applied automatically at startup; devices that
-# don't set it are unaffected (same as before this was added).
+# no safe universal default (it varies per magnet), so set `ps.current.ramp`
+# (device-level or IOC-level) on a device below to have it applied
+# automatically at startup; devices that don't set it are unaffected (same
+# as before this was added, when the field was named `ramp_rate`).
 - type: epics.PostStartupCommand
   command: |
   {%- for param in iocinit %}
     dbpf("{{iocprefix}}:{{iocroot}}:{{param.name}}", "{{param.value}}")
   {%- endfor %}
+  {%- set ioc_ps2 = (ps if ps is defined else {}) %}
   {%- for dev in devices %}
-  {%- if dev.ramp_rate is defined %}
-    dbpf("{{iocprefix}}:{{dev.name}}:RAMP_RATE_SET", "{{dev.ramp_rate}}")
+  {%- set ramp = dev.get('ps', {}).get('current', {}).get('ramp', ioc_ps2.get('current', {}).get('ramp', none)) %}
+  {%- if ramp is not none %}
+    dbpf("{{iocprefix}}:{{dev.name}}:RAMP_RATE_SET", "{{ramp}}")
   {%- endif %}
   {%- for param in dev.iocinit %}
     dbpf("{{iocprefix}}:{{dev.name}}:{{param.name}}", "{{param.value}}")

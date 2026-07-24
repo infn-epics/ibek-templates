@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+
+iocname: "ps-caenels-test"
+asset: "https://confluence.infn.it/x/test"
+devtype: fastps
+template: "caenels"
+devgroup: mag
+iocprefix: "TEST:MAG:FAST"
+iocroot: "FAST"
+ps:
+  current:
+    max: 30
+    ramp: 0
+  voltage:
+    max: 20
+    ramp: 0
+devices:
+  - name: "PSTEST01"
+    ip: "192.168.1.5"
+    ps:
+      current:
+        max: 30
+        ramp: 0.2
+        limit: 32
+  - name: "PSTEST02"
+    ip: "192.168.1.6"

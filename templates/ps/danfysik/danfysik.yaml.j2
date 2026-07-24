@@ -13,14 +13,19 @@ entities:
 # ============================================================================
 # Power Supplies with UNIMAG Interfaces
 # ============================================================================
+{%- set ioc_ps = (ps if ps is defined else {}) %}
 {%- for device in devices %}
+{%- set dev_ps = device.get('ps', {}) %}
 - type: danfysik.ps
   NAME: "{{device.name}}"
   P: "{{iocprefix}}:{{device.name}}"
   PORT: "DANFYSIK_PORT"
   ADDR: {{ device.id }}
-  IMAX: {{ device.imax | default(100.0) }}
-  VMAX: {{ device.vmax | default(25.0) }}
+  # NOTE: device.ps.polarity is informational only here - the danfysik.ps IBEK
+  # entity has no signed-polarity input today. Do not add one without first
+  # confirming the entity's parameter schema in the danfysik ibek-support package.
+  IMAX: {{ dev_ps.get('current', {}).get('max', ioc_ps.get('current', {}).get('max', 100.0)) }}
+  VMAX: {{ dev_ps.get('voltage', {}).get('max', ioc_ps.get('voltage', {}).get('max', 25.0)) }}
   PREC: 3
   unimag_enable: {{ device.unimag_enable | default(true) }}
   debug: {{ device.debug | default(1) }}

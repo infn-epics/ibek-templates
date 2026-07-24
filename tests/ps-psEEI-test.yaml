@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+
+iocname: "ps-psEEI-test"
+asset: "https://confluence.infn.it/x/test"
+devtype: eei
+template: "psEEI"
+devgroup: mag
+iocprefix: "TEST:MAG:EEI"
+iocroot: "EEI"
+port: 502
+ps:
+  polarity:
+    mode: bipolar-native
+  current:
+    max: 100
+    min: -100
+devices:
+  - name: "DHPTEST01"
+    ip: "192.168.1.3"
+    ps:
+      polarity:
+        mode: bipolar-native
+      current:
+        max: 100
+        min: -100
+        ramp: 0.2
+  - name: "QUATEST01"
+    ip: "192.168.1.4"
