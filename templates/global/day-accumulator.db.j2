@@ -43,6 +43,19 @@ record(bo, "{{ daypv }}:ENABLE") {
     field(VAL,  "1")
 }
 
+{% if pvenable %}
+# ------------------------------------------------------------------
+# Mirror the external enable PV and reprocess on changes
+# ------------------------------------------------------------------
+record(calcout, "{{ daypv }}:ext_enable_") {
+    field(DESC, "Mirror external enable PV")
+    field(INPA, "{{ pvenable }} CPP NMS")
+    field(CALC, "A")
+    field(DOPT, "Use CALC")
+    field(FLNK, "{{ daypv }}:accumulate_")
+}
+{% endif %}
+
 # ------------------------------------------------------------------
 # Poll the source PV at the configured scan rate
 # ------------------------------------------------------------------
@@ -73,7 +86,7 @@ record(calcout, "{{ daypv }}:accumulate_") {
     field(INPC, "{{ daypv }}:prev_ NPP NMS")
     field(INPD, "{{ daypv }}:ENABLE NPP NMS")
 {% if pvenable %}
-    field(INPE, "{{ pvenable }} CPP NMS")
+    field(INPE, "{{ daypv }}:ext_enable_ NPP NMS")
     field(CALC, "(D>0&&E>0&&A!=C)?(B+ABS(A)):B")
 {% else %}
     field(CALC, "(D>0&&A!=C)?(B+ABS(A)):B")
