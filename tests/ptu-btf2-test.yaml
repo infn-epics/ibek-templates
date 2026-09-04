@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+
+iocname: "ptu-btf2"
+iocprefix: "BTF2"
+template: "ptu"
+
+server: "192.168.189.206"
+port: 4444
+serial: "METEOMK2-188824"
+pollperiod: 2.0
+
+iocexit: false
