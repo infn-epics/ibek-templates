@@ -1,21 +1,25 @@
 # yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+
 ioc_name: {{iocname}}
 description: BTF PTU TEMPLATE
 
 entities:
+{%- for dev in devices %}
 - type: PTUControl.meteo
-  name: "{{name | default('PTU_' ~ iocprefix)}}"
-  P: "{{iocprefix}}"
-  hubAddress: "{{server}}:{{port | default(4444)}}"
-  serialNumber: "{{serial}}"
-  pollPeriod: {{pollperiod | default(2.0)}}
+  name: "{{dev.name | default('PTU_' ~ dev.prefix)}}"
+  P: "{{dev.prefix}}"
+  hubAddress: "{{dev.server}}:{{dev.port | default(4444)}}"
+  serialNumber: "{{dev.serial}}"
+  pollPeriod: {{dev.pollperiod | default(2.0)}}
+
+{%- endfor %}
 
 - type: epics.PostStartupCommand
   command: |
-  {%- if iocexit %}
+  {%- if iocexit | default(false) %}
     dbl
     exit
   {%- else %}
-    dbl("*") > {{config_dir | default('/epics/iocs')}}/pvlist.txt
     dbl
   {%- endif %}
+  
