@@ -7,7 +7,8 @@ entities:
 {%- for dev in devices %}
 - type: PTUControl.meteo
   name: "{{dev.name | default('PTU_' ~ dev.prefix)}}"
-  P: "{{dev.prefix}}"
+  P: "{{iocprefix}}"
+  R: "{{dev.name}}"
   hubAddress: "{{dev.server}}:{{dev.port | default(4444)}}"
   serialNumber: "{{dev.serial}}"
   pollPeriod: {{dev.pollperiod | default(2.0)}}

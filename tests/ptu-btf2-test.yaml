@@ -2,15 +2,17 @@
 
 iocname: "ptu-btf"
 template: "ptu"
+iocprefix: "PTU:"
+
 
 devices:
-  - prefix: "BTF1"
+  - name: "BTF1"
     server: "192.168.189.205"
     port: 4444
-    serial: "METEOMK2-BTF1"
+    serial: "METEOMK2-2E43CE"
     pollperiod: 2.0
 
-  - prefix: "BTF2"
+  - name: "BTF2"
     server: "192.168.189.206"
     port: 4444
     serial: "METEOMK2-188824"
