@@ -4,7 +4,7 @@ asset: "https://servicedesk.infn.it/secure/ObjectSchema.jspa?id=44&typeId=2505&o
 iocprefix: "LEL:VAC:VPCON17"
 template: "agilent-vac"
 devtype: 4uhv
-devgroup: vpc
+devgroup: vac
 server: "10.16.4.57"
 iocexit: true
 port: 4002

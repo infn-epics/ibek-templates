@@ -33,7 +33,14 @@ jobs:
             ajv compile -s "$schema" || exit 1
           done
 
-      # Step 4: Run jnjrender on YAML files in tests
+      # Step 4: Validate every test fixture against schemas/ioc.schema.json.
+      # `ajv compile` above only checks the schema file itself is well-formed
+      # - it never checks that tests/*.yaml instances actually conform to it.
+      - name: Validate Test YAML Files Against ioc.schema.json
+        run: |
+          ajv validate -s schemas/ioc.schema.json -d "tests/*.yaml"
+
+      # Step 5: Run jnjrender on YAML files in tests
       - name: Test templates on YAML files
         run: |
           pip install jnjrender

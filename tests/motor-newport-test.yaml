@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+
 iocname: "vitara"
 asset: "Vitara RF SPARC"
 template: "motor"
@@ -8,12 +10,15 @@ iocroot: "VITARA01"
 server: "192.168.197.105"
 port: 4002
 iocexit: true
-motor:
-  devices:
-    - name: "m0"
-      axid: 0
-      dllm: -25
-      dhlm: 25
-      home: 1
-      start: 10
-      velo: 1
+# devices: must be at the IOC root, not nested under motor: - the newport
+# template branch reads top-level `devices`, not `motor.devices`. This
+# fixture used to nest it here, which rendered numAxes: 0 (no axis
+# entities at all) - see motor-schema.yaml "Resolution order" note.
+devices:
+  - name: "m0"
+    axid: 0
+    dllm: -25
+    dhlm: 25
+    home: 1
+    start: 10
+    velo: 1

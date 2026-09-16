@@ -4,7 +4,7 @@ iocname: "tml-ch1"
 asset: "https://confluence.infn.it/x/nYD8DQ"
 devtype: tml
 template: "motor"
-devgroup: motor
+devgroup: mot
 iocprefix: "SPARC:TML"
 iocexit: true
 serial:
@@ -22,44 +22,48 @@ motor:
   velo: 20
   jvel: 20
   hvel: 20
-  devices:
-    - name: GUNFLG01
-      axid: 10
-      velo: 30
-      jvel: 30
-      hvel: 30
+# devices: must be at the IOC root, not nested under motor: - the tml
+# template branch reads top-level `devices`, not `motor.devices`. This
+# fixture used to nest it here, which rendered zero axes (see motor-schema.yaml
+# "Resolution order" note - same class of bug as motor-newport-test.yaml).
+devices:
+  - name: GUNFLG01
+    axid: 10
+    velo: 30
+    jvel: 30
+    hvel: 30
   # - name: AC1BAM01
-  #   axid: 23        
-    - name: "AC1FLG01"
-      axid: 3
-    - name: AC2FLG01
-      axid: 4
-      velo: 40
-      jvel: 40
-      hvel: 40
-    - name: AC3FLG01
-      axid: 5
-      velo: 40
-      jvel: 40
-      hvel: 40
-    - name: UTLFLG01
-      axid: 12
-      velo: 40
-      jvel: 40
-      hvel: 40
-    - name: UTLFLG02
-      axid: 13
-    - name: DGLFLG00
-      axid: 11
-      velo: 40
-      jvel: 40
-      hvel: 40
-    - name: DGLFLG01
-      axid: 14
-      velo: 40
-      jvel: 40
-      hvel: 40
-    - axid: 8
-      name: GUNHOR01
-    - axid: 7
-      name: GUNVER01
+  #   axid: 23
+  - name: "AC1FLG01"
+    axid: 3
+  - name: AC2FLG01
+    axid: 4
+    velo: 40
+    jvel: 40
+    hvel: 40
+  - name: AC3FLG01
+    axid: 5
+    velo: 40
+    jvel: 40
+    hvel: 40
+  - name: UTLFLG01
+    axid: 12
+    velo: 40
+    jvel: 40
+    hvel: 40
+  - name: UTLFLG02
+    axid: 13
+  - name: DGLFLG00
+    axid: 11
+    velo: 40
+    jvel: 40
+    hvel: 40
+  - name: DGLFLG01
+    axid: 14
+    velo: 40
+    jvel: 40
+    hvel: 40
+  - axid: 8
+    name: GUNHOR01
+  - axid: 7
+    name: GUNVER01

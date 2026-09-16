@@ -1,0 +1,192 @@
+# motor-schema.yaml
+#
+# Human-readable reference for the `motor:` block shared by every motor
+# devtype (pollux, pigcs2, newport, tml, technosoft-asyn, thorlabs,
+# motorsim), and for the equivalent per-axis fields on devices[].
+#
+# This file documents the same shape that is ENFORCED (IDE-validated) by
+# schemas/ioc.schema.json - see the `motor` and `zones` definitions there,
+# published at:
+#   https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+# Reference it from a values.yaml or test fixture with:
+#   # yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+#
+# Precedent: mirrors ps-schema.yaml, written for the same reason - `motor:`
+# and its axis fields (velo, dllm, dhlm, mres, prec, egu, ...) were a
+# collection of ad hoc fields understood only by reading each Jinja branch
+# in templates/motor/motor.yaml.j2, with one internal inconsistency: some
+# branches read defaults from `motor.*`, others read the same concepts as
+# bare top-level IOC fields.
+
+# ---------------------------------------------------------------------------
+# Shape
+# ---------------------------------------------------------------------------
+shape:
+  motor:                    # IOC-level: applies to every axis on this IOC
+                             # unless overridden per-device (see below).
+    # Controller-level fields (devtype-specific - see migration table)
+    hostid: <int|string>
+    baudRate: <int>
+    movingPollPeriod: <number>
+    idlePollPeriod: <number>
+    debug: <int>
+    configFile: <string>
+    sendVelAccel: <bool>
+    eguxstep: <number>
+    motorType: dc | stepper | piezo | kim
+    yesNoRefFlag: <int>
+    ASYNPRIO: <int>
+    AUTOCONNECT: <int>
+    NOPROCESSEOS: <int>
+    # Axis-default fields - same names as the per-device override fields below
+    velo: <number>
+    vbas: <number>
+    accl: <number>          # acceleration time (s)
+    accs: <number>          # acceleration (EGU/s^2) - devtypes that take it directly
+    bdst: <number>
+    bvel: <number>
+    bacc: <number>
+    mres: <number>
+    prec: <int>
+    egu: <string>
+    dir: Pos | Neg
+    dllm: <number>
+    dhlm: <number>
+    home: <number>
+    start: <number>
+    twv: <number>
+
+  devices:
+    - name: <string>
+      axid: <int|string>
+      poi:                   # named points of interest
+        - name: <string>
+          value: <number>
+      zones: <string|list>
+      # any of the axis-default field names above, overriding motor.<field>
+      # field-by-field (not block-by-block)
+      velo: <number>
+      dllm: <number>
+      # ...
+
+# ---------------------------------------------------------------------------
+# Resolution order - identical for every devtype after this refactor
+# ---------------------------------------------------------------------------
+# For each axis field: devices[].<field>  >  motor.<field>  >  hardcoded
+# template default. Nest `motor:` at IOC level when every axis on that IOC
+# shares defaults; override per-axis on devices[] when they differ - exactly
+# like ps: at IOC level vs per-device.
+#
+# Before this refactor, `pollux` and `pigcs2` were the exception: their axis
+# defaults were read as bare top-level IOC fields (`velo`, `dllm`, ...) with
+# NO `motor:` wrapper - nesting them under `motor:` was silently ignored.
+# Grepping all three facilities' values.yaml (BTF/SPARC/EUAPS) at the time of
+# this refactor found zero IOCs relying on that bare-field behavior for
+# pollux/pigcs2 - every existing instance fully specifies each axis's values
+# on devices[] rather than using an IOC-level default. The bare top-level
+# fields still work (kept as a second-priority fallback, after motor.* and
+# before the hardcoded default) but are no longer documented - always use
+# `motor:` for new IOCs.
+
+# ---------------------------------------------------------------------------
+# Per-devtype field table
+# ---------------------------------------------------------------------------
+# Not every devtype reads every field - unused fields are simply ignored,
+# not rejected (schema allows any subset).
+fields_by_devtype:
+  pollux:            # template branch: motor.yaml.j2, devtype == "pollux"
+    controller: [eguxstep, configFile, sendVelAccel, debug]
+    axis: [dllm, dhlm, home, velo, dir, egu, vbas, accl, bdst, bvel, bacc, mres, prec]
+    note: >
+      Previously read axis defaults as bare top-level IOC fields; now reads
+      motor.* first (see "Resolution order" above).
+
+  pigcs2:             # template branch: motor.yaml.j2, devtype == "pigcs2"
+                       # used for the "mercury" hardware family in EUAPS
+    controller: [movingPollPeriod, idlePollPeriod, yesNoRefFlag, configFile, ASYNPRIO, AUTOCONNECT, NOPROCESSEOS]
+    axis: [egu, dir, velo, vbas, accl, bdst, bvel, bacc, mres, prec, dhlm, dllm, twv]
+    note: >
+      Same pre-existing bare-top-level-field issue as pollux, same fix.
+
+  newport:
+    controller: [eguxstep]              # note: motor.eguxstep only, no bare fallback ever existed
+    axis: [dllm, dhlm, home, start, velo, dir, egu, vbas, accl, bdst, bvel, bacc, mres, prec]
+
+  tml:                # technosoft TML over shared &motor anchor
+    controller: [hostid, nsteps, nmicrosteps, velo, velo_max, velo_min, accl,
+                 accl_max, accl_min, har, hvel, jar, jvel, egu, slsp, enabled]
+    axis: [nsteps, nmicrosteps, velo, pos_max, pos_min, egu2mm, velo_max,
+           velo_min, accl, accl_max, accl_min, har, hvel, jar, jvel, egu,
+           slsp, enabled, timeout]
+    note: "Already used motor.* consistently before this refactor - untouched."
+
+  technosoft-asyn:
+    controller: [hostid, baudRate, movingPollPeriod, idlePollPeriod, debug]
+    axis: [axisId, setupFile, homingSwitch, ignoreLSP, ignoreLSN, scrValue,
+           egu, dir, velo, vbas, accs, bdst, bvel, bacc, mres, ares, prec,
+           dhlm, dllm, twv]
+    note: "Already used motor.* consistently before this refactor - untouched."
+
+  thorlabs:
+    controller: [motorType, movingPollPeriod, idlePollPeriod]
+    axis: [egu, dir, velo, vbas, accs, bdst, bvel, bacc, mres, prec, dhlm,
+           dllm, twv, home]
+    note: >
+      motorType (dc/stepper/piezo/kim) selects a built-in per-family default
+      envelope for every axis field below it - explicit motor.<field> or
+      device mot.<field> still wins over the type default.
+      Already used motor.* consistently before this refactor - untouched.
+
+  motorsim:
+    axis: [dllm, dhlm, home, start, dir, egu, velo, vbas, accl, bdst, bvel, bacc, mres, prec]
+    note: "Already used motor.* consistently before this refactor - untouched."
+
+# ---------------------------------------------------------------------------
+# Worked examples
+# ---------------------------------------------------------------------------
+examples:
+
+  ioc_level_default_with_per_axis_override:
+    motor:
+      egu: mm
+      velo: 5
+      accl: 0.2
+      mres: 0.0001
+      prec: 4
+    devices:
+      - name: FP1-HMN-01
+        axid: 1
+        dllm: 0
+        dhlm: 12
+        home: -1
+        # velo/accl/mres/prec/egu inherited from motor: above
+      - name: FP1-VMN-01
+        axid: 2
+        dllm: 0
+        dhlm: 12
+        home: -1
+        velo: 2          # overrides motor.velo just for this axis
+
+  fully_per_axis_no_ioc_default:
+    # what most existing pollux/pigcs2/mercury instances look like today -
+    # every axis fully specified, no motor: block needed at all.
+    devices:
+      - name: SLTTB004R
+        axid: 3
+        dhlm: 19383561
+        velo: 200
+        hvel: 200
+
+  points_of_interest:
+    devices:
+      - name: HMOT01
+        axid: 1
+        dllm: 0
+        dhlm: 12
+        poi:
+          - name: YAG
+            value: 5
+          - name: calibration
+            value: 10
+          - name: mirror
+            value: 12

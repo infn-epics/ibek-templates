@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+#
+# Exercises the motor.<field> -> bare <field> -> hardcoded-default fallback
+# chain added for pollux in this refactor: axis M2 relies entirely on the
+# IOC-level motor: block, axis M1 overrides a few fields per-axis.
+
+iocname: "pollux-test"
+asset: "https://confluence.infn.it/x/test"
+devtype: pollux
+template: "motor"
+devgroup: mot
+iocprefix: "TEST:MOT:POL"
+server: "192.168.1.1"
+port: 4001
+debug: 2
+motor:
+  configFile: "/epics/generic-source/ibek-support-infn/motorMicos/config/test.txt"
+  egu: mm
+  velo: 5
+  accl: 0.2
+  mres: 0.0001
+  prec: 4
+devices:
+  - name: M1
+    axid: 1
+    dllm: 0
+    dhlm: 12
+    home: -1
+    velo: 2
+    poi:
+      - name: YAG
+        value: 5
+      - name: mirror
+        value: 12
+  - name: M2
+    axid: 2
+    dllm: 0
+    dhlm: 12
+    home: -1
+    # velo/accl/mres/prec/egu all inherited from motor: above

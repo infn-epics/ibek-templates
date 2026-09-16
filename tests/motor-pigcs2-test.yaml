@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+#
+# Exercises the motor.<field> -> bare <field> -> hardcoded-default fallback
+# chain added for pigcs2 in this refactor (mercury/PI GCS2 hardware family):
+# axis M2 relies entirely on the IOC-level motor: block, M1 overrides a
+# couple of fields per-axis.
+
+iocname: "pigcs2-test"
+asset: "https://confluence.infn.it/x/test"
+devtype: pigcs2
+template: "motor"
+devgroup: mot
+iocprefix: "TEST:MOT:PI"
+server: "192.168.1.2"
+port: 50000
+motor:
+  movingPollPeriod: 100
+  idlePollPeriod: 1000
+  egu: mm
+  velo: 0.5
+  mres: 0.0000000388264
+  prec: 4
+devices:
+  - name: M1
+    axid: 0
+    dllm: 0
+    dhlm: 25
+    velo: 1
+  - name: M2
+    axid: 1
+    dllm: 0
+    dhlm: 25
+    # velo/mres/prec/egu all inherited from motor: above

@@ -19,6 +19,19 @@
             "type": "string",
             "description": "Global Device type."
         },
+        "devgroup": {
+            "description": "Device family. LOAD-BEARING for the operator screens: epik8s-opi's Scripts/epik8sutil.py conf_to_dev() dispatches with an exact string compare (`devgroup == group`, where group is the panel's GROUP macro) and builds the item widget path as uni<devgroup>-opi/<devgroup>_channel_load.bob. A devgroup that doesn't match a uni<x>-opi family means the device silently never appears on its panel.",
+            "$ref": "#/definitions/devgroup"
+        },
+        "devfunc": {
+            "description": "Device function within its family (e.g. a magnet's COR/QUA/DIP). Drives the FUNC filter on the operator panels. Declare it: when absent, epik8sutil.py conf_to_dev() falls back to guessing it from substrings of the device NAME (QUA*/DIP*/CHH*/CVV*/SLT*/FLG*/SIP*...), so any device not matching those naming conventions lands in the wrong filter bucket.",
+            "$ref": "#/definitions/devfunc"
+        },
+        "geo": {
+            "type": "number",
+            "description": "Ordering position of the device along the beamline (monotonically increasing downstream). Used by downstream consumers (dashboard/synoptic ordering), not by any Jinja template. Not a calibrated s-coordinate in metres today - it is a relative ordering key.",
+            "minimum": 0
+        },
         "iocprefix": {
             "type": "string",
             "description": "Prefix for the IOC PVs."
@@ -37,7 +50,7 @@
         },
         "asset": {
             "type": "string",
-            "description": "Asset entry associated with the IOC."
+            "description": "Optional asset/documentation link for the IOC as a whole. Not required: some IOCs track asset per-device instead (see devices[].asset), and some legitimately have none yet."
         },
         "iocinit": {
             "type": "array",
@@ -63,6 +76,15 @@
             "description": "IOC-wide default power-supply rating/polarity block, overridable per device.",
             "$ref": "#/definitions/ps"
         },
+        "motor": {
+            "type": "object",
+            "description": "IOC-wide default motor controller/axis configuration, overridable per device (devices[].<field> overrides field-by-field, not block-by-block). Shared by every motor devtype (pollux, pigcs2, newport, tml, technosoft-asyn, thorlabs, motorsim) - not every devtype consumes every field, see motor-schema.yaml's per-devtype table.",
+            "$ref": "#/definitions/motor"
+        },
+        "zones": {
+            "description": "Logical/physical zone grouping for this IOC (dashboard, interlock aggregation). A single zone name or a list of zone names.",
+            "$ref": "#/definitions/zones"
+        },
         "devices": {
             "type": "array",
             "description": "List of devices to configure.",
@@ -71,7 +93,7 @@
             }
         }
     },
-    "required": ["iocname", "iocprefix", "asset"],
+    "required": ["iocname", "iocprefix"],
     "definitions": {
         "keyvalue": {
             "type": "object",
@@ -81,8 +103,8 @@
                     "description": "Name of the parameter."
                 },
                 "value": {
-                    "type": "string",
-                    "description": "Value of the parameter."
+                    "type": ["string", "number", "boolean"],
+                    "description": "Value of the parameter. Any scalar is valid - the Jinja templates interpolate it as {{value}}, string-typing it in the schema was stricter than actual usage (iocparam/iocinit routinely carry numbers and booleans, e.g. port: 4001, value: true)."
                 }
             },
             "required": ["name", "value"]
@@ -113,12 +135,12 @@
                     "description": "controlled device/sensor type"
                 },
                 "channel": {
-                    "type": "integer",
-                    "description": "Channel number of the device."
+                    "type": ["integer", "string"],
+                    "description": "Channel identifier of the device. Integer for a plain channel index (icpdas, tektronix, ...); string for a devtype with an enum-style channel label instead (e.g. pfeiffer tpg300/tpg366: A1/A2/B1/B2, per the pfeiffer.tpg300 ibek-support channel entity)."
                 },
                 "asset": {
                     "type": "string",
-                    "description": "Asset entry associated with the device/sensor"
+                    "description": "Optional asset/documentation link for this device. Not required - used instead of (or alongside) the IOC-level asset for IOCs that manage several distinct physical assets (e.g. one camera IOC with several devices[], each with its own asset link)."
                 },
 
                 "iocinit": {
@@ -137,7 +159,69 @@
                     "type": "object",
                     "description": "Per-device power-supply rating/polarity block. Overrides any IOC-level ps: block field-by-field.",
                     "$ref": "#/definitions/ps"
-                }
+                },
+                "zones": {
+                    "description": "Logical/physical zone grouping for this device. Consumers merge this with the IOC-level zones rather than replacing it (epik8s-opi appends the IOC zone to the device's own).",
+                    "$ref": "#/definitions/zones"
+                },
+                "devfunc": {
+                    "description": "Per-device function, overriding the IOC-level devfunc. Read by epik8s-opi's conf_to_dev() to populate the FUNC panel filter.",
+                    "$ref": "#/definitions/devfunc"
+                },
+                "geo": {
+                    "type": "number",
+                    "description": "Ordering position of this device along the beamline. Per-device is the common case (one IOC often drives several magnets at different positions).",
+                    "minimum": 0
+                },
+                "limits": {
+                    "type": "object",
+                    "description": "Per-device alarm/display limits, overriding any IOC-level limits field-by-field.",
+                    "$ref": "#/definitions/limits"
+                },
+                "alias": {
+                    "type": "string",
+                    "description": "Display name substituted for 'name' on the operator panels (epik8s-opi conf_to_dev uses dev.alias in place of dev.name when present)."
+                },
+                "prefix": {
+                    "type": "string",
+                    "description": "Per-device PV prefix, overriding the IOC-level iocprefix. Honoured by epik8s-opi and by the motor/ps/mrf/libera templates."
+                },
+                "opi": {
+                    "type": "string",
+                    "description": "Per-device OPI (.bob) override, taking precedence over the IOC-level opi on the operator panels."
+                },
+                "axid": {
+                    "type": ["integer", "string"],
+                    "description": "Motor axis number on the controller. Per-device, no IOC-level default (each axis is distinct)."
+                },
+                "poi": {
+                    "type": "array",
+                    "description": "Named points of interest (motor positions) for this axis.",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": { "type": "string" },
+                            "value": { "type": "number" }
+                        },
+                        "required": ["name", "value"]
+                    }
+                },
+                "velo": { "type": "number", "description": "Motor axis default/max velocity. Overrides motor.velo." },
+                "vbas": { "type": "number", "description": "Motor axis base velocity. Overrides motor.vbas." },
+                "accl": { "type": "number", "description": "Motor axis acceleration time (s). Overrides motor.accl." },
+                "accs": { "type": "number", "description": "Motor axis acceleration (EGU/s^2), used by devtypes that take acceleration directly rather than a ramp time. Overrides motor.accs." },
+                "bdst": { "type": "number", "description": "Motor axis backlash distance. Overrides motor.bdst." },
+                "bvel": { "type": "number", "description": "Motor axis backlash velocity. Overrides motor.bvel." },
+                "bacc": { "type": "number", "description": "Motor axis backlash acceleration time (s). Overrides motor.bacc." },
+                "mres": { "type": "number", "description": "Motor axis resolution (EGU/step). Overrides motor.mres." },
+                "prec": { "type": "integer", "description": "Motor axis display precision. Overrides motor.prec." },
+                "egu": { "type": "string", "description": "Motor axis engineering units. Overrides motor.egu." },
+                "dir": { "type": "string", "enum": ["Pos", "Neg"], "description": "Motor axis direction sense. Overrides motor.dir." },
+                "dllm": { "type": "number", "description": "Motor axis dial low limit. Overrides motor.dllm." },
+                "dhlm": { "type": "number", "description": "Motor axis dial high limit. Overrides motor.dhlm." },
+                "home": { "type": "number", "description": "Motor axis homing direction/procedure flag (devtype-specific encoding). Overrides motor.home." },
+                "start": { "type": "number", "description": "Motor axis homing start offset (devtype-specific). Overrides motor.start." },
+                "twv": { "type": "number", "description": "Motor axis tweak step value. Overrides motor.twv." }
             },
             "required": ["name"]
         },
@@ -213,6 +297,108 @@
                     "type": ["number", "null"],
                     "description": "Additional software safety clamp layered on top of min/max (devtype-specific; seen on caenels as IMAX/OMAX). null/0 conventionally means disabled for devtypes that support it."
                 }
+            }
+        },
+        "zones": {
+            "description": "A single zone name, or a list of zone names. Both forms are in active use across facilities; consumers must accept either. NOTE for consumers: an IOC-level zones and a device-level zones can EACH independently be a string or a list - do not assume the device-level one is a list before merging the IOC-level one into it (see epik8s-opi Scripts/epik8sutil.py conf_to_dev, which normalizes both).",
+            "oneOf": [
+                { "type": "string" },
+                { "type": "array", "items": { "type": "string" } }
+            ]
+        },
+        "devgroup": {
+            "type": "string",
+            "description": "Controlled vocabulary for the device family. Three vocabularies must agree for a device to reach its operator panel: this field, the GROUP macro a .bob panel passes, and the uni<x>-opi directory name (epik8sutil.conf_to_dev does `devgroup == group`, then builds uni<GROUP>-opi/<GROUP>_channel_load.bob). Only six values line up on all three today: mag, mot, vac, cam, cool, io. KNOWN MISMATCHES, devices in these groups are NOT reachable from any panel until one side is renamed: 'diag' (panels pass GROUP=daq), 'timing' (panels pass GROUP=tim), 'modulator' (the directory is unimod-opi, i.e. 'mod', and no panel passes either spelling), 'bpm' (unibpm-opi exists but no panel passes GROUP=bpm), 'rf' (no uni<x>-opi family and no panel at all). Synonyms that are NOT accepted: 'motor' (use 'mot'), 'cooling' (use 'cool'), 'vpc'/'vgc' (use 'vac' and put the pump/gauge distinction in devfunc).",
+            "enum": [
+                "mag",
+                "mot",
+                "vac",
+                "cam",
+                "cool",
+                "io",
+                "bpm",
+                "diag",
+                "rf",
+                "timing",
+                "modulator"
+            ]
+        },
+        "devfunc": {
+            "type": "string",
+            "description": "Device function within its devgroup. These are exactly the values epik8s-opi's conf_to_dev() produces - declared values win over its name-substring guessing. mag: COR (corrector), QUA (quadrupole), DIP (dipole/bend), SOL (solenoid), SEX (sextupole), UFS (fast corrector). mot: SLT (slit), FLG (flag/screen), MIR (mirror), HMOT/VMOT (horizontal/vertical stage), MOT (generic). vac: ion (ion pump), pig (Pirani/penning gauge), ccg (cold cathode gauge), turbo (turbomolecular pump), scroll (scroll/backing pump).",
+            "enum": [
+                "COR",
+                "QUA",
+                "DIP",
+                "SOL",
+                "SEX",
+                "UFS",
+                "SLT",
+                "FLG",
+                "MIR",
+                "HMOT",
+                "VMOT",
+                "MOT",
+                "ion",
+                "pig",
+                "ccg",
+                "turbo",
+                "scroll"
+            ]
+        },
+        "limits": {
+            "type": "object",
+            "description": "EPICS alarm/display limits for this device's main readback, so alarm thresholds live with the device definition instead of only in the Phoebus alarm tree. Generalizes the hihi/high/low/lolo fields that templates/io/icpdas already accepts per RTD channel.",
+            "properties": {
+                "hihi": { "type": "number", "description": "MAJOR alarm upper threshold." },
+                "high": { "type": "number", "description": "MINOR alarm upper threshold." },
+                "low": { "type": "number", "description": "MINOR alarm lower threshold." },
+                "lolo": { "type": "number", "description": "MAJOR alarm lower threshold." },
+                "hopr": { "type": "number", "description": "Display range upper bound." },
+                "lopr": { "type": "number", "description": "Display range lower bound." },
+                "egu": { "type": "string", "description": "Engineering units for the limits above." }
+            }
+        },
+        "motor": {
+            "type": "object",
+            "description": "Motor controller/axis configuration shared by every motor devtype (pollux, pigcs2, newport, tml, technosoft-asyn, thorlabs, motorsim). See motor-schema.yaml for the per-devtype field table - not every devtype reads every field below, and fields it doesn't read are simply ignored rather than rejected.",
+            "properties": {
+                "hostid": {
+                    "type": ["integer", "string"],
+                    "description": "Controller/host identifier (technosoft-asyn TML hostId)."
+                },
+                "baudRate": { "type": "integer", "description": "Serial baud rate (technosoft-asyn)." },
+                "movingPollPeriod": { "type": "number", "description": "Poll period while an axis is moving (s)." },
+                "idlePollPeriod": { "type": "number", "description": "Poll period while an axis is idle (s)." },
+                "debug": { "type": "integer", "description": "Controller debug verbosity level." },
+                "configFile": { "type": "string", "description": "Path to a controller-specific axis config/init file (pollux, mercury/pigcs2)." },
+                "sendVelAccel": { "type": "boolean", "description": "Whether to push velocity/acceleration to the controller at init (pollux)." },
+                "eguxstep": { "type": "number", "description": "EGU-per-step conversion used to seed controller EGU scaling (pollux, newport)." },
+                "motorType": {
+                    "type": "string",
+                    "enum": ["dc", "stepper", "piezo", "kim"],
+                    "description": "Thorlabs stage family - selects the template's built-in per-type default envelope (velo/mres/dhlm/...)."
+                },
+                "yesNoRefFlag": { "type": "integer", "description": "Referencing behavior flag (pigcs2/PI GCS2)." },
+                "ASYNPRIO": { "type": "integer", "description": "Asyn port priority (pigcs2)." },
+                "AUTOCONNECT": { "type": "integer", "description": "Asyn port autoconnect flag (pigcs2)." },
+                "NOPROCESSEOS": { "type": "integer", "description": "Asyn port NOPROCESSEOS flag (pigcs2)." },
+                "velo": { "type": "number", "description": "IOC-wide default axis velocity, applied to every device unless overridden on devices[]." },
+                "vbas": { "type": "number", "description": "IOC-wide default axis base velocity." },
+                "accl": { "type": "number", "description": "IOC-wide default axis acceleration time (s)." },
+                "accs": { "type": "number", "description": "IOC-wide default axis acceleration (EGU/s^2)." },
+                "bdst": { "type": "number", "description": "IOC-wide default axis backlash distance." },
+                "bvel": { "type": "number", "description": "IOC-wide default axis backlash velocity." },
+                "bacc": { "type": "number", "description": "IOC-wide default axis backlash acceleration time (s)." },
+                "mres": { "type": "number", "description": "IOC-wide default axis resolution (EGU/step)." },
+                "prec": { "type": "integer", "description": "IOC-wide default axis display precision." },
+                "egu": { "type": "string", "description": "IOC-wide default axis engineering units." },
+                "dir": { "type": "string", "enum": ["Pos", "Neg"], "description": "IOC-wide default axis direction sense." },
+                "dllm": { "type": "number", "description": "IOC-wide default axis dial low limit." },
+                "dhlm": { "type": "number", "description": "IOC-wide default axis dial high limit." },
+                "home": { "type": "number", "description": "IOC-wide default axis homing direction/procedure flag (devtype-specific encoding)." },
+                "start": { "type": "number", "description": "IOC-wide default axis homing start offset (devtype-specific)." },
+                "twv": { "type": "number", "description": "IOC-wide default axis tweak step value." }
             }
         }
     }

@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+#
+# Coverage for the thorlabs branch (in production use in SPARC/EUAPS but
+# previously untested by CI). motorType selects the built-in per-family
+# default envelope; devices[] can still override any field.
+
+iocname: "thorlabs-test"
+asset: "https://confluence.infn.it/x/test"
+devtype: thorlabs
+template: "motor"
+devgroup: mot
+iocprefix: "TEST:MOT:THOR"
+server: "192.168.1.3"
+port: 4001
+motor:
+  motorType: kim
+devices:
+  - name: HPB-01
+    axid: 0
+    dllm: -1000000.0
+    dhlm: 1000000.0
+    home: 1
+    velo: 500
+    mres: 1
+  - name: VPB-01
+    axid: 1
+    dllm: -1000000.0
+    dhlm: 1000000.0
+    home: 1
+    # velo/mres inherited from the 'kim' motorType default envelope
