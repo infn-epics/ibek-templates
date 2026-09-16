@@ -1,0 +1,187 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/beamline.schema.json",
+    "type": "object",
+    "description": "Schema for a beamline values.yaml (epik8s-btf, epik8-sparc, epik8s-euaps and friends). Reference it from the top of the file with:\n  # yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/beamline.schema.json\nIt reuses ioc.schema.json for the IOC entries, so devgroup/devfunc/ps/motor/zones/limits get the same completion and validation there as in a single-IOC file. Deliberately permissive on the deployment-side blocks (services, applications, cronjobs, dashboard, backend, opi, nfs*, syncPolicy): those are Helm chart inputs whose shape is owned by the charts, not by this schema, so they are typed only loosely to avoid false errors.",
+    "properties": {
+        "beamline": {
+            "type": "string",
+            "description": "Short beamline identifier (btf, sparc, euaps). Used as a name prefix throughout the chart."
+        },
+        "namespace": {
+            "type": "string",
+            "description": "Kubernetes namespace the beamline is deployed into."
+        },
+        "epik8namespace": {
+            "type": "string",
+            "description": "Cluster ingress domain (e.g. k8sda.lnf.infn.it)."
+        },
+        "ingressClassName": {
+            "type": "string",
+            "description": "Ingress class used by the beamline services (e.g. nginx)."
+        },
+        "targetRevision": {
+            "type": "string",
+            "description": "Default chart revision for the deployed services."
+        },
+        "serviceAccountName": {
+            "type": "string"
+        },
+        "argocdProject": {
+            "type": "string"
+        },
+        "giturl": {
+            "type": "string",
+            "description": "Repository holding this beamline configuration."
+        },
+        "gitrev": {
+            "type": "string",
+            "description": "Branch/revision of giturl to deploy from."
+        },
+        "epik8s_secrets": {
+            "type": "string"
+        },
+        "token": {
+            "type": "string"
+        },
+        "email": {
+            "type": "object",
+            "description": "SMTP settings used by the alarm/notification services.",
+            "properties": {
+                "from": {
+                    "type": "string"
+                },
+                "to": {
+                    "type": "string"
+                },
+                "smtp": {
+                    "type": "object",
+                    "properties": {
+                        "host": {
+                            "type": "string"
+                        },
+                        "port": {
+                            "type": [
+                                "integer",
+                                "string"
+                            ]
+                        },
+                        "user": {
+                            "type": "string"
+                        },
+                        "password": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "openshift": {
+            "type": "boolean"
+        },
+        "http_proxy": {
+            "type": "string"
+        },
+        "https_proxy": {
+            "type": "string"
+        },
+        "no_proxy": {
+            "type": "string"
+        },
+        "baseIp": {
+            "type": "string",
+            "description": "CIDR from which per-service cluster IPs are allocated (e.g. 10.43.244.0/22)."
+        },
+        "startIp": {
+            "type": "integer",
+            "description": "Offset within baseIp at which allocation starts."
+        },
+        "iocDefaults": {
+            "type": "object",
+            "description": "Per-template defaults merged into each IOC that names the template. The key is the value of an IOC's 'template' field; the value is a partial IOC, so iocname/iocprefix are not required here. IOC-specific values always override these.",
+            "additionalProperties": {
+                "$ref": "https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json#/definitions/iocFields"
+            }
+        },
+        "epicsConfiguration": {
+            "type": "object",
+            "description": "EPICS-side configuration: channel access settings, the deployed services, and the IOC list.",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name of the ConfigMap carrying the CA/PVA environment."
+                },
+                "address_list": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "EPICS_CA_ADDR_LIST for the gateways. Empty or null means auto."
+                },
+                "max_array_bytes": {
+                    "type": [
+                        "string",
+                        "integer"
+                    ],
+                    "description": "EPICS_CA_MAX_ARRAY_BYTES."
+                },
+                "conn_tmo": {
+                    "type": [
+                        "number",
+                        "string"
+                    ]
+                },
+                "services": {
+                    "type": "object",
+                    "description": "Deployed EPICS services (archiver, gateway, pvagateway, olog, dashboard, ...). Shape is owned by the individual service charts, so it is not constrained here."
+                },
+                "iocs": {
+                    "type": "array",
+                    "description": "The IOCs of this beamline. Each entry is an IOC as described by ioc.schema.json, keyed by 'name' rather than 'iocname'.",
+                    "items": {
+                        "allOf": [
+                            {
+                                "$ref": "https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json#/definitions/iocFields"
+                            }
+                        ],
+                        "required": [
+                            "name"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "iocs"
+            ]
+        },
+        "applications": {
+            "description": "Extra ArgoCD applications deployed alongside the beamline."
+        },
+        "cronjobs": {
+            "description": "Scheduled jobs deployed alongside the beamline."
+        },
+        "dashboard": {
+            "description": "Dashboard deployment inputs (owned by the dashboard chart)."
+        },
+        "backend": {
+            "description": "Backend deployment inputs (owned by the backend chart)."
+        },
+        "opi": {
+            "description": "OPI repository/checkout configuration for the console and dbwr."
+        },
+        "nfsMounts": {
+            "type": "array",
+            "description": "NFS mounts made available to services/IOCs."
+        },
+        "nfsBackups": {
+            "description": "NFS backup configuration."
+        },
+        "syncPolicy": {
+            "description": "ArgoCD sync policy applied to the generated applications."
+        }
+    },
+    "required": [
+        "beamline",
+        "epicsConfiguration"
+    ]
+}

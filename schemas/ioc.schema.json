@@ -1,100 +1,122 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
-    "$id": "https://github.com/infn-epics/ibek-templates/releases/download/v1/ioc.schema.json",
-    "properties": {
-        "iocname": {
-            "type": "string",
-            "description": "Name of the IOC."
-        },
-        "iocexit": {
-            "type": "boolean",
-            "description": "Exit IOC after initialization. (debug and CI integration)"
-        },
-        "template": {
-            "type": "string",
-            "description": "The jnja2 template to use (<template>.yaml.j2)"
-        },
-        "devtype": {
-            "type": "string",
-            "description": "Global Device type."
-        },
-        "devgroup": {
-            "description": "Device family. LOAD-BEARING for the operator screens: epik8s-opi's Scripts/epik8sutil.py conf_to_dev() dispatches with an exact string compare (`devgroup == group`, where group is the panel's GROUP macro) and builds the item widget path as uni<devgroup>-opi/<devgroup>_channel_load.bob. A devgroup that doesn't match a uni<x>-opi family means the device silently never appears on its panel.",
-            "$ref": "#/definitions/devgroup"
-        },
-        "devfunc": {
-            "description": "Device function within its family (e.g. a magnet's COR/QUA/DIP). Drives the FUNC filter on the operator panels. Declare it: when absent, epik8sutil.py conf_to_dev() falls back to guessing it from substrings of the device NAME (QUA*/DIP*/CHH*/CVV*/SLT*/FLG*/SIP*...), so any device not matching those naming conventions lands in the wrong filter bucket.",
-            "$ref": "#/definitions/devfunc"
-        },
-        "geo": {
-            "type": "number",
-            "description": "Ordering position of the device along the beamline (monotonically increasing downstream). Used by downstream consumers (dashboard/synoptic ordering), not by any Jinja template. Not a calibrated s-coordinate in metres today - it is a relative ordering key.",
-            "minimum": 0
-        },
-        "iocprefix": {
-            "type": "string",
-            "description": "Prefix for the IOC PVs."
-        },
-        "iocroot": {
-            "type": "string",
-            "description": "PV prefix for the IOC PVs."
-        },
-        "data_dir": {
-            "type": "string",
-            "description": "Directory for storing data files."
-        },
-        "config_dir": {
-            "type": "string",
-            "description": "Directory for storing configuration files."
-        },
-        "asset": {
-            "type": "string",
-            "description": "Optional asset/documentation link for the IOC as a whole. Not required: some IOCs track asset per-device instead (see devices[].asset), and some legitimately have none yet."
-        },
-        "iocinit": {
-            "type": "array",
-            "description": "Common IOC initialization parameters.",
-            "items": {
-                "$ref": "#/definitions/keyvalue"
-            }
-        },
-        "iocparam": {
+    "$id": "https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json",
+    "description": "Schema for a single IOC. Beamline values.yaml files reference #/definitions/iocFields instead (via beamline.schema.json), which carries the same fields without requiring iocname/iocprefix.",
+    "allOf": [
+        {
+            "$ref": "#/definitions/iocFields"
+        }
+    ],
+    "required": [
+        "iocname",
+        "iocprefix"
+    ],
+    "definitions": {
+        "iocFields": {
+            "type": "object",
+            "description": "Every field an IOC entry may carry. Split out so a beamline values.yaml can reuse it for epicsConfiguration.iocs[] and for iocDefaults entries, which are partial IOCs and must not require iocname/iocprefix.",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "IOC name as written in a beamline values.yaml (epicsConfiguration.iocs[].name). The rendered single-IOC form uses 'iocname' instead; both are accepted here."
+                },
+                "iocname": {
+                    "type": "string",
+                    "description": "Name of the IOC."
+                },
+                "iocexit": {
+                    "type": "boolean",
+                    "description": "Exit IOC after initialization. (debug and CI integration)"
+                },
+                "template": {
+                    "type": "string",
+                    "description": "The jnja2 template to use (<template>.yaml.j2)"
+                },
+                "devtype": {
+                    "type": "string",
+                    "description": "Global Device type."
+                },
+                "devgroup": {
+                    "description": "Device family. LOAD-BEARING for the operator screens: epik8s-opi's Scripts/epik8sutil.py conf_to_dev() dispatches with an exact string compare (`devgroup == group`, where group is the panel's GROUP macro) and builds the item widget path as uni<devgroup>-opi/<devgroup>_channel_load.bob. A devgroup that doesn't match a uni<x>-opi family means the device silently never appears on its panel.",
+                    "$ref": "#/definitions/devgroup"
+                },
+                "devfunc": {
+                    "description": "Device function within its family (e.g. a magnet's COR/QUA/DIP). Drives the FUNC filter on the operator panels. Declare it: when absent, epik8sutil.py conf_to_dev() falls back to guessing it from substrings of the device NAME (QUA*/DIP*/CHH*/CVV*/SLT*/FLG*/SIP*...), so any device not matching those naming conventions lands in the wrong filter bucket.",
+                    "$ref": "#/definitions/devfunc"
+                },
+                "geo": {
+                    "type": "number",
+                    "description": "Ordering position of the device along the beamline (monotonically increasing downstream). Used by downstream consumers (dashboard/synoptic ordering), not by any Jinja template. Not a calibrated s-coordinate in metres today - it is a relative ordering key.",
+                    "minimum": 0
+                },
+                "iocprefix": {
+                    "type": "string",
+                    "description": "Prefix for the IOC PVs."
+                },
+                "iocroot": {
+                    "type": "string",
+                    "description": "PV prefix for the IOC PVs."
+                },
+                "data_dir": {
+                    "type": "string",
+                    "description": "Directory for storing data files."
+                },
+                "config_dir": {
+                    "type": "string",
+                    "description": "Directory for storing configuration files."
+                },
+                "asset": {
+                    "type": "string",
+                    "description": "Optional asset/documentation link for the IOC as a whole. Not required: some IOCs track asset per-device instead (see devices[].asset), and some legitimately have none yet."
+                },
+                "iocinit": {
+                    "type": "array",
+                    "description": "Common IOC initialization parameters.",
+                    "items": {
+                        "$ref": "#/definitions/keyvalue"
+                    }
+                },
+                "iocparam": {
                     "type": "array",
                     "description": "generic IOC parameters to be replaced in the template.",
                     "items": {
                         "$ref": "#/definitions/keyvalue"
                     }
                 },
-        "connection": {
-            "type": "object",
-            "description": "Connection parameters for the IOC.",
-            "$ref": "#/definitions/connection"
-        },
-        "ps": {
-            "type": "object",
-            "description": "IOC-wide default power-supply rating/polarity block, overridable per device.",
-            "$ref": "#/definitions/ps"
-        },
-        "motor": {
-            "type": "object",
-            "description": "IOC-wide default motor controller/axis configuration, overridable per device (devices[].<field> overrides field-by-field, not block-by-block). Shared by every motor devtype (pollux, pigcs2, newport, tml, technosoft-asyn, thorlabs, motorsim) - not every devtype consumes every field, see motor-schema.yaml's per-devtype table.",
-            "$ref": "#/definitions/motor"
-        },
-        "zones": {
-            "description": "Logical/physical zone grouping for this IOC (dashboard, interlock aggregation). A single zone name or a list of zone names.",
-            "$ref": "#/definitions/zones"
-        },
-        "devices": {
-            "type": "array",
-            "description": "List of devices to configure.",
-            "items": {
-                "$ref": "#/definitions/device"
+                "connection": {
+                    "type": "object",
+                    "description": "Connection parameters for the IOC.",
+                    "$ref": "#/definitions/connection"
+                },
+                "ps": {
+                    "type": "object",
+                    "description": "IOC-wide default power-supply rating/polarity block, overridable per device.",
+                    "$ref": "#/definitions/ps"
+                },
+                "motor": {
+                    "type": "object",
+                    "description": "IOC-wide default motor controller/axis configuration, overridable per device (devices[].<field> overrides field-by-field, not block-by-block). Shared by every motor devtype (pollux, pigcs2, newport, tml, technosoft-asyn, thorlabs, motorsim) - not every devtype consumes every field, see motor-schema.yaml's per-devtype table.",
+                    "$ref": "#/definitions/motor"
+                },
+                "zones": {
+                    "description": "Logical/physical zone grouping for this IOC (dashboard, interlock aggregation). A single zone name or a list of zone names.",
+                    "$ref": "#/definitions/zones"
+                },
+                "devices": {
+                    "type": "array",
+                    "description": "List of devices to configure.",
+                    "items": {
+                        "$ref": "#/definitions/device"
+                    }
+                },
+                "limits": {
+                    "type": "object",
+                    "description": "IOC-wide default alarm/display limits, overridable per device.",
+                    "$ref": "#/definitions/limits"
+                }
             }
-        }
-    },
-    "required": ["iocname", "iocprefix"],
-    "definitions": {
+        },
         "keyvalue": {
             "type": "object",
             "properties": {
@@ -103,11 +125,18 @@
                     "description": "Name of the parameter."
                 },
                 "value": {
-                    "type": ["string", "number", "boolean"],
+                    "type": [
+                        "string",
+                        "number",
+                        "boolean"
+                    ],
                     "description": "Value of the parameter. Any scalar is valid - the Jinja templates interpolate it as {{value}}, string-typing it in the schema was stricter than actual usage (iocparam/iocinit routinely carry numbers and booleans, e.g. port: 4001, value: true)."
                 }
             },
-            "required": ["name", "value"]
+            "required": [
+                "name",
+                "value"
+            ]
         },
         "connection": {
             "type": "object",
@@ -121,7 +150,10 @@
                     "description": "connection port of the device"
                 }
             },
-            "required": ["name", "value"]
+            "required": [
+                "name",
+                "value"
+            ]
         },
         "device": {
             "type": "object",
@@ -135,14 +167,16 @@
                     "description": "controlled device/sensor type"
                 },
                 "channel": {
-                    "type": ["integer", "string"],
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "description": "Channel identifier of the device. Integer for a plain channel index (icpdas, tektronix, ...); string for a devtype with an enum-style channel label instead (e.g. pfeiffer tpg300/tpg366: A1/A2/B1/B2, per the pfeiffer.tpg300 ibek-support channel entity)."
                 },
                 "asset": {
                     "type": "string",
                     "description": "Optional asset/documentation link for this device. Not required - used instead of (or alongside) the IOC-level asset for IOCs that manage several distinct physical assets (e.g. one camera IOC with several devices[], each with its own asset link)."
                 },
-
                 "iocinit": {
                     "type": "array",
                     "description": "Device-specific IOC initialization parameters.",
@@ -191,7 +225,10 @@
                     "description": "Per-device OPI (.bob) override, taking precedence over the IOC-level opi on the operator panels."
                 },
                 "axid": {
-                    "type": ["integer", "string"],
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "description": "Motor axis number on the controller. Per-device, no IOC-level default (each axis is distinct)."
                 },
                 "poi": {
@@ -200,30 +237,91 @@
                     "items": {
                         "type": "object",
                         "properties": {
-                            "name": { "type": "string" },
-                            "value": { "type": "number" }
+                            "name": {
+                                "type": "string"
+                            },
+                            "value": {
+                                "type": "number"
+                            }
                         },
-                        "required": ["name", "value"]
+                        "required": [
+                            "name",
+                            "value"
+                        ]
                     }
                 },
-                "velo": { "type": "number", "description": "Motor axis default/max velocity. Overrides motor.velo." },
-                "vbas": { "type": "number", "description": "Motor axis base velocity. Overrides motor.vbas." },
-                "accl": { "type": "number", "description": "Motor axis acceleration time (s). Overrides motor.accl." },
-                "accs": { "type": "number", "description": "Motor axis acceleration (EGU/s^2), used by devtypes that take acceleration directly rather than a ramp time. Overrides motor.accs." },
-                "bdst": { "type": "number", "description": "Motor axis backlash distance. Overrides motor.bdst." },
-                "bvel": { "type": "number", "description": "Motor axis backlash velocity. Overrides motor.bvel." },
-                "bacc": { "type": "number", "description": "Motor axis backlash acceleration time (s). Overrides motor.bacc." },
-                "mres": { "type": "number", "description": "Motor axis resolution (EGU/step). Overrides motor.mres." },
-                "prec": { "type": "integer", "description": "Motor axis display precision. Overrides motor.prec." },
-                "egu": { "type": "string", "description": "Motor axis engineering units. Overrides motor.egu." },
-                "dir": { "type": "string", "enum": ["Pos", "Neg"], "description": "Motor axis direction sense. Overrides motor.dir." },
-                "dllm": { "type": "number", "description": "Motor axis dial low limit. Overrides motor.dllm." },
-                "dhlm": { "type": "number", "description": "Motor axis dial high limit. Overrides motor.dhlm." },
-                "home": { "type": "number", "description": "Motor axis homing direction/procedure flag (devtype-specific encoding). Overrides motor.home." },
-                "start": { "type": "number", "description": "Motor axis homing start offset (devtype-specific). Overrides motor.start." },
-                "twv": { "type": "number", "description": "Motor axis tweak step value. Overrides motor.twv." }
+                "velo": {
+                    "type": "number",
+                    "description": "Motor axis default/max velocity. Overrides motor.velo."
+                },
+                "vbas": {
+                    "type": "number",
+                    "description": "Motor axis base velocity. Overrides motor.vbas."
+                },
+                "accl": {
+                    "type": "number",
+                    "description": "Motor axis acceleration time (s). Overrides motor.accl."
+                },
+                "accs": {
+                    "type": "number",
+                    "description": "Motor axis acceleration (EGU/s^2), used by devtypes that take acceleration directly rather than a ramp time. Overrides motor.accs."
+                },
+                "bdst": {
+                    "type": "number",
+                    "description": "Motor axis backlash distance. Overrides motor.bdst."
+                },
+                "bvel": {
+                    "type": "number",
+                    "description": "Motor axis backlash velocity. Overrides motor.bvel."
+                },
+                "bacc": {
+                    "type": "number",
+                    "description": "Motor axis backlash acceleration time (s). Overrides motor.bacc."
+                },
+                "mres": {
+                    "type": "number",
+                    "description": "Motor axis resolution (EGU/step). Overrides motor.mres."
+                },
+                "prec": {
+                    "type": "integer",
+                    "description": "Motor axis display precision. Overrides motor.prec."
+                },
+                "egu": {
+                    "type": "string",
+                    "description": "Motor axis engineering units. Overrides motor.egu."
+                },
+                "dir": {
+                    "type": "string",
+                    "enum": [
+                        "Pos",
+                        "Neg"
+                    ],
+                    "description": "Motor axis direction sense. Overrides motor.dir."
+                },
+                "dllm": {
+                    "type": "number",
+                    "description": "Motor axis dial low limit. Overrides motor.dllm."
+                },
+                "dhlm": {
+                    "type": "number",
+                    "description": "Motor axis dial high limit. Overrides motor.dhlm."
+                },
+                "home": {
+                    "type": "number",
+                    "description": "Motor axis homing direction/procedure flag (devtype-specific encoding). Overrides motor.home."
+                },
+                "start": {
+                    "type": "number",
+                    "description": "Motor axis homing start offset (devtype-specific). Overrides motor.start."
+                },
+                "twv": {
+                    "type": "number",
+                    "description": "Motor axis tweak step value. Overrides motor.twv."
+                }
             },
-            "required": ["name"]
+            "required": [
+                "name"
+            ]
         },
         "ps": {
             "type": "object",
@@ -235,13 +333,21 @@
                     "properties": {
                         "mode": {
                             "type": "string",
-                            "enum": ["unipolar", "bipolar-native", "bipolar-switched", "unspecified"],
+                            "enum": [
+                                "unipolar",
+                                "bipolar-native",
+                                "bipolar-switched",
+                                "unspecified"
+                            ],
                             "default": "unspecified",
                             "description": "unipolar: fixed to one sign, requires 'sign'. bipolar-native: true four-quadrant, signed setpoint direct. bipolar-switched: monopolar hardware + polarity relay, requires 'switch'. unspecified: polarity behavior not yet confirmed against hardware - MUST NOT be treated as unipolar by consumers. This is the global default when polarity (or the whole ps: block) is omitted entirely - no PS devtype's Jinja template branches on the literal 'unspecified' string, so omitting it is behaviorally identical to writing it out. Only set mode explicitly once it's actually confirmed against the hardware."
                         },
                         "sign": {
                             "type": "string",
-                            "enum": ["positive", "negative"],
+                            "enum": [
+                                "positive",
+                                "negative"
+                            ],
                             "description": "Required when mode == unipolar: which rail this supply is wired to."
                         },
                         "switch": {
@@ -262,7 +368,10 @@
                 },
                 "control_mode": {
                     "type": "string",
-                    "enum": ["current", "voltage"],
+                    "enum": [
+                        "current",
+                        "voltage"
+                    ],
                     "default": "current",
                     "description": "Which quantity is the regulated setpoint. The other block, if present, is a compliance limit only. Every PS devtype in this repo is current-regulated today, so 'current' is the global default when omitted - no need to repeat it in iocDefaults or on individual devices. Set explicitly only for a genuinely voltage-regulated PS."
                 },
@@ -290,11 +399,17 @@
                     "description": "Upper bound of the achievable envelope."
                 },
                 "ramp": {
-                    "type": ["number", "null"],
+                    "type": [
+                        "number",
+                        "null"
+                    ],
                     "description": "Rate-of-change limit. null = not ramp-limited or not applicable."
                 },
                 "limit": {
-                    "type": ["number", "null"],
+                    "type": [
+                        "number",
+                        "null"
+                    ],
                     "description": "Additional software safety clamp layered on top of min/max (devtype-specific; seen on caenels as IMAX/OMAX). null/0 conventionally means disabled for devtypes that support it."
                 }
             }
@@ -302,8 +417,15 @@
         "zones": {
             "description": "A single zone name, or a list of zone names. Both forms are in active use across facilities; consumers must accept either. NOTE for consumers: an IOC-level zones and a device-level zones can EACH independently be a string or a list - do not assume the device-level one is a list before merging the IOC-level one into it (see epik8s-opi Scripts/epik8sutil.py conf_to_dev, which normalizes both).",
             "oneOf": [
-                { "type": "string" },
-                { "type": "array", "items": { "type": "string" } }
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
             ]
         },
         "devgroup": {
@@ -350,13 +472,34 @@
             "type": "object",
             "description": "EPICS alarm/display limits for this device's main readback, so alarm thresholds live with the device definition instead of only in the Phoebus alarm tree. Generalizes the hihi/high/low/lolo fields that templates/io/icpdas already accepts per RTD channel.",
             "properties": {
-                "hihi": { "type": "number", "description": "MAJOR alarm upper threshold." },
-                "high": { "type": "number", "description": "MINOR alarm upper threshold." },
-                "low": { "type": "number", "description": "MINOR alarm lower threshold." },
-                "lolo": { "type": "number", "description": "MAJOR alarm lower threshold." },
-                "hopr": { "type": "number", "description": "Display range upper bound." },
-                "lopr": { "type": "number", "description": "Display range lower bound." },
-                "egu": { "type": "string", "description": "Engineering units for the limits above." }
+                "hihi": {
+                    "type": "number",
+                    "description": "MAJOR alarm upper threshold."
+                },
+                "high": {
+                    "type": "number",
+                    "description": "MINOR alarm upper threshold."
+                },
+                "low": {
+                    "type": "number",
+                    "description": "MINOR alarm lower threshold."
+                },
+                "lolo": {
+                    "type": "number",
+                    "description": "MAJOR alarm lower threshold."
+                },
+                "hopr": {
+                    "type": "number",
+                    "description": "Display range upper bound."
+                },
+                "lopr": {
+                    "type": "number",
+                    "description": "Display range lower bound."
+                },
+                "egu": {
+                    "type": "string",
+                    "description": "Engineering units for the limits above."
+                }
             }
         },
         "motor": {
@@ -364,41 +507,134 @@
             "description": "Motor controller/axis configuration shared by every motor devtype (pollux, pigcs2, newport, tml, technosoft-asyn, thorlabs, motorsim). See motor-schema.yaml for the per-devtype field table - not every devtype reads every field below, and fields it doesn't read are simply ignored rather than rejected.",
             "properties": {
                 "hostid": {
-                    "type": ["integer", "string"],
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "description": "Controller/host identifier (technosoft-asyn TML hostId)."
                 },
-                "baudRate": { "type": "integer", "description": "Serial baud rate (technosoft-asyn)." },
-                "movingPollPeriod": { "type": "number", "description": "Poll period while an axis is moving (s)." },
-                "idlePollPeriod": { "type": "number", "description": "Poll period while an axis is idle (s)." },
-                "debug": { "type": "integer", "description": "Controller debug verbosity level." },
-                "configFile": { "type": "string", "description": "Path to a controller-specific axis config/init file (pollux, mercury/pigcs2)." },
-                "sendVelAccel": { "type": "boolean", "description": "Whether to push velocity/acceleration to the controller at init (pollux)." },
-                "eguxstep": { "type": "number", "description": "EGU-per-step conversion used to seed controller EGU scaling (pollux, newport)." },
+                "baudRate": {
+                    "type": "integer",
+                    "description": "Serial baud rate (technosoft-asyn)."
+                },
+                "movingPollPeriod": {
+                    "type": "number",
+                    "description": "Poll period while an axis is moving (s)."
+                },
+                "idlePollPeriod": {
+                    "type": "number",
+                    "description": "Poll period while an axis is idle (s)."
+                },
+                "debug": {
+                    "type": "integer",
+                    "description": "Controller debug verbosity level."
+                },
+                "configFile": {
+                    "type": "string",
+                    "description": "Path to a controller-specific axis config/init file (pollux, mercury/pigcs2)."
+                },
+                "sendVelAccel": {
+                    "type": "boolean",
+                    "description": "Whether to push velocity/acceleration to the controller at init (pollux)."
+                },
+                "eguxstep": {
+                    "type": "number",
+                    "description": "EGU-per-step conversion used to seed controller EGU scaling (pollux, newport)."
+                },
                 "motorType": {
                     "type": "string",
-                    "enum": ["dc", "stepper", "piezo", "kim"],
+                    "enum": [
+                        "dc",
+                        "stepper",
+                        "piezo",
+                        "kim"
+                    ],
                     "description": "Thorlabs stage family - selects the template's built-in per-type default envelope (velo/mres/dhlm/...)."
                 },
-                "yesNoRefFlag": { "type": "integer", "description": "Referencing behavior flag (pigcs2/PI GCS2)." },
-                "ASYNPRIO": { "type": "integer", "description": "Asyn port priority (pigcs2)." },
-                "AUTOCONNECT": { "type": "integer", "description": "Asyn port autoconnect flag (pigcs2)." },
-                "NOPROCESSEOS": { "type": "integer", "description": "Asyn port NOPROCESSEOS flag (pigcs2)." },
-                "velo": { "type": "number", "description": "IOC-wide default axis velocity, applied to every device unless overridden on devices[]." },
-                "vbas": { "type": "number", "description": "IOC-wide default axis base velocity." },
-                "accl": { "type": "number", "description": "IOC-wide default axis acceleration time (s)." },
-                "accs": { "type": "number", "description": "IOC-wide default axis acceleration (EGU/s^2)." },
-                "bdst": { "type": "number", "description": "IOC-wide default axis backlash distance." },
-                "bvel": { "type": "number", "description": "IOC-wide default axis backlash velocity." },
-                "bacc": { "type": "number", "description": "IOC-wide default axis backlash acceleration time (s)." },
-                "mres": { "type": "number", "description": "IOC-wide default axis resolution (EGU/step)." },
-                "prec": { "type": "integer", "description": "IOC-wide default axis display precision." },
-                "egu": { "type": "string", "description": "IOC-wide default axis engineering units." },
-                "dir": { "type": "string", "enum": ["Pos", "Neg"], "description": "IOC-wide default axis direction sense." },
-                "dllm": { "type": "number", "description": "IOC-wide default axis dial low limit." },
-                "dhlm": { "type": "number", "description": "IOC-wide default axis dial high limit." },
-                "home": { "type": "number", "description": "IOC-wide default axis homing direction/procedure flag (devtype-specific encoding)." },
-                "start": { "type": "number", "description": "IOC-wide default axis homing start offset (devtype-specific)." },
-                "twv": { "type": "number", "description": "IOC-wide default axis tweak step value." }
+                "yesNoRefFlag": {
+                    "type": "integer",
+                    "description": "Referencing behavior flag (pigcs2/PI GCS2)."
+                },
+                "ASYNPRIO": {
+                    "type": "integer",
+                    "description": "Asyn port priority (pigcs2)."
+                },
+                "AUTOCONNECT": {
+                    "type": "integer",
+                    "description": "Asyn port autoconnect flag (pigcs2)."
+                },
+                "NOPROCESSEOS": {
+                    "type": "integer",
+                    "description": "Asyn port NOPROCESSEOS flag (pigcs2)."
+                },
+                "velo": {
+                    "type": "number",
+                    "description": "IOC-wide default axis velocity, applied to every device unless overridden on devices[]."
+                },
+                "vbas": {
+                    "type": "number",
+                    "description": "IOC-wide default axis base velocity."
+                },
+                "accl": {
+                    "type": "number",
+                    "description": "IOC-wide default axis acceleration time (s)."
+                },
+                "accs": {
+                    "type": "number",
+                    "description": "IOC-wide default axis acceleration (EGU/s^2)."
+                },
+                "bdst": {
+                    "type": "number",
+                    "description": "IOC-wide default axis backlash distance."
+                },
+                "bvel": {
+                    "type": "number",
+                    "description": "IOC-wide default axis backlash velocity."
+                },
+                "bacc": {
+                    "type": "number",
+                    "description": "IOC-wide default axis backlash acceleration time (s)."
+                },
+                "mres": {
+                    "type": "number",
+                    "description": "IOC-wide default axis resolution (EGU/step)."
+                },
+                "prec": {
+                    "type": "integer",
+                    "description": "IOC-wide default axis display precision."
+                },
+                "egu": {
+                    "type": "string",
+                    "description": "IOC-wide default axis engineering units."
+                },
+                "dir": {
+                    "type": "string",
+                    "enum": [
+                        "Pos",
+                        "Neg"
+                    ],
+                    "description": "IOC-wide default axis direction sense."
+                },
+                "dllm": {
+                    "type": "number",
+                    "description": "IOC-wide default axis dial low limit."
+                },
+                "dhlm": {
+                    "type": "number",
+                    "description": "IOC-wide default axis dial high limit."
+                },
+                "home": {
+                    "type": "number",
+                    "description": "IOC-wide default axis homing direction/procedure flag (devtype-specific encoding)."
+                },
+                "start": {
+                    "type": "number",
+                    "description": "IOC-wide default axis homing start offset (devtype-specific)."
+                },
+                "twv": {
+                    "type": "number",
+                    "description": "IOC-wide default axis tweak step value."
+                }
             }
         }
     }
