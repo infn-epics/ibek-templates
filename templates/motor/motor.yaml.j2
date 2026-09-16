@@ -443,6 +443,15 @@ entities:
     {%- else %}
     MRES: {{ motor.mres | default(1.0, true) }}
     {%- endif %}
+    {%- if mot.ares is defined %}
+    ARES: {{mot.ares}}
+    {%- elif motor.ares is defined %}
+    ARES: {{ motor.ares }}
+    {%- elif mot.mres is defined %}
+    ARES: {{mot.mres}}
+    {%- else %}
+    ARES: {{ motor.mres | default(1.0, true) }}
+    {%- endif %}
     {%- if mot.prec is defined %}
     PREC: {{mot.prec}}
     {%- else %}
