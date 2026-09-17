@@ -361,6 +361,37 @@
                 "id": {
                     "type": "string",
                     "description": "IOC-level device id, used as a single-device shorthand instead of devices[] (e.g. smc/polyscience chiller's DEV_ID)."
+                },
+                "iocfunc": {
+                    "type": "string",
+                    "description": "mrf-pci-230: the *_registerRecordDeviceDriver function name for this build (e.g. 'elinp_gp06_ioc01'), when it differs from the devtype default."
+                },
+                "nfsMounts": {
+                    "type": "array",
+                    "description": "Per-IOC NFS/CIFS mounts, overriding/extending the beamline-level nfsMounts.",
+                    "items": {
+                        "$ref": "#/definitions/nfsMountEntry"
+                    }
+                },
+                "dataVolume": {
+                    "type": "object",
+                    "description": "PersistentVolumeClaim request for this IOC's writable data directory. Shape owned by the deploying chart."
+                },
+                "pls_width_max": {
+                    "type": "number",
+                    "description": "scandinova-scandicat-mod: pulse-width HOPR (-> PLS_WDTH_SP_HOPR), IOC-level default."
+                },
+                "i_max": {
+                    "type": "number",
+                    "description": "scandinova-scandicat-mod: filament PS current HOPR (-> FILPS_CURR_SP_HOPR), IOC-level default."
+                },
+                "pres_warn": {
+                    "type": "number",
+                    "description": "scandinova-scandicat-mod: ion pump pressure MINOR alarm threshold (-> IONPMP_HIGH)."
+                },
+                "pres_alarm": {
+                    "type": "number",
+                    "description": "scandinova-scandicat-mod: ion pump pressure MAJOR alarm threshold (-> IONPMP_HIHI)."
                 }
             },
             "additionalProperties": false
@@ -594,15 +625,24 @@
                     "description": "Serial/Modbus device address (e.g. '0x80', '002')."
                 },
                 "bus": {
-                    "type": "string",
+                    "type": [
+                        "string",
+                        "integer"
+                    ],
                     "description": "PCI bus identifier for an MRF card (e.g. '06')."
                 },
                 "slot": {
-                    "type": "string",
+                    "type": [
+                        "string",
+                        "integer"
+                    ],
                     "description": "PCI slot identifier for an MRF card (e.g. '00')."
                 },
                 "func": {
-                    "type": "string",
+                    "type": [
+                        "string",
+                        "integer"
+                    ],
                     "description": "PCI function identifier for an MRF card (e.g. '0')."
                 },
                 "pv": {
@@ -707,6 +747,22 @@
                 "homingSwitch": {
                     "type": "string",
                     "description": "technosoft-asyn per-axis homing switch (e.g. LSN/LSP), overriding motor.homingSwitch."
+                },
+                "dev": {
+                    "type": "string",
+                    "description": "mrf-pci-230 m9210: VISA-style instrument descriptor (e.g. 'PCI::INSTR0')."
+                },
+                "buffer": {
+                    "type": "integer",
+                    "description": "mrf-pci-230 m9210: per-device sample buffer size."
+                },
+                "eventpv": {
+                    "type": "string",
+                    "description": "mrf-pci-230 m9210: PV suffix for the event counter."
+                },
+                "v_max": {
+                    "type": "number",
+                    "description": "scandinova-scandicat-mod: per-modulator voltage max."
                 }
             },
             "required": [
@@ -821,7 +877,7 @@
         },
         "devgroup": {
             "type": "string",
-            "description": "Controlled vocabulary for the device family. Three vocabularies must agree for a device to reach its operator panel: this field, the GROUP macro a .bob panel passes, and the uni<x>-opi directory name (epik8sutil.conf_to_dev does `devgroup == group`, then builds uni<GROUP>-opi/<GROUP>_channel_load.bob). Only six values line up on all three today: mag, mot, vac, cam, cool, io. KNOWN MISMATCHES, devices in these groups are NOT reachable from any panel until one side is renamed: 'diag' (panels pass GROUP=daq), 'timing' (panels pass GROUP=tim), 'modulator' (the directory is unimod-opi, i.e. 'mod', and no panel passes either spelling), 'bpm' (unibpm-opi exists but no panel passes GROUP=bpm), 'rf' (no uni<x>-opi family and no panel at all). Synonyms that are NOT accepted: 'motor' (use 'mot'), 'cooling' (use 'cool'), 'vpc'/'vgc' (use 'vac' and put the pump/gauge distinction in devfunc).",
+            "description": "Controlled vocabulary for the device family. Three vocabularies must agree for a device to reach its operator panel: this field, the GROUP macro a .bob panel passes, and the uni<x>-opi directory name (epik8sutil.conf_to_dev does `devgroup == group`, then builds uni<GROUP>-opi/<GROUP>_channel_load.bob). Only six values line up on all three today: mag, mot, vac, cam, cool, io. KNOWN MISMATCHES, devices in these groups are NOT reachable from any panel until one side is renamed: 'diag' (panels pass GROUP=daq), 'timing' (panels pass GROUP=tim), 'modulator' (the directory is unimod-opi, i.e. 'mod', and no panel passes either spelling), 'bpm' (unibpm-opi exists but no panel passes GROUP=bpm), 'rf' (no uni<x>-opi family and no panel at all). Synonyms that are NOT accepted: 'motor' (use 'mot'), 'cooling' (use 'cool'), 'vpc'/'vgc' (use 'vac' and put the pump/gauge distinction in devfunc). 'mps' (machine protection, ssrip-mps template) and 'saf' (safety PLC I/O, plceli template) are also accepted - like diag/rf/timing, neither has a uni<x>-opi panel yet.",
             "enum": [
                 "mag",
                 "mot",
@@ -833,7 +889,9 @@
                 "diag",
                 "rf",
                 "timing",
-                "modulator"
+                "modulator",
+                "mps",
+                "saf"
             ]
         },
         "devfunc": {
@@ -1272,6 +1330,40 @@
                     "type": "integer"
                 }
             }
+        },
+        "nfsMountEntry": {
+            "type": "object",
+            "description": "An NFS/CIFS mount made available inside the IOC container.",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "server": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string",
+                    "description": "Remote path exported by the server."
+                },
+                "mountPath": {
+                    "type": "string",
+                    "description": "Path the export is mounted at inside the container."
+                },
+                "opt": {
+                    "type": "string",
+                    "description": "Extra mount options (e.g. '-o nolock', '-o credentials=...')."
+                },
+                "type": {
+                    "type": "string",
+                    "description": "Filesystem type, when not the chart's default (e.g. 'cifs')."
+                }
+            },
+            "required": [
+                "name",
+                "server",
+                "path",
+                "mountPath"
+            ]
         }
     }
 }
