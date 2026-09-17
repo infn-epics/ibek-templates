@@ -541,10 +541,6 @@
                     "type": "number",
                     "description": "Motor axis acceleration time (s). Overrides motor.accl."
                 },
-                "accs": {
-                    "type": "number",
-                    "description": "Motor axis acceleration (EGU/s^2), used by devtypes that take acceleration directly rather than a ramp time. Overrides motor.accs."
-                },
                 "bdst": {
                     "type": "number",
                     "description": "Motor axis backlash distance. Overrides motor.bdst."

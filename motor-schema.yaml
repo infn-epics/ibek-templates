@@ -42,7 +42,6 @@ shape:
     velo: <number>
     vbas: <number>
     accl: <number>          # acceleration time (s)
-    accs: <number>          # acceleration (EGU/s^2) - devtypes that take it directly
     bdst: <number>
     bvel: <number>
     bacc: <number>

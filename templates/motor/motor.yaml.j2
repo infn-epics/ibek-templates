@@ -91,7 +91,7 @@ entities:
     {%- if mot.bacc is defined %}
     BACC: {{mot.bacc}}
     {%- else %}
-    BACC: {{ motor.bacc | default(bacc) | default (motor.accl | default(accl) | default(101, true)) }}
+    BACC: {{ motor.bacc | default(bacc) | default(0.5, true) }}
     {%- endif %}
     {%- if mot.mres is defined %}
     MRES: {{mot.mres}}
@@ -416,10 +416,10 @@ entities:
     {%- else %}
     VBAS: {{ motor.vbas | default(0.1, true) }}
     {%- endif %}
-    {%- if mot.accs is defined %}
-    ACCS: {{mot.accs}}
+    {%- if mot.accl is defined %}
+    ACCS: {{mot.accl}}
     {%- else %}
-    ACCS: {{ motor.accs | default(0.5, true) }}
+    ACCS: {{ motor.accl | default(0.5, true) }}
     {%- endif %}
     {%- if mot.bdst is defined %}
     BDST: {{mot.bdst}}
@@ -490,7 +490,7 @@ entities:
   {%- set _def_egu   = 'count' %}
   {%- set _def_velo  = 0 %}
   {%- set _def_vbas  = 0 %}
-  {%- set _def_accs  = 0 %}
+  {%- set _def_accl  = 0 %}
   {%- set _def_mres  = 1 %}
   {%- set _def_prec  = 0 %}
   {%- set _def_dhlm  = 32767 %}
@@ -502,7 +502,7 @@ entities:
   {%- set _def_egu   = 'count' %}
   {%- set _def_velo  = 500 %}
   {%- set _def_vbas  = 10 %}
-  {%- set _def_accs  = 200 %}
+  {%- set _def_accl  = 200 %}
   {%- set _def_mres  = 1 %}
   {%- set _def_prec  = 0 %}
   {%- set _def_dhlm  = 0 %}
@@ -514,7 +514,7 @@ entities:
   {%- set _def_egu   = 'mm' %}
   {%- set _def_velo  = 2.3 %}
   {%- set _def_vbas  = 0.1 %}
-  {%- set _def_accs  = 1.5 %}
+  {%- set _def_accl  = 1.5 %}
   {%- set _def_mres  = 0.0000024414 %}
   {%- set _def_prec  = 4 %}
   {%- set _def_dhlm  = 25.0 %}
@@ -526,7 +526,7 @@ entities:
   {%- set _def_egu   = 'mm' %}
   {%- set _def_velo  = 2.3 %}
   {%- set _def_vbas  = 0.1 %}
-  {%- set _def_accs  = 1.5 %}
+  {%- set _def_accl  = 1.5 %}
   {%- set _def_mres  = 0.000028939405515 %}
   {%- set _def_prec  = 4 %}
   {%- set _def_dhlm  = 25.0 %}
@@ -576,10 +576,10 @@ entities:
     {%- else %}
     VBAS: {{ motor.vbas | default(_def_vbas, true) }}
     {%- endif %}
-    {%- if mot.accs is defined %}
-    ACCS: {{mot.accs}}
+    {%- if mot.accl is defined %}
+    ACCS: {{mot.accl}}
     {%- else %}
-    ACCS: {{ motor.accs | default(_def_accs, true) }}
+    ACCS: {{ motor.accl | default(_def_accl, true) }}
     {%- endif %}
     {%- if mot.bdst is defined %}
     BDST: {{mot.bdst}}
