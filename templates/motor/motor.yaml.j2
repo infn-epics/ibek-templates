@@ -86,12 +86,12 @@ entities:
     {%- if mot.bvel is defined %}
     BVEL: {{mot.bvel}}
     {%- else %}
-    BVEL: {{ motor.bvel | default(bvel) | default(0.5, true) }}
+    BVEL: {{ motor.bvel | default(bvel) | default(mot.velo | default(motor.velo | default(velo) | default(0.5, true))) }}
     {%- endif %}
     {%- if mot.bacc is defined %}
     BACC: {{mot.bacc}}
     {%- else %}
-    BACC: {{ motor.bacc | default(bacc) | default(0.5, true) }}
+    BACC: {{ motor.bacc | default(bacc) | default(mot.accl | default(motor.accl | default(accl) | default(0.5, true))) }}
     {%- endif %}
     {%- if mot.mres is defined %}
     MRES: {{mot.mres}}
@@ -181,12 +181,12 @@ entities:
     {%- if mot.bvel is defined %}
     BVEL: {{mot.bvel}}
     {%- else %}
-    BVEL: {{ motor.bvel | default(0.5, true) }}
+    BVEL: {{ motor.bvel | default(mot.velo | default(motor.velo | default(1, true))) }}
     {%- endif %}
     {%- if mot.bacc is defined %}
     BACC: {{mot.bacc}}
     {%- else %}
-    BACC: {{ motor.bacc | default(0.2, true) }}
+    BACC: {{ motor.bacc | default(mot.accl | default(motor.accl | default(0.2, true))) }}
     {%- endif %}
     {%- if mot.mres is defined %}
     MRES: {{mot.mres}}
@@ -429,12 +429,12 @@ entities:
     {%- if mot.bvel is defined %}
     BVEL: {{mot.bvel}}
     {%- else %}
-    BVEL: {{ motor.bvel | default(1.0, true) }}
+    BVEL: {{ motor.bvel | default(mot.velo | default(motor.velo | default(1.0, true))) }}
     {%- endif %}
     {%- if mot.bacc is defined %}
     BACC: {{mot.bacc}}
     {%- else %}
-    BACC: {{ motor.bacc | default(0.5, true) }}
+    BACC: {{ motor.bacc | default(mot.accl | default(motor.accl | default(0.5, true))) }}
     {%- endif %}
     {%- if mot.mres is defined %}
     MRES: {{mot.mres}}
@@ -589,12 +589,12 @@ entities:
     {%- if mot.bvel is defined %}
     BVEL: {{mot.bvel}}
     {%- else %}
-    BVEL: {{ motor.bvel | default(_def_bvel, true) }}
+    BVEL: {{ motor.bvel | default(mot.velo | default(motor.velo | default(_def_bvel, true))) }}
     {%- endif %}
     {%- if mot.bacc is defined %}
     BACC: {{mot.bacc}}
     {%- else %}
-    BACC: {{ motor.bacc | default(_def_bacc, true) }}
+    BACC: {{ motor.bacc | default(mot.accl | default(motor.accl | default(_def_bacc, true))) }}
     {%- endif %}
     {%- if mot.mres is defined %}
     MRES: {{mot.mres}}
@@ -704,12 +704,12 @@ entities:
     {%- if mot.bvel is defined %}
     BVEL: {{mot.bvel}}
     {%- else %}
-    BVEL: {{ motor.bvel | default(bvel) | default(1, true) }}
+    BVEL: {{ motor.bvel | default(bvel) | default(mot.velo | default(motor.velo | default(velo) | default(1, true))) }}
     {%- endif %}
     {%- if mot.bacc is defined %}
     BACC: {{mot.bacc}}
     {%- else %}
-    BACC: {{ motor.bacc | default(bacc) | default(0.2, true) }}
+    BACC: {{ motor.bacc | default(bacc) | default(mot.accl | default(motor.accl | default(accl) | default(0.2, true))) }}
     {%- endif %}
     {%- if mot.mres is defined %}
     MRES: {{mot.mres}}
@@ -814,12 +814,12 @@ entities:
     {%- if mot.bvel is defined %}
     BVEL: {{mot.bvel}}
     {%- else %}
-    BVEL: {{ motor.bvel | default(1, true) }}
+    BVEL: {{ motor.bvel | default(mot.velo | default(motor.velo | default(1, true))) }}
     {%- endif %}
     {%- if mot.bacc is defined %}
     BACC: {{mot.bacc}}
     {%- else %}
-    BACC: {{ motor.bacc | default(0.2, true) }}
+    BACC: {{ motor.bacc | default(mot.accl | default(motor.accl | default(0.2, true))) }}
     {%- endif %}
     {%- if mot.mres is defined %}
     MRES: {{mot.mres}}
