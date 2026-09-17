@@ -191,6 +191,54 @@
                     "type": "integer",
                     "description": "Controller/driver debug verbosity level (ocem/E642 naming)."
                 },
+                "set_tolerance": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "Power-supply setpoint tolerance. Devices may override this IOC-level default."
+                },
+                "zero_tolerance": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "Power-supply zero-current tolerance. Devices may override this IOC-level default."
+                },
+                "set_timeout_s": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "Power-supply setpoint timeout in seconds. Devices may override this IOC-level default."
+                },
+                "init_timeout_s": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "Power-supply initialization timeout in seconds. Devices may override this IOC-level default."
+                },
+                "current_threshold": {
+                    "type": "number",
+                    "description": "Power-supply current-change reporting threshold."
+                },
+                "voltage_threshold": {
+                    "type": "number",
+                    "description": "Power-supply voltage-change reporting threshold."
+                },
+                "poll_state": {
+                    "type": "integer",
+                    "enum": [0, 1],
+                    "description": "Enable power-supply state polling (0 = disabled, 1 = enabled)."
+                },
+                "poll_state_interval": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "description": "Power-supply state polling interval in seconds."
+                },
+                "poll_analog": {
+                    "type": "integer",
+                    "enum": [0, 1],
+                    "description": "Enable power-supply analog polling (0 = disabled, 1 = enabled)."
+                },
+                "poll_analog_interval": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "description": "Power-supply analog polling interval in seconds."
+                },
                 "description": {
                     "type": "string",
                     "description": "Free-text description of this IOC, distinct from the rendered template's own 'description:' header."
@@ -611,6 +659,54 @@
                         "integer"
                     ],
                     "description": "Device identifier. String for adcamera (IP address or hostname) and smc/polyscience (DEV_ID); integer for the ocem/danfysik/hazemeyer PS templates (slave/channel address)."
+                },
+                "set_tolerance": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "Per-device power-supply setpoint tolerance."
+                },
+                "zero_tolerance": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "Per-device power-supply zero-current tolerance."
+                },
+                "set_timeout_s": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "Per-device power-supply setpoint timeout in seconds."
+                },
+                "init_timeout_s": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "Per-device power-supply initialization timeout in seconds."
+                },
+                "current_threshold": {
+                    "type": "number",
+                    "description": "Per-device power-supply current-change reporting threshold."
+                },
+                "voltage_threshold": {
+                    "type": "number",
+                    "description": "Per-device power-supply voltage-change reporting threshold."
+                },
+                "poll_state": {
+                    "type": "integer",
+                    "enum": [0, 1],
+                    "description": "Per-device state-polling enable flag (0 = disabled, 1 = enabled)."
+                },
+                "poll_state_interval": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "description": "Per-device state polling interval in seconds."
+                },
+                "poll_analog": {
+                    "type": "integer",
+                    "enum": [0, 1],
+                    "description": "Per-device analog-polling enable flag (0 = disabled, 1 = enabled)."
+                },
+                "poll_analog_interval": {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "description": "Per-device analog polling interval in seconds."
                 },
                 "serial": {
                     "type": "string",
