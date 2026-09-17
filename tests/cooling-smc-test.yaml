@@ -9,7 +9,7 @@ devtype: smc
 devgroup: cool
 server: "192.168.197.105"
 port: 4002
-dev_id: "01"
+id: "01"
 iocexit: true
 
 

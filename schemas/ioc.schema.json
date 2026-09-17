@@ -114,8 +114,256 @@
                     "type": "object",
                     "description": "IOC-wide default alarm/display limits, overridable per device.",
                     "$ref": "#/definitions/limits"
+                },
+                "server": {
+                    "type": "string",
+                    "description": "Default IP/hostname for this IOC's device connection."
+                },
+                "port": {
+                    "type": "integer",
+                    "description": "Default TCP port for this IOC's device connection."
+                },
+                "host": {
+                    "type": "string",
+                    "description": "Target hostname for an SSH/SCP-deployed IOC (libera-llrf/libera-sppp style)."
+                },
+                "ip": {
+                    "type": "string",
+                    "description": "IOC-level device IP, used by templates with a single fixed target."
+                },
+                "workdir": {
+                    "type": "string",
+                    "description": "Remote working directory for an SSH/SCP-deployed IOC."
+                },
+                "exec": {
+                    "type": "string",
+                    "description": "Entry script executed to start the IOC (e.g. st.cmd, start.sh)."
+                },
+                "start": {
+                    "type": "string",
+                    "description": "Path to the start script for a bespoke softioc/epics-py-base IOC."
+                },
+                "iocdir": {
+                    "type": "string",
+                    "description": "Subdirectory within the IOC image/repo this IOC's config lives in."
+                },
+                "iocbin": {
+                    "type": "string",
+                    "description": "Path to the IOC binary, when it is not at the devtype's default location (see mrf-utca-300/mrf-pci-230, whose st.cmd.j2 shebang is #!{{iocbin}})."
+                },
+                "image": {
+                    "type": "string",
+                    "description": "Container image overriding the devtype's default."
+                },
+                "charturl": {
+                    "type": "string",
+                    "description": "Git URL of the ioc-chart (or other) Helm chart used to deploy this IOC."
+                },
+                "gitinit": {
+                    "type": "boolean",
+                    "description": "Whether to git-clone the IOC's scripts/config repo at container init."
+                },
+                "autosync": {
+                    "type": "boolean",
+                    "description": "Restart the IOC automatically when its rendered config changes."
+                },
+                "disable": {
+                    "type": "boolean",
+                    "description": "Skip deploying this IOC/service without removing its definition."
+                },
+                "usegateway": {
+                    "type": "boolean",
+                    "description": "Route this IOC's PVs through the CA/PVA gateway."
+                },
+                "pva": {
+                    "type": "boolean",
+                    "description": "Enable PVAccess for this IOC."
+                },
+                "enable_ingress": {
+                    "type": "boolean",
+                    "description": "Expose this IOC/service via an Ingress."
+                },
+                "debug": {
+                    "type": "integer",
+                    "description": "Controller/driver debug verbosity level."
+                },
+                "debug_level": {
+                    "type": "integer",
+                    "description": "Controller/driver debug verbosity level (ocem/E642 naming)."
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Free-text description of this IOC, distinct from the rendered template's own 'description:' header."
+                },
+                "opi": {
+                    "type": [
+                        "string",
+                        "null"
+                    ],
+                    "description": "Default OPI (.bob) screen for this IOC's devices."
+                },
+                "opi_debug": {
+                    "type": "string",
+                    "description": "Debug-variant OPI screen (see tml iocDefaults.opi_debug)."
+                },
+                "scan": {
+                    "type": "string",
+                    "description": "EPICS SCAN rate string (e.g. '.2 second'), used by bergoz-bcm."
+                },
+                "samples": {
+                    "type": "integer",
+                    "description": "Waveform sample count (tektronix)."
+                },
+                "start_sample": {
+                    "type": "integer",
+                    "description": "First sample index to read (tektronix)."
+                },
+                "day_accumulators": {
+                    "type": "array",
+                    "description": "Daily accumulator PVs (tektronix template).",
+                    "items": {
+                        "$ref": "#/definitions/dayAccumulator"
+                    }
+                },
+                "active_poll_s": {
+                    "type": "number",
+                    "description": "OCEM/E642 controller active poll period, in seconds."
+                },
+                "active_timeout_s": {
+                    "type": "number",
+                    "description": "OCEM/E642 controller active-state timeout, in seconds."
+                },
+                "idle_poll_s": {
+                    "type": "number",
+                    "description": "OCEM/E642 controller idle poll period, in seconds."
+                },
+                "configFile": {
+                    "type": "string",
+                    "description": "Controller-specific axis config/init file path (pollux, mercury/pigcs2)."
+                },
+                "yesNoRefFlag": {
+                    "type": "integer",
+                    "description": "PI GCS2 (pigcs2) referencing behavior flag, IOC-level default."
+                },
+                "poi_tollerance": {
+                    "type": "number",
+                    "description": "Tolerance for point-of-interest matching (pollux)."
+                },
+                "cratename": {
+                    "type": "string",
+                    "description": "OCEM modbusps4chan crate identifier."
+                },
+                "correction": {
+                    "type": "number",
+                    "description": "OCEM modbus correction factor, IOC-level default."
+                },
+                "correctionset": {
+                    "type": "number",
+                    "description": "OCEM modbus correction set index, IOC-level default."
+                },
+                "pump": {
+                    "type": "array",
+                    "description": "Vacuum pump interlock thresholds monitored by an rf-conditioning softIOC.",
+                    "items": {
+                        "$ref": "#/definitions/pumpEntry"
+                    }
+                },
+                "scpoptions": {
+                    "type": "string",
+                    "description": "Extra scp flags for an SSH/SCP-deployed IOC's file transfer."
+                },
+                "ssh_options": {
+                    "type": "string",
+                    "description": "Extra ssh flags for an SSH/SCP-deployed IOC's remote connection."
+                },
+                "ssh_nodeport": {
+                    "type": "integer",
+                    "description": "NodePort exposing SSH to an embedded IOC target."
+                },
+                "initcmd": {
+                    "type": "string",
+                    "description": "Shell command run before the IOC starts on an SSH/SCP-deployed target (e.g. remounting rw)."
+                },
+                "networks": {
+                    "type": "array",
+                    "description": "Multus secondary network attachments for this IOC (e.g. GigE Vision camera networks).",
+                    "items": {
+                        "$ref": "#/definitions/networkEntry"
+                    }
+                },
+                "runon": {
+                    "type": "array",
+                    "description": "Node-affinity-style placement hints, shaped like networks (name/annotation).",
+                    "items": {
+                        "$ref": "#/definitions/networkEntry"
+                    }
+                },
+                "env": {
+                    "type": "array",
+                    "description": "Extra container environment variables.",
+                    "items": {
+                        "$ref": "#/definitions/keyvalue"
+                    }
+                },
+                "resources": {
+                    "type": "object",
+                    "description": "Kubernetes resources block (limits/requests). Shape owned by the deploying chart."
+                },
+                "securityContext": {
+                    "type": "object",
+                    "description": "Kubernetes securityContext block. Shape owned by the deploying chart."
+                },
+                "service": {
+                    "type": "object",
+                    "description": "Extra Kubernetes Service configuration (e.g. adcamera's service.http.port for the MJPEG stream). Shape owned by the deploying chart."
+                },
+                "aliases": {
+                    "type": "array",
+                    "description": "IOC-level PV aliases.",
+                    "items": {
+                        "$ref": "#/definitions/aliasEntry"
+                    }
+                },
+                "alias": {
+                    "type": "string",
+                    "description": "Display name substituted for this IOC's name on operator panels."
+                },
+                "roi_enable": {
+                    "type": "boolean",
+                    "description": "adcamera/adcamera2: enable the ROI plugin."
+                },
+                "proc_enable": {
+                    "type": "boolean",
+                    "description": "adcamera/adcamera2: enable the NDProcess plugin."
+                },
+                "stats_enable": {
+                    "type": "boolean",
+                    "description": "adcamera/adcamera2: enable the NDStats plugin."
+                },
+                "overlay_enable": {
+                    "type": "boolean",
+                    "description": "adcamera/adcamera2: enable the NDOverlay plugin."
+                },
+                "stream_enable": {
+                    "type": "boolean",
+                    "description": "adcamera/adcamera2: enable the ffmpegServer MJPEG stream."
+                },
+                "connections": {
+                    "type": "array",
+                    "description": "Modbus TCP connections (modbus-generic template).",
+                    "items": {
+                        "$ref": "#/definitions/modbusConnection"
+                    }
+                },
+                "serial": {
+                    "$ref": "#/definitions/serial"
+                },
+                "id": {
+                    "type": "string",
+                    "description": "IOC-level device id, used as a single-device shorthand instead of devices[] (e.g. smc/polyscience chiller's DEV_ID)."
                 }
-            }
+            },
+            "additionalProperties": false
         },
         "keyvalue": {
             "type": "object",
@@ -317,11 +565,154 @@
                 "twv": {
                     "type": "number",
                     "description": "Motor axis tweak step value. Overrides motor.twv."
+                },
+                "server": {
+                    "type": "string",
+                    "description": "Per-device IP/hostname, overriding the IOC-level server."
+                },
+                "port": {
+                    "type": "integer",
+                    "description": "Per-device TCP port, overriding the IOC-level port."
+                },
+                "ip": {
+                    "type": "string",
+                    "description": "Per-device IP address (danfysik_hallprobes and similar templates read dev.ip specifically, not dev.server)."
+                },
+                "id": {
+                    "type": [
+                        "string",
+                        "integer"
+                    ],
+                    "description": "Device identifier. String for adcamera (IP address or hostname) and smc/polyscience (DEV_ID); integer for the ocem/danfysik/hazemeyer PS templates (slave/channel address)."
+                },
+                "serial": {
+                    "type": "string",
+                    "description": "Vendor serial number identifying this specific unit (e.g. PTU meteo station)."
+                },
+                "addr": {
+                    "type": "string",
+                    "description": "Serial/Modbus device address (e.g. '0x80', '002')."
+                },
+                "bus": {
+                    "type": "string",
+                    "description": "PCI bus identifier for an MRF card (e.g. '06')."
+                },
+                "slot": {
+                    "type": "string",
+                    "description": "PCI slot identifier for an MRF card (e.g. '00')."
+                },
+                "func": {
+                    "type": "string",
+                    "description": "PCI function identifier for an MRF card (e.g. '0')."
+                },
+                "pv": {
+                    "type": "string",
+                    "description": "An externally-defined PV this device references (bespoke softIOC glue, e.g. ioc-time-profile)."
+                },
+                "enablepv": {
+                    "type": "string",
+                    "description": "PV that gates this device's activity (tektronix measurement channels)."
+                },
+                "pollperiod": {
+                    "type": "number",
+                    "description": "Per-device poll period, in seconds (PTU)."
+                },
+                "nocheckconn": {
+                    "type": "integer",
+                    "description": "Skip connection-liveness checking for this device (chiller/smc)."
+                },
+                "interlock": {
+                    "type": "boolean",
+                    "description": "This device participates in a vacuum/PS interlock. See the schema-consistency note on 'zones': it names the group, not the relationship - what it gates is not yet expressed here."
+                },
+                "desc": {
+                    "type": "string",
+                    "description": "Short description, used as the EPICS DESC field default on several templates."
+                },
+                "coeff": {
+                    "type": "number",
+                    "description": "Measurement scaling coefficient (tektronix BCM channel)."
+                },
+                "correction": {
+                    "type": "number",
+                    "description": "OCEM modbus correction factor for this device."
+                },
+                "correctionset": {
+                    "type": "number",
+                    "description": "OCEM modbus correction set index for this device."
+                },
+                "width": {
+                    "type": "integer",
+                    "description": "Camera sensor width in pixels."
+                },
+                "height": {
+                    "type": "integer",
+                    "description": "Camera sensor height in pixels."
+                },
+                "buffers": {
+                    "type": "integer",
+                    "description": "Number of frame buffers to allocate (adcamera/adcamera2)."
+                },
+                "hihi": {
+                    "type": "number",
+                    "description": "MAJOR alarm upper threshold, read directly (icpdas rtd). Equivalent to limits.hihi; the icpdas template reads this flat field, not the nested limits: block."
+                },
+                "high": {
+                    "type": "number",
+                    "description": "MINOR alarm upper threshold, read directly (icpdas rtd). See hihi."
+                },
+                "low": {
+                    "type": "number",
+                    "description": "MINOR alarm lower threshold, read directly (icpdas rtd). See hihi."
+                },
+                "lolo": {
+                    "type": "number",
+                    "description": "MAJOR alarm lower threshold, read directly (icpdas rtd). See hihi."
+                },
+                "hvel": {
+                    "type": "number",
+                    "description": "TML motor per-axis homing velocity, overriding motor.hvel."
+                },
+                "jvel": {
+                    "type": "number",
+                    "description": "TML motor per-axis jog velocity, overriding motor.jvel."
+                },
+                "velo_max": {
+                    "type": "number",
+                    "description": "TML motor per-axis maximum velocity, overriding motor.velo_max."
+                },
+                "sensor": {
+                    "type": "string",
+                    "description": "agilent-vac xgs600: sensor channel id (e.g. 'I1')."
+                },
+                "tcauto": {
+                    "type": "string",
+                    "description": "agilent-vac xgs600 img sensor: thermocouple auto-range channel id."
+                },
+                "number": {
+                    "type": [
+                        "string",
+                        "integer"
+                    ],
+                    "description": "agilent-vac xgs600 setpoint: setpoint number."
+                },
+                "axisId": {
+                    "type": "integer",
+                    "description": "technosoft-asyn per-axis id, alternative spelling to axid (the template checks axisId first, then axid, then falls back to the loop index)."
+                },
+                "setupFile": {
+                    "type": "string",
+                    "description": "technosoft-asyn per-axis .t.zip setup file, overriding motor.setupFile."
+                },
+                "homingSwitch": {
+                    "type": "string",
+                    "description": "technosoft-asyn per-axis homing switch (e.g. LSN/LSP), overriding motor.homingSwitch."
                 }
             },
             "required": [
                 "name"
-            ]
+            ],
+            "additionalProperties": false
         },
         "ps": {
             "type": "object",
@@ -634,6 +1025,251 @@
                 "twv": {
                     "type": "number",
                     "description": "IOC-wide default axis tweak step value."
+                }
+            }
+        },
+        "aliasEntry": {
+            "type": "object",
+            "description": "A single PV alias mapping.",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "PV name suffix to alias."
+                },
+                "alias": {
+                    "type": "string",
+                    "description": "Alias target suffix."
+                }
+            },
+            "required": [
+                "name",
+                "alias"
+            ]
+        },
+        "networkEntry": {
+            "type": "object",
+            "description": "A Multus secondary network attachment for this IOC.",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Network attachment definition name."
+                },
+                "annotation": {
+                    "type": "string",
+                    "description": "k8s.v1.cni.cncf.io/networks annotation value."
+                }
+            }
+        },
+        "dayAccumulator": {
+            "type": "object",
+            "description": "Daily charge/value accumulator, used by the tektronix template's day_accumulators.",
+            "properties": {
+                "pvname": {
+                    "type": "string"
+                },
+                "daypv": {
+                    "type": "string"
+                },
+                "egu": {
+                    "type": "string"
+                },
+                "prec": {
+                    "type": [
+                        "string",
+                        "integer"
+                    ]
+                },
+                "scan": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "enablepv": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "pvname",
+                "daypv"
+            ]
+        },
+        "pumpEntry": {
+            "type": "object",
+            "description": "A vacuum pump interlock threshold, used by the bespoke rf-conditioning softIOCs' pump list.",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "prefix": {
+                    "type": "string"
+                },
+                "suffix": {
+                    "type": "string"
+                },
+                "tsh": {
+                    "type": [
+                        "string",
+                        "number"
+                    ],
+                    "description": "Interlock threshold."
+                }
+            },
+            "required": [
+                "name"
+            ]
+        },
+        "modbusRegister": {
+            "type": "object",
+            "description": "A single Modbus register exposed by modbus-generic.",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "float",
+                        "int",
+                        "uint",
+                        "coil"
+                    ]
+                },
+                "access": {
+                    "type": "string",
+                    "enum": [
+                        "read",
+                        "write"
+                    ]
+                },
+                "format": {
+                    "type": "string",
+                    "enum": [
+                        "LE",
+                        "BE"
+                    ]
+                },
+                "r": {
+                    "type": "string",
+                    "description": "Record name suffix override, defaults to ':'+name."
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "egu": {
+                    "type": "string"
+                },
+                "hopr": {
+                    "type": "number"
+                },
+                "lopr": {
+                    "type": "number"
+                },
+                "prec": {
+                    "type": "integer"
+                },
+                "pini": {
+                    "type": "string",
+                    "enum": [
+                        "YES",
+                        "NO"
+                    ]
+                },
+                "scan": {
+                    "type": "string"
+                },
+                "znam": {
+                    "type": "string"
+                },
+                "onam": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "offset"
+            ]
+        },
+        "modbusSlave": {
+            "type": "object",
+            "description": "A Modbus slave device on a modbus-generic connection.",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "slave_id": {
+                    "type": "integer"
+                },
+                "func_code": {
+                    "type": "integer"
+                },
+                "start_addr": {
+                    "type": "integer"
+                },
+                "length": {
+                    "type": "integer"
+                },
+                "data_type": {
+                    "type": "integer"
+                },
+                "poll_delay": {
+                    "type": "integer",
+                    "description": "Poll interval in milliseconds."
+                },
+                "registers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/modbusRegister"
+                    }
+                }
+            },
+            "required": [
+                "name"
+            ]
+        },
+        "modbusConnection": {
+            "type": "object",
+            "description": "A Modbus TCP connection carrying one or more slaves (modbus-generic template).",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "server": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "slaves": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/modbusSlave"
+                    }
+                }
+            },
+            "required": [
+                "name"
+            ]
+        },
+        "serial": {
+            "type": "object",
+            "description": "Serial-over-TCP connection details (tml template).",
+            "properties": {
+                "ip": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "ptty": {
+                    "type": "string",
+                    "description": "Local pseudo-tty device the serial bridge is exposed on."
+                },
+                "baud": {
+                    "type": "integer"
                 }
             }
         }
