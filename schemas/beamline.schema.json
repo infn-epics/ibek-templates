@@ -136,18 +136,22 @@
                     "description": "Deployed EPICS services (archiver, gateway, pvagateway, olog, dashboard, ...). Shape is owned by the individual service charts, so it is not constrained here."
                 },
                 "iocs": {
-                    "type": "array",
-                    "description": "The IOCs of this beamline. Each entry is an IOC as described by ioc.schema.json, keyed by 'name' rather than 'iocname'.",
-                    "items": {
-                        "allOf": [
-                            {
-                                "$ref": "https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json#/definitions/iocFields"
+                    "description": "The IOCs of this beamline, as a map keyed by IOC name. Each entry is an IOC as described by ioc.schema.json, with 'name' (not 'iocname') repeating the key: the chart iterates the values only, so 'name' must be present in the entry. A map lets Helm merge several values files per IOC (e.g. values-linac.yaml + values-accumulator.yaml). The legacy list form (entries with 'name') is still accepted by the chart but is deprecated.",
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/beamlineIoc"
                             }
-                        ],
-                        "required": [
-                            "name"
-                        ]
-                    }
+                        },
+                        {
+                            "type": "array",
+                            "description": "Deprecated: list of IOCs. Convert to a map keyed by IOC name.",
+                            "items": {
+                                "$ref": "#/definitions/beamlineIoc"
+                            }
+                        }
+                    ]
                 }
             },
             "required": [
@@ -180,8 +184,17 @@
             "description": "ArgoCD sync policy applied to the generated applications."
         }
     },
-    "required": [
-        "beamline",
-        "epicsConfiguration"
-    ]
+    "definitions": {
+        "beamlineIoc": {
+            "description": "One IOC entry of epicsConfiguration.iocs: the IOC fields of ioc.schema.json, identified by 'name' rather than 'iocname'.",
+            "allOf": [
+                {
+                    "$ref": "https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json#/definitions/iocFields"
+                }
+            ],
+            "required": [
+                "name"
+            ]
+        }
+    }
 }

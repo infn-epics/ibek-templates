@@ -605,6 +605,10 @@
                     "type": "number",
                     "description": "Motor axis resolution (EGU/step). Overrides motor.mres."
                 },
+                "ares": {
+                    "type": "number",
+                    "description": "Motor axis actuator resolution (ARES). Optional: overrides motor.ares; when neither is set the axis mres is used."
+                },
                 "prec": {
                     "type": "integer",
                     "description": "Motor axis display precision. Overrides motor.prec."
@@ -1139,6 +1143,10 @@
                 "mres": {
                     "type": "number",
                     "description": "IOC-wide default axis resolution (EGU/step)."
+                },
+                "ares": {
+                    "type": "number",
+                    "description": "IOC-wide default axis actuator resolution (ARES). When unset each axis falls back to its own mres."
                 },
                 "prec": {
                     "type": "integer",
