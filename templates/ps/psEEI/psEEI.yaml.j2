@@ -22,6 +22,9 @@ entities:
   MIN_CURR: {{ dev_ps.get('current', {}).get('min', ioc_ps.get('current', {}).get('min', -330000)) }}
   SW_MODE: {{ t.sw_mode if t.sw_mode is defined else 1 }}
   POLARITY_VIA_SIGN: {{ 1 if dev_ps.get('polarity', {}).get('mode', ioc_ps.get('polarity', {}).get('mode', '')) in ['bipolar-native','bipolar-switched'] else 0 }}
+  ZERO_TOLERANCE: {{ t.zero_tolerance | default(zero_tolerance) | default(2.0) }}
+  SET_TOLERANCE: {{ t.set_tolerance | default(set_tolerance) | default(1.0) }}
+  SET_TIMEOUT_S: {{ t.set_timeout_s | default(set_timeout_s) | default(30.0) }}
 
 {%- endfor %}
 
