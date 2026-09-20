@@ -1,33 +1,21 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
 
-iocname: "ps-hazemeyer-test"
+iocname: "ps-hazemeyer-iocast-test"
 asset: "https://confluence.infn.it/x/test"
-devtype: haz-ser
+devtype: haz-iocast
 template: "hazemeyer"
 devgroup: mag
 iocprefix: "TEST:MAG:HAZ"
 iocroot: "HAZ"
-server: "192.168.1.7"
-port: 4001
-ps:
-  current:
-    max: 200
-  voltage:
-    max: 110
+port: 502
 # IOC-level defaults for the UNIMAG watchdogs; a device can override each one.
-# Omitted altogether, the defaults apply (0.5 A, 1.0 A, 30 s).
 zero_tolerance: 0.4
 set_tolerance: 0.8
 set_timeout_s: 45
 devices:
   - name: "DHTEST01"
-    id: 1
+    ip: "192.168.1.11"
     set_tolerance: 0.2
     set_timeout_s: 20
-    ps:
-      current:
-        max: 250
-      voltage:
-        max: 120
   - name: "DHTEST02"
-    id: 2
+    ip: "192.168.1.12"

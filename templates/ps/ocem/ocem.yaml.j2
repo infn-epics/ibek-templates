@@ -15,6 +15,9 @@ entities:
     TCPPORT: {{alim.port | default(502)}}
     CORRECTION: {{alim.correction | default(1.8)}}  
     CORRECTIONSET: {{alim.correctionset | default(1)}} 
+    ZERO_TOLERANCE: {{ alim.zero_tolerance | default(zero_tolerance) | default(0.5) }}
+    SET_TOLERANCE: {{ alim.set_tolerance | default(set_tolerance) | default(1.0) }}
+    SET_TIMEOUT_S: {{ alim.set_timeout_s | default(set_timeout_s) | default(30.0) }}
 {%- endfor %}
 {%- endif %}
 
@@ -27,6 +30,9 @@ entities:
     IMAX: {{ioc_ps.get('current', {}).get('max', 30)}}
     VMAX: {{ioc_ps.get('voltage', {}).get('max', 16)}}
     TCPPORT: {{port | default(502)}}
+    ZERO_TOLERANCE: {{ zero_tolerance | default(0.5) }}
+    SET_TOLERANCE: {{ set_tolerance | default(1.0) }}
+    SET_TIMEOUT_S: {{ set_timeout_s | default(30.0) }}
 {% set ways = ["WAYA", "WAYB", "WAYC", "WAYD"] %}
 {%- for alim in devices %}
 {%- set way = ways[loop.index0] %}

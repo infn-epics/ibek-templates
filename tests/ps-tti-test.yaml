@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+
+iocname: "ps-tti-test"
+asset: "https://confluence.infn.it/x/test"
+devtype: tti
+template: "TTI"
+devgroup: mag
+iocprefix: "TEST:MAG:TTI"
+iocroot: "TTI"
+server: "192.168.1.13"
+# The current setpoint of a TTI supply is its current limit, so set_tolerance
+# defaults to 0 (setpoint check disabled) unless the load makes it meaningful.
+zero_tolerance: 0.4
+set_timeout_s: 45
+devices:
+  - name: "TTITEST01"
+    port: 4001
+    set_tolerance: 0.5
+  - name: "TTITEST02"
+    port: 4002

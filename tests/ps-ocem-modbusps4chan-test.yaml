@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+
+iocname: "ps-ocem-modbusps4chan-test"
+asset: "https://confluence.infn.it/x/test"
+devtype: modbusps4chan
+template: "ocem"
+devgroup: mag
+iocprefix: "TEST:MAG:OCEM"
+iocroot: "OCEM"
+cratename: "CRATE01"
+ip: "192.168.1.10"
+ps:
+  current:
+    max: 30
+  voltage:
+    max: 16
+# The four ways of a crate share one entity, so the UNIMAG watchdog
+# parameters are IOC-level only.
+zero_tolerance: 0.4
+set_tolerance: 0.8
+set_timeout_s: 45
+devices:
+  - name: "QUATEST01"
+  - name: "QUATEST02"
+  - name: "QUATEST03"
+  - name: "QUATEST04"

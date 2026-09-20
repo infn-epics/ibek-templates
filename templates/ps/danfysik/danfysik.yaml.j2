@@ -29,6 +29,9 @@ entities:
   PREC: 3
   unimag_enable: {{ device.unimag_enable | default(true) }}
   debug: {{ device.debug | default(1) }}
+  ZERO_TOLERANCE: {{ device.zero_tolerance | default(zero_tolerance) | default(0.5) }}
+  SET_TOLERANCE: {{ device.set_tolerance | default(set_tolerance) | default(1.0) }}
+  SET_TIMEOUT_S: {{ device.set_timeout_s | default(set_timeout_s) | default(30.0) }}
 {%- endfor %}
 
 # ============================================================================

@@ -14,9 +14,16 @@ ps:
   voltage:
     max: 20
     ramp: 0
+# IOC-level defaults for the UNIMAG watchdogs; a device can override each one.
+# Omitted altogether, the defaults apply (0.5 A, 1.0 A, 30 s).
+zero_tolerance: 0.4
+set_tolerance: 0.8
+set_timeout_s: 45
 devices:
   - name: "PSTEST01"
     ip: "192.168.1.5"
+    set_tolerance: 0.2
+    set_timeout_s: 20
     ps:
       current:
         max: 30

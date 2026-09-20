@@ -25,6 +25,9 @@ entities:
   ID: {{ t.id}}
   WPOLL: {{ t.wpoll if t.wpoll is defined else 200 }}
   RPOLL: {{ t.rpoll if t.rpoll is defined else 2000 }}
+  ZERO_TOLERANCE: {{ t.zero_tolerance | default(zero_tolerance) | default(0.5) }}
+  SET_TOLERANCE: {{ t.set_tolerance | default(set_tolerance) | default(1.0) }}
+  SET_TIMEOUT_S: {{ t.set_timeout_s | default(set_timeout_s) | default(30.0) }}
 {%- endfor %}
 
 {%- elif devtype == "haz-iocast" %}
@@ -43,6 +46,9 @@ entities:
   R: "{{ t.name }}"
   POLL: {{ t.poll if t.poll is defined else 1000 }}
   TIMEOUT: {{ t.timeout if t.timeout is defined else 2000 }}
+  ZERO_TOLERANCE: {{ t.zero_tolerance | default(zero_tolerance) | default(0.5) }}
+  SET_TOLERANCE: {{ t.set_tolerance | default(set_tolerance) | default(1.0) }}
+  SET_TIMEOUT_S: {{ t.set_timeout_s | default(set_timeout_s) | default(30.0) }}
 {%- endfor %}
 
 {%- endif %}

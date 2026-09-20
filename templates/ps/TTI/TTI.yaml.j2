@@ -11,6 +11,9 @@ entities:
   PORT: {{ device.port | default(4001) }}
   TIMEOUT: {{ timeout | default(1000) }}
   DISCONNECT_ON_TIMEOUT: {{ disconnect_on_timeout | default(true) }}
+  ZERO_TOLERANCE: {{ device.zero_tolerance | default(zero_tolerance) | default(0.5) }}
+  SET_TOLERANCE: {{ device.set_tolerance | default(set_tolerance) | default(0.0) }}
+  SET_TIMEOUT_S: {{ device.set_timeout_s | default(set_timeout_s) | default(30.0) }}
 {%- endfor %}
 
 - type: epics.PostStartupCommand

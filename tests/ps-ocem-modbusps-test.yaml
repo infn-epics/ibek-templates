@@ -1,39 +1,25 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
 
-iocname: "ps-danfysik-test"
+iocname: "ps-ocem-modbusps-test"
 asset: "https://confluence.infn.it/x/test"
-devtype: sys8x00
-template: "danfysik"
+devtype: modbusps
+template: "ocem"
 devgroup: mag
-iocprefix: "TEST:MAG:DANFYSIK"
-server: "192.168.1.2"
-port: 4005
+iocprefix: "TEST:MAG:OCEM"
+iocroot: "OCEM"
 ps:
   current:
     max: 100
   voltage:
-    max: 25
+    max: 16
 # IOC-level defaults for the UNIMAG watchdogs; a device can override each one.
-# Omitted altogether, the defaults apply (0.5 A, 1.0 A, 30 s).
 zero_tolerance: 0.4
 set_tolerance: 0.8
 set_timeout_s: 45
 devices:
   - name: "QUATEST01"
-    id: 10
+    ip: "192.168.1.8"
     set_tolerance: 0.2
     set_timeout_s: 20
-    ps:
-      polarity:
-        mode: unipolar
-        sign: positive
-      current:
-        max: 100
-      voltage:
-        max: 100
   - name: "QUATEST02"
-    id: 11
-    ps:
-      polarity:
-        mode: unipolar
-        sign: negative
+    ip: "192.168.1.9"

@@ -76,6 +76,38 @@ shape:
 # setting the field explicitly, exactly as before.
 
 # ---------------------------------------------------------------------------
+# UNIMAG watchdog keys (flat, next to `ps:` - not inside it)
+# ---------------------------------------------------------------------------
+# Every UNIMAG power-supply IOC (psEEI, caenels, ocem, hazemeyer, danfysik,
+# TTI; the ocem E642 template has had them for longer) exposes the same
+# three tuning keys, set at IOC level and/or per device (the device value
+# wins, then the IOC one, then the default):
+#
+#   zero_tolerance: <A>   default 0.5   |current| within this counts as zero
+#                                        (psEEI: default 2.0, its sequencer
+#                                        also uses it before a polarity change)
+#   set_tolerance:  <A>   default 1.0   readback within this of CURRENT_SP
+#                                        counts as reached; 0 disables the
+#                                        SP_NOT_REACHED check
+#                                        (TTI: default 0, its CURRENT_SP is the
+#                                        supply's current limit)
+#   set_timeout_s:  <s>   default 30    how long a setpoint / commanded state
+#                                        may stay unreached, without progress,
+#                                        before it is reported
+#
+# They reach the IOC as the ZERO_TOLERANCE, SET_TOLERANCE and SET_TIMEOUT_S
+# parameters of the support entity (and db macros of the same names) and are
+# also live PVs of every unit. The keys are already in ioc.schema.json.
+# ocem/modbusps4chan is IOC-level only: the four ways of a crate share one
+# entity.
+#
+# STATE_RB (aligned across these IOCs):
+#   0 OFF | 1 ON | 2 STANDBY | 3 FAULT (MAJOR) | 4 EXT_INTLK (MAJOR) |
+#   5 CONN_FAULT (MAJOR, communication errors) | 6 SP_NOT_REACHED (MINOR) |
+#   7 ST_NOT_REACHED (MAJOR) | 8.. device specific (danfysik 8 RAMPING,
+#   9 POL_CHANGE; TTI 8 LIMITING)
+
+# ---------------------------------------------------------------------------
 # Per-devtype migration/mapping table, corrected against the actual Jinja
 # entity parameters in templates/ps/*.yaml.j2 (not just the old values.yaml
 # field names - several were dead/unused before this refactor)
