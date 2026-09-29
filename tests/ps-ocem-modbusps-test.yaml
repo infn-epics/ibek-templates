@@ -16,10 +16,13 @@ ps:
 zero_tolerance: 0.4
 set_tolerance: 0.8
 set_timeout_s: 45
+# Hardware alarm mask (bit at 1 masks): IOC-level default, a device can override it.
+maskalarm: 0x200
 devices:
   - name: "QUATEST01"
     ip: "192.168.1.8"
     set_tolerance: 0.2
     set_timeout_s: 20
+    maskalarm: "0xFFFFFFFF"
   - name: "QUATEST02"
     ip: "192.168.1.9"

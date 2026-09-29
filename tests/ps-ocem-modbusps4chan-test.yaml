@@ -19,8 +19,14 @@ ps:
 zero_tolerance: 0.4
 set_tolerance: 0.8
 set_timeout_s: 45
+# Hardware alarm masks (bit at 1 masks): maskalarm is the default of every
+# way (device n is way A..D and can override it), maskalarm_global masks
+# the GlobalAlarms word shared by the ways.
+maskalarm: 1
+maskalarm_global: 8
 devices:
   - name: "QUATEST01"
   - name: "QUATEST02"
+    maskalarm: 0x20001
   - name: "QUATEST03"
   - name: "QUATEST04"

@@ -309,6 +309,16 @@
                     "type": "number",
                     "description": "OCEM modbus correction set index, IOC-level default."
                 },
+                "maskalarm": {
+                    "type": ["integer", "string"],
+                    "pattern": "^(0[xX][0-9a-fA-F]+|-?[0-9]+)$",
+                    "description": "OCEM modbus hardware alarm mask (bit at 1 masks the alarm), IOC-level default for every device / way. modbusps: bits 0-15 AlarmsFirst, 16-31 AlarmsSecond; modbusps4chan: per way, bits 0-15 WayX_AlarmsFirst, 16-31 WayX_AlarmsSecond."
+                },
+                "maskalarm_global": {
+                    "type": ["integer", "string"],
+                    "pattern": "^(0[xX][0-9a-fA-F]+|-?[0-9]+)$",
+                    "description": "OCEM modbusps4chan GlobalAlarms mask (bit at 1 masks the alarm, bits 0-15), shared by all the ways."
+                },
                 "pump": {
                     "type": "array",
                     "description": "Vacuum pump interlock thresholds monitored by an rf-conditioning softIOC.",
@@ -776,6 +786,11 @@
                 "correctionset": {
                     "type": "number",
                     "description": "OCEM modbus correction set index for this device."
+                },
+                "maskalarm": {
+                    "type": ["integer", "string"],
+                    "pattern": "^(0[xX][0-9a-fA-F]+|-?[0-9]+)$",
+                    "description": "OCEM modbus hardware alarm mask for this device (bit at 1 masks the alarm); on modbusps4chan device n is way A..D."
                 },
                 "width": {
                     "type": "integer",
