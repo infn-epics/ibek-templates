@@ -7,6 +7,7 @@ entities:
   IP: "{{ server }}"
   BOARD_PAD: {{ board_pad | default(0) }}
 {%- for device in devices %}
+{%- set labels = device.channels | default({}) %}
 - type: srsDG535.DG535
   PORT: "GPIB0"
   P: "{{ iocprefix }}"
@@ -14,6 +15,13 @@ entities:
   ADDR: {{ device.addr | default(15) | int }}
   SCAN: "{{ device.scan | default(scan) | default('2 second') }}"
   SCAN_CFG: "{{ device.scan_cfg | default(scan_cfg) | default('10 second') }}"
+  T0_LABEL: {{ (labels.T0 | default('T0')) | tojson }}
+  A_LABEL: {{ (labels.A | default('A')) | tojson }}
+  B_LABEL: {{ (labels.B | default('B')) | tojson }}
+  AB_LABEL: {{ (labels.AB | default('AB')) | tojson }}
+  C_LABEL: {{ (labels.C | default('C')) | tojson }}
+  D_LABEL: {{ (labels.D | default('D')) | tojson }}
+  CD_LABEL: {{ (labels.CD | default('CD')) | tojson }}
 {%- endfor %}
 
 - type: epics.PostStartupCommand

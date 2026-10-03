@@ -12,3 +12,11 @@ server: "192.168.191.35"
 devices:
   - name: "DDG535"
     addr: "14"
+    # channel labels (<ch>_LABEL PVs); unlisted channels keep their name
+    channels:
+      A: "LINAC GUN"
+      B: "LINAC Sys"
+      C: "HODOSCOPE"
+      D: "HODOSCOPE"
+  - name: "DDG536"
+    addr: "15"

@@ -510,6 +510,14 @@
                     ],
                     "description": "Channel identifier of the device. Integer for a plain channel index (icpdas, tektronix, ...); string for a devtype with an enum-style channel label instead (e.g. pfeiffer tpg300/tpg366: A1/A2/B1/B2, per the pfeiffer.tpg300 ibek-support channel entity)."
                 },
+                "channels": {
+                    "type": "object",
+                    "description": "Labels of the device channels, keyed by channel name: what each output or input is connected to (srsDG535: T0, A, B, AB, C, D, CD). Each label becomes the <channel>_LABEL PV, so it is limited to 39 characters.",
+                    "additionalProperties": {
+                        "type": "string",
+                        "maxLength": 39
+                    }
+                },
                 "asset": {
                     "type": "string",
                     "description": "Optional asset/documentation link for this device. Not required - used instead of (or alongside) the IOC-level asset for IOCs that manage several distinct physical assets (e.g. one camera IOC with several devices[], each with its own asset link)."
