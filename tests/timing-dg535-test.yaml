@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+
+iocname: "timing-dg535-test"
+asset: "https://confluence.infn.it/x/test"
+devtype: dg535
+template: "srsDG535"
+devgroup: timing
+iocprefix: "TEST:TIM:DDG"
+iocroot: "DDG"
+# NI GPIB-ENET/1000; each DG535 is a device on its GPIB bus
+server: "192.168.191.35"
+devices:
+  - name: "DDG535"
+    addr: "14"

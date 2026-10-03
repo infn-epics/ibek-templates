@@ -1,0 +1,28 @@
+ioc_name: {{ iocname }}
+description: SRS DG535 delay generator on NI GPIB-ENET/1000 TEMPLATE
+
+entities:
+- type: srsDG535.niEnetPort
+  NAME: "GPIB0"
+  IP: "{{ server }}"
+  BOARD_PAD: {{ board_pad | default(0) }}
+{%- for device in devices %}
+- type: srsDG535.DG535
+  PORT: "GPIB0"
+  P: "{{ iocprefix }}"
+  R: "{{ device.name }}"
+  ADDR: {{ device.addr | default(15) | int }}
+  SCAN: "{{ device.scan | default(scan) | default('2 second') }}"
+  SCAN_CFG: "{{ device.scan_cfg | default(scan_cfg) | default('10 second') }}"
+{%- endfor %}
+
+- type: epics.PostStartupCommand
+  command: |
+    epicsThreadSleep 1.0
+{%- if iocexit %}
+    dbl
+    exit
+{%- else %}
+    dbl("*") > {{ config_dir }}/pvlist.txt
+    dbl
+{%- endif %}
