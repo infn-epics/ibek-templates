@@ -1,0 +1,95 @@
+ioc_name: {{iocname}}
+description: VME IOC {{iocname}} (RTEMS-pc686, VMIVME-7750)
+
+# VME boards on an RTEMS-pc686 IOC (image infn-epics-ioc-rtems-pc686).
+#
+#   iocprefix: DANTE068
+#   template: vme
+#   devices:
+#     - name: QDC0
+#       type: caen-qdc        # CAEN V965, V965A or V792
+#       card_type: V965       # optional, default V965
+#       address: "0xee000000" # A24 (<= 0xffffff) or A32
+#       vector: 160
+#       level: 5              # optional, default 5
+#     - name: SIS0
+#       type: sis3820         # Struck SIS3820 scaler (mca + scaler records)
+#       address: "0x38000000"
+#       vector: 224           # optional
+#       level: 6              # optional
+#       max_chans: 2048       # optional
+#     - name: CARD0
+#       type: a32             # generic A32 register card (vme record)
+#       card: 0
+#       address: "0x20100000"
+#       nregs: 16
+#
+# A32 boards outside the BSP default window (VME 0x20000000-0x2dffffff) get a
+# 16 MB master window on the free Universe ports 3-6 (PCI 0xa0000000 on);
+# 'windows' replaces them: [{port, vme_address, pci_address, size, am}]
+
+{%- set _default_lo = 0x20000000 %}
+{%- set _default_hi = 0x2e000000 %}
+{%- set _seg_size = 0x01000000 %}
+
+entities:
+{%- if windows is defined and windows %}
+{%- for w in windows %}
+  - type: vme.MasterWindow
+    port: {{w.port}}
+    am: "{{w.am | default('0x0d')}}"
+    vme_address: "{{w.vme_address}}"
+    pci_address: "{{w.pci_address}}"
+    size: "{{w.size | default('0x01000000')}}"
+{%- endfor %}
+{%- else %}
+{%- set ns = namespace(segs=[]) %}
+{%- for dev in devices %}
+{%- set a = dev.address if dev.address is number else (dev.address | string | int(0, 16)) %}
+{%- set seg = (a // _seg_size) * _seg_size %}
+{%- if a > 0xffffff and not (_default_lo <= a < _default_hi) and seg not in ns.segs %}
+{%- set ns.segs = ns.segs + [seg] %}
+{%- endif %}
+{%- endfor %}
+{%- for seg in ns.segs %}
+  - type: vme.MasterWindow
+    port: {{ 3 + loop.index0 }}
+    am: "0x0d"
+    vme_address: "{{ '0x%08x' | format(seg) }}"
+    pci_address: "{{ '0x%08x' | format(0xa0000000 + loop.index0 * _seg_size) }}"
+    size: "{{ '0x%08x' | format(_seg_size) }}"
+{%- endfor %}
+{%- endif %}
+
+{%- for dev in devices %}
+{%- set _addr = dev.address if dev.address is string else ('0x%x' | format(dev.address)) %}
+{%- if dev.type == "caen-qdc" %}
+
+  - type: CaenV965.CaenQdc
+    PORT: {{dev.name}}
+    P: "{{iocprefix}}:"
+    R: "{{dev.name}}:"
+    card_type: {{dev.card_type | default("V965")}}
+    address: "{{_addr}}"
+    vector: {{dev.vector}}
+    level: {{dev.level | default(5)}}
+{%- elif dev.type == "sis3820" %}
+
+  - type: mca.SIS3820
+    PORT: {{dev.name}}
+    P: "{{iocprefix}}:{{dev.name}}:"
+    address: "{{_addr}}"
+    vector: {{dev.vector | default(224)}}
+    level: {{dev.level | default(6)}}
+    max_chans: {{dev.max_chans | default(2048)}}
+    max_signals: {{dev.max_signals | default(1)}}
+{%- elif dev.type == "a32" %}
+
+  - type: vme.A32Card
+    card: {{dev.card}}
+    address: "{{_addr}}"
+    nregs: {{dev.nregs}}
+    vector: {{dev.vector | default(0)}}
+    level: {{dev.level | default(0)}}
+{%- endif %}
+{%- endfor %}
