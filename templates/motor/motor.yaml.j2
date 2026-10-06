@@ -74,9 +74,9 @@ entities:
     VBAS: {{ motor.vbas | default(vbas) | default(0.2, true) }}
     {%- endif %}
     {%- if mot.accl is defined %}
-    ACCS: {{mot.accl}}
+    ACCL: {{mot.accl}}
     {%- else %}
-    ACCS: {{ motor.accl | default(accl) | default(101, true) }}
+    ACCL: {{ motor.accl | default(accl) | default(0.5, true) }}
     {%- endif %}
     {%- if mot.bdst is defined %}
     BDST: {{mot.bdst}}
