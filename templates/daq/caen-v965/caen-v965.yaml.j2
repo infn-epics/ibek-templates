@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+
+{# epik8s-run identifies IOCs by `name`; retain iocname as a compatibility
+   fallback for direct ibek-template rendering. #}
+{%- set _ioc_name = name | default(iocname, true) %}
+ioc_name: {{_ioc_name}}
+description: CAEN V965 dual-range QDC acquisition through a SIS3153 Ethernet VME controller
+
+# Required configuration:
+#   server: 192.168.189.92
+#   devices:
+#     - name: QDC965
+#       base: "0xee00"       # optional; this is the default
+#
+# Optional:
+#   vme_port: VME1            # asyn port name of the shared SIS3153
+#   devices[].prefix: :QDC965:     # suffix appended to iocprefix
+#   devices[].port: V965Port
+
+{%- set _vme_port = vme_port | default("VME1", true) %}
+
+entities:
+  # The controller is deliberately outside the device loop: all V965 boards
+  # in this IOC share one SIS3153 transport and therefore one asyn port.
+  - type: SIS3153.ethernet
+    name: "{{_vme_port}}"
+    IP: "{{server}}"
+
+{%- for qdc in devices %}
+  - type: SIS3153.v965
+    name: "{{qdc.port | default(qdc.name ~ 'Port', true)}}"
+    controller: "{{_vme_port}}"
+    P: "{{iocprefix}}{{qdc.prefix | default(':' ~ qdc.name ~ ':', true)}}"
+    BASE: "{{qdc.base | default('0xee00', true)}}"
+
+{%- endfor %}
