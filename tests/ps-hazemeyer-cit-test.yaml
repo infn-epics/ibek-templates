@@ -1,0 +1,72 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+
+iocname: "hazemeyer-acc-SER18006"
+devtype: haz-cit
+template: "hazemeyer"
+devgroup: mag
+zones: ACCUMULATOR
+iocprefix: "ACC:MAG:COR"
+iocroot: "COR"
+server: "192.168.192.32"
+port: 4005
+ps:
+  current:
+    max: 10
+# Cubicle (CIT module) names by Modbus slave address; default CIT<id>.
+cubicles:
+  - id: 1
+    name: CITA1001
+  - id: 2
+    name: CITA3001
+devices:
+  # CITA1001, CIT module 1
+  - name: CHHA1002
+    id: 1
+    channel: 0
+  - name: CVVA1002
+    id: 1
+    channel: 1
+  - name: CHHA4001
+    id: 1
+    channel: 2
+  - name: CVVA4001
+    id: 1
+    channel: 3
+  - name: CHHA1001
+    id: 1
+    channel: 4
+  - name: CVVA1001
+    id: 1
+    channel: 5
+  - name: CHHA2001
+    id: 1
+    channel: 6
+  - name: CVVA2001
+    id: 1
+    channel: 7
+  # CITA3001, CIT module 2
+  - name: CHHA3001
+    id: 2
+    channel: 0
+  - name: CVVA3001
+    id: 2
+    channel: 1
+  - name: CHHA3002
+    id: 2
+    channel: 2
+  - name: CVVA3002
+    id: 2
+    channel: 3
+  - name: CHHA4002
+    id: 2
+    channel: 4
+  - name: CVVA4002
+    id: 2
+    channel: 5
+  - name: CHHA4003
+    id: 2
+    channel: 6
+    set_tolerance: 0.2
+  - name: CVVA4003
+    id: 2
+    channel: 7

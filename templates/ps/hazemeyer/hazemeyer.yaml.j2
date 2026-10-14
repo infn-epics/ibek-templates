@@ -51,6 +51,50 @@ entities:
   SET_TIMEOUT_S: {{ t.set_timeout_s | default(set_timeout_s) | default(30.0) }}
 {%- endfor %}
 
+{%- elif devtype == "haz-cit" %}
+# ============================================================================
+# CITBUS MODE - CHV TL cubicles (8 channels each, MMU Modbus RTU slave)
+# via Serial-to-Ethernet converter. Device id = cubicle slave address,
+# device channel = MAU 0..7. Cubicle names come from the optional
+# cubicles list ({id, name}), default CIT<id>.
+# ============================================================================
+- type: hazemeyer.serial
+  IP: {{server}}
+  TCPPORT: {{port}}
+  P: "{{iocprefix}}"
+  NAME: "HAZEMEYER001"
+  TIMEOUT: {{ timeout if timeout is defined else 1000 }}
+  WDELAY: {{ wdelay if wdelay is defined else 50 }}
+
+{%- set ioc_ps = (ps if ps is defined else {}) %}
+{%- set cub_names = {} %}
+{%- for c in (cubicles if cubicles is defined else []) %}
+{%- set _ = cub_names.update({c.id|int: c.name}) %}
+{%- endfor %}
+{%- set cub_ids = devices | map(attribute='id') | map('int') | unique | list %}
+{%- for id in cub_ids %}
+
+- type: hazemeyer.cit
+  NAME: "HAZCIT{{ id }}"
+  serctrl: "HAZEMEYER001"
+  R: "{{ cub_names.get(id, 'CIT' ~ id) }}"
+  ID: {{ id }}
+  TIMEOUT: {{ timeout if timeout is defined else 1000 }}
+  SET_TIMEOUT_S: {{ set_timeout_s | default(30.0) }}
+{%- for t in devices if t.id|int == id %}
+{%- set dev_ps = t.get('ps', {}) %}
+- type: hazemeyer.cit_channel
+  cit: "HAZCIT{{ id }}"
+  R: "{{ t.name }}"
+  CHANNEL: {{ t.channel }}
+  IMAX: {{ dev_ps.get('current', {}).get('max', ioc_ps.get('current', {}).get('max', 10)) }}
+  VMAX: {{ dev_ps.get('voltage', {}).get('max', ioc_ps.get('voltage', {}).get('max', 20)) }}
+  ZERO_TOLERANCE: {{ t.zero_tolerance | default(zero_tolerance) | default(0.05) }}
+  SET_TOLERANCE: {{ t.set_tolerance | default(set_tolerance) | default(0.1) }}
+  SET_TIMEOUT_S: {{ t.set_timeout_s | default(set_timeout_s) | default(30.0) }}
+{%- endfor %}
+{%- endfor %}
+
 {%- endif %}
 
 # ============================================================================

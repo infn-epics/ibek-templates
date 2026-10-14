@@ -3,7 +3,7 @@
 # Human-readable reference for the `ps:` block shared by every power-supply
 # (PS) devtype under devgroup: mag (ocem/E642/modbusps/modbusps4chan,
 # danfysik/sys8x00, maccaferriPS/maccaferri, psEEI/eei,
-# caenels/{fastps,easydriver,histar}, hazemeyer/{haz-ser,haz-iocast},
+# caenels/{fastps,easydriver,histar}, hazemeyer/{haz-ser,haz-iocast,haz-cit},
 # sigmaphi, ibilt/biltitest/bilt-itest).
 #
 # This file documents the same shape that is ENFORCED (IDE-validated, CI
@@ -180,6 +180,11 @@ migration:
   - devtype: haz-iocast                # template: hazemeyer
     old_fields: []                     # never read imax/vmax - nothing to migrate
     new_path: {}
+
+  - devtype: haz-cit                   # template: hazemeyer
+    old_fields: []                     # new devtype - ps block from the start
+    new_path: { current.max: IMAX (default 10), voltage.max: VMAX (default 20) }
+    polarity: unspecified
 
   - devtype: sigmaphi                  # template: sigmaphi
     old_fields: [max]
