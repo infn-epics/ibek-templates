@@ -28,9 +28,12 @@ jobs:
         run: |
           npm install -g ajv-cli
           cd schemas
+          # beamline.schema.json $refs ioc.schema.json by URL: give ajv the local copies so it can resolve them.
           for schema in *.json; do
             echo "Validating $schema"
-            ajv compile -s "$schema" || exit 1
+            refs=""
+            for other in *.json; do [ "$other" != "$schema" ] && refs="$refs -r $other"; done
+            ajv compile -s "$schema" $refs || exit 1
           done
 
       # Step 4: Validate every test fixture against schemas/ioc.schema.json.
@@ -44,9 +47,12 @@ jobs:
       - name: Test templates on YAML files
         run: |
           pip install jnjrender
+          # --auto renders only the template the fixture names (its `template:`), as the IOC pod does;
+          # without it every template is rendered with every fixture and unrelated ones fail.
           for file in tests/*.yaml; do
             echo "Processing $file with jnjrender..."
-            jnjrender templates/ "$file" -o . || exit 1
+            out=$(mktemp -d)
+            jnjrender templates/ "$file" --auto -o "$out" || exit 1
           done
 
   release:
