@@ -96,7 +96,7 @@
                 },
                 "motor": {
                     "type": "object",
-                    "description": "IOC-wide default motor controller/axis configuration, overridable per device (devices[].<field> overrides field-by-field, not block-by-block). Shared by every motor devtype (pollux, pigcs2, newport, tml, technosoft-asyn, thorlabs, motorsim) - not every devtype consumes every field, see motor-schema.yaml's per-devtype table.",
+                    "description": "IOC-wide default motor controller/axis configuration, overridable per device (devices[].<field> overrides field-by-field, not block-by-block). Shared by every motor devtype (pollux, pigcs2, newport, technosoft-asyn, thorlabs, motorsim) - not every devtype consumes every field, see motor-schema.yaml's per-devtype table.",
                     "$ref": "#/definitions/motor"
                 },
                 "zones": {
@@ -849,15 +849,15 @@
                 },
                 "hvel": {
                     "type": "number",
-                    "description": "TML motor per-axis homing velocity, overriding motor.hvel."
+                    "description": "Per-axis homing velocity. Read by no template since the tml devtype (motorTML) was removed; kept so existing entries still validate."
                 },
                 "jvel": {
                     "type": "number",
-                    "description": "TML motor per-axis jog velocity, overriding motor.jvel."
+                    "description": "Per-axis jog velocity. Read by no template since the tml devtype (motorTML) was removed; kept so existing entries still validate."
                 },
                 "velo_max": {
                     "type": "number",
-                    "description": "TML motor per-axis maximum velocity, overriding motor.velo_max."
+                    "description": "Per-axis maximum velocity. Read by no template since the tml devtype (motorTML) was removed; kept so existing entries still validate."
                 },
                 "sensor": {
                     "type": "string",
@@ -1091,7 +1091,7 @@
         },
         "motor": {
             "type": "object",
-            "description": "Motor controller/axis configuration shared by every motor devtype (pollux, pigcs2, newport, tml, technosoft-asyn, thorlabs, motorsim). See motor-schema.yaml for the per-devtype field table - not every devtype reads every field below, and fields it doesn't read are simply ignored rather than rejected.",
+            "description": "Motor controller/axis configuration shared by every motor devtype (pollux, pigcs2, newport, technosoft-asyn, thorlabs, motorsim). See motor-schema.yaml for the per-devtype field table - not every devtype reads every field below, and fields it doesn't read are simply ignored rather than rejected.",
             "properties": {
                 "hostid": {
                     "type": [
@@ -1456,7 +1456,7 @@
         },
         "serial": {
             "type": "object",
-            "description": "Serial-over-TCP connection details (tml template).",
+            "description": "Serial connection details. motor technosoft-asyn opens serial.ptty (default /var/tmp/ttyV0) when no server is set.",
             "properties": {
                 "ip": {
                     "type": "string"

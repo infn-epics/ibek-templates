@@ -1,7 +1,7 @@
 # motor-schema.yaml
 #
 # Human-readable reference for the `motor:` block shared by every motor
-# devtype (pollux, pigcs2, newport, tml, technosoft-asyn, thorlabs,
+# devtype (pollux, pigcs2, newport, technosoft-asyn, thorlabs,
 # motorsim), and for the equivalent per-axis fields on devices[].
 #
 # This file documents the same shape that is ENFORCED (IDE-validated) by
@@ -110,14 +110,6 @@ fields_by_devtype:
   newport:
     controller: [eguxstep]              # note: motor.eguxstep only, no bare fallback ever existed
     axis: [dllm, dhlm, home, start, velo, dir, egu, vbas, accl, bdst, bvel, bacc, mres, prec]
-
-  tml:                # technosoft TML over shared &motor anchor
-    controller: [hostid, nsteps, nmicrosteps, velo, velo_max, velo_min, accl,
-                 accl_max, accl_min, har, hvel, jar, jvel, egu, slsp, enabled]
-    axis: [nsteps, nmicrosteps, velo, pos_max, pos_min, egu2mm, velo_max,
-           velo_min, accl, accl_max, accl_min, har, hvel, jar, jvel, egu,
-           slsp, enabled, timeout]
-    note: "Already used motor.* consistently before this refactor - untouched."
 
   technosoft-asyn:
     controller: [hostid, baudRate, movingPollPeriod, idlePollPeriod, debug]
