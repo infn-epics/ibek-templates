@@ -859,6 +859,42 @@
                     "type": "number",
                     "description": "Per-axis maximum velocity. Read by no template since the tml devtype (motorTML) was removed; kept so existing entries still validate."
                 },
+                "type": {
+                    "type": "string",
+                    "description": "vme: the board on this entry - caen-qdc (CAEN V965/V965A/V792), sis3820 (Struck scaler) or a32 (generic A32 register card)."
+                },
+                "card_type": {
+                    "type": "string",
+                    "description": "vme caen-qdc: board model, V965 (default), V965A or V792."
+                },
+                "card": {
+                    "type": "integer",
+                    "description": "vme a32: card number."
+                },
+                "address": {
+                    "type": ["string", "integer"],
+                    "description": "vme: base address, A24 (<= 0xffffff) or A32, as a hex string (\"0xee000000\") or an integer. A32 boards outside the BSP default window get a master window."
+                },
+                "vector": {
+                    "type": "integer",
+                    "description": "vme: interrupt vector."
+                },
+                "level": {
+                    "type": "integer",
+                    "description": "vme: interrupt level (caen-qdc default 5)."
+                },
+                "max_chans": {
+                    "type": "integer",
+                    "description": "vme sis3820: maximum channels (mca record length)."
+                },
+                "max_signals": {
+                    "type": "integer",
+                    "description": "vme sis3820: number of input signals."
+                },
+                "nregs": {
+                    "type": "integer",
+                    "description": "vme a32: number of registers."
+                },
                 "sensor": {
                     "type": "string",
                     "description": "agilent-vac xgs600: sensor channel id (e.g. 'I1')."
@@ -1015,7 +1051,7 @@
         },
         "devgroup": {
             "type": "string",
-            "description": "Controlled vocabulary for the device family. Three vocabularies must agree for a device to reach its operator panel: this field, the GROUP macro a .bob panel passes, and the uni<x>-opi directory name (epik8sutil.conf_to_dev does `devgroup == group`, then builds uni<GROUP>-opi/<GROUP>_channel_load.bob). Only six values line up on all three today: mag, mot, vac, cam, cool, io. KNOWN MISMATCHES, devices in these groups are NOT reachable from any panel until one side is renamed: 'diag' (panels pass GROUP=daq), 'timing' (panels pass GROUP=tim), 'modulator' (the directory is unimod-opi, i.e. 'mod', and no panel passes either spelling), 'bpm' (unibpm-opi exists but no panel passes GROUP=bpm), 'rf' (no uni<x>-opi family and no panel at all). Synonyms that are NOT accepted: 'motor' (use 'mot'), 'cooling' (use 'cool'), 'vpc'/'vgc' (use 'vac' and put the pump/gauge distinction in devfunc). 'mps' (machine protection, ssrip-mps template) and 'saf' (safety PLC I/O, plceli template) are also accepted - like diag/rf/timing, neither has a uni<x>-opi panel yet.",
+            "description": "Controlled vocabulary for the device family. Three vocabularies must agree for a device to reach its operator panel: this field, the GROUP macro a .bob panel passes, and the uni<x>-opi directory name (epik8sutil.conf_to_dev does `devgroup == group`, then builds uni<GROUP>-opi/<GROUP>_channel_load.bob). Only six values line up on all three today: mag, mot, vac, cam, cool, io. KNOWN MISMATCHES, devices in these groups are NOT reachable from any panel until one side is renamed: 'diag' (panels pass GROUP=daq), 'timing' (panels pass GROUP=tim), 'modulator' (the directory is unimod-opi, i.e. 'mod', and no panel passes either spelling), 'bpm' (unibpm-opi exists but no panel passes GROUP=bpm), 'rf' (no uni<x>-opi family and no panel at all). Synonyms that are NOT accepted: 'motor' (use 'mot'), 'cooling' (use 'cool'), 'vpc'/'vgc' (use 'vac' and put the pump/gauge distinction in devfunc). 'daq' (data acquisition, e.g. BTF's VME crate dante068) is accepted too. 'mps' (machine protection, ssrip-mps template) and 'saf' (safety PLC I/O, plceli template) are also accepted - like diag/rf/timing, neither has a uni<x>-opi panel yet.",
             "enum": [
                 "mag",
                 "mot",
@@ -1025,6 +1061,7 @@
                 "io",
                 "bpm",
                 "diag",
+                "daq",
                 "rf",
                 "timing",
                 "modulator",
