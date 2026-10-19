@@ -127,7 +127,8 @@ migration:
     old_fields: [imax, vmax]         # IOC-level only, not per-device
     new_path: { current.max: imax, voltage.max: vmax }
 
-  - devtype: sys8x00                 # template: danfysik
+  - devtype: sys8x00                 # template: danfysik (sys80it: same fields,
+                                     # System 8000 "SPEC.ITALIEN" variant)
     old_fields: [imax, vmax, monopolar]
     new_path:
       current.max: imax

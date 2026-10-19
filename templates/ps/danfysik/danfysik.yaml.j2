@@ -13,14 +13,27 @@ entities:
 # ============================================================================
 # Power Supplies with UNIMAG Interfaces
 # ============================================================================
+{#- devtype picks the controller firmware (device.devtype overrides the IOC's):
+      sys8x00 / sys8800 - "DANFYSIK A/S SYSTEM 8800 SB" (default)
+      sys80it           - System 8000 "SPEC.ITALIEN" (accumulator): 24-char S1,
+                          no ADCV, all units share one slow serial line, so the
+                          readbacks poll slower unless scan_* is given. #}
 {%- set ioc_ps = (ps if ps is defined else {}) %}
 {%- for device in devices %}
 {%- set dev_ps = device.get('ps', {}) %}
+{%- set dev_type = device.get('devtype') or devtype | default('sys8x00') %}
+{%- set model = 'sys80it' if dev_type == 'sys80it' else 'sys8800' %}
+{%- set scan_defaults = {'sys8800': ['1 second', '10 second', 'Passive'],
+                         'sys80it': ['2 second', '10 second', 'Passive']}[model] %}
 - type: danfysik.ps
   NAME: "{{device.name}}"
   P: "{{iocprefix}}:{{device.name}}"
   PORT: "DANFYSIK_PORT"
   ADDR: {{ device.id }}
+  model: {{ model }}
+  SCAN_FAST: "{{ device.scan_fast | default(scan_fast) | default(scan_defaults[0]) }}"
+  SCAN_SLOW: "{{ device.scan_slow | default(scan_slow) | default(scan_defaults[1]) }}"
+  SCAN_DIAG: "{{ device.scan_diag | default(scan_diag) | default(scan_defaults[2]) }}"
   # NOTE: device.ps.polarity is informational only here - the danfysik.ps IBEK
   # entity has no signed-polarity input today. Do not add one without first
   # confirming the entity's parameter schema in the danfysik ibek-support package.

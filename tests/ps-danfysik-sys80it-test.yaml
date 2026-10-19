@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+
+# System 8000 "SPEC.ITALIEN" units (accumulator): devtype sys80it loads the
+# danfysik_sys80it.template overlay and polls slower by default.
+iocname: "ps-danfysik-sys80it-test"
+asset: "https://confluence.infn.it/x/test"
+devtype: sys80it
+template: "danfysik"
+devgroup: mag
+iocprefix: "TEST:MAG:DANFYSIK"
+server: "192.168.1.2"
+port: 4001
+ps:
+  current:
+    max: 315
+  voltage:
+    max: 255
+devices:
+  - name: "QUATEST01"
+    id: 2
+  - name: "DHSTEST01"
+    id: 5
+    ps:
+      current:
+        max: 700
+      voltage:
+        max: 250
