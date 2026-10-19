@@ -301,25 +301,6 @@
                     "type": "string",
                     "description": "OCEM modbusps4chan crate identifier."
                 },
-                "cubicles": {
-                    "type": "array",
-                    "description": "Hazemeyer haz-cit cubicle names: the cubicle with Modbus slave address id (devices[].id) gets PVs <iocprefix>:<name>:... Cubicles not listed are named CIT<id>.",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "id": {
-                                "type": "integer",
-                                "description": "Modbus slave address of the cubicle (devices[].id)."
-                            },
-                            "name": {
-                                "type": "string",
-                                "description": "Cubicle name."
-                            }
-                        },
-                        "required": ["id", "name"],
-                        "additionalProperties": false
-                    }
-                },
                 "correction": {
                     "type": "number",
                     "description": "OCEM modbus correction factor, IOC-level default."

@@ -12,14 +12,9 @@ port: 4005
 ps:
   current:
     max: 10
-# Cubicle (CIT module) names by Modbus slave address; default CIT<id>.
-cubicles:
-  - id: 1
-    name: CITA1001
-  - id: 2
-    name: CITA3001
+# Cubicles are named after their Modbus slave address: CIT1, CIT2.
 devices:
-  # CITA1001, CIT module 1
+  # CIT1 (CITA1001), slave 1
   - name: CHHA1002
     id: 1
     channel: 0
@@ -44,7 +39,7 @@ devices:
   - name: CVVA2001
     id: 1
     channel: 7
-  # CITA3001, CIT module 2
+  # CIT2 (CITA3001), slave 2
   - name: CHHA3001
     id: 2
     channel: 0

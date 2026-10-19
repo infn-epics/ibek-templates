@@ -55,8 +55,8 @@ entities:
 # ============================================================================
 # CITBUS MODE - CHV TL cubicles (8 channels each, MMU Modbus RTU slave)
 # via Serial-to-Ethernet converter. Device id = cubicle slave address,
-# device channel = MAU 0..7. Cubicle names come from the optional
-# cubicles list ({id, name}), default CIT<id>.
+# device channel = MAU 0..7. Each cubicle is named after its slave address:
+# PVs <iocprefix>:CIT<id>:...
 # ============================================================================
 - type: hazemeyer.serial
   IP: {{server}}
@@ -67,17 +67,12 @@ entities:
   WDELAY: {{ wdelay if wdelay is defined else 50 }}
 
 {%- set ioc_ps = (ps if ps is defined else {}) %}
-{%- set cub_names = {} %}
-{%- for c in (cubicles if cubicles is defined else []) %}
-{%- set _ = cub_names.update({c.id|int: c.name}) %}
-{%- endfor %}
 {%- set cub_ids = devices | map(attribute='id') | map('int') | unique | list %}
 {%- for id in cub_ids %}
 
 - type: hazemeyer.cit
   NAME: "HAZCIT{{ id }}"
   serctrl: "HAZEMEYER001"
-  R: "{{ cub_names.get(id, 'CIT' ~ id) }}"
   ID: {{ id }}
   TIMEOUT: {{ timeout if timeout is defined else 1000 }}
   SET_TIMEOUT_S: {{ set_timeout_s | default(30.0) }}
