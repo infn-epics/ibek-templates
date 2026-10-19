@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+iocname: ps-e36100-test
+template: e36100
+devtype: e36100
+devgroup: mag
+iocprefix: TEST:PS:E36100
+server: 192.168.1.60
+port: 5025
+devices:
+- name: PS01
+- name: PS02
+  server: 192.168.1.61

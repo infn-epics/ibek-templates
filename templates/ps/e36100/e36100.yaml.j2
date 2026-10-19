@@ -1,0 +1,26 @@
+ioc_name: {{ iocname }}
+description: Keysight E36100B series DC power supply (E36103B 20 V / 2 A) (template e36100)
+
+entities:
+{%- for device in devices %}
+- type: e36100.controller
+  name: "{{ device.name }}"
+  P: "{{ iocprefix }}"
+  R: "{{ device.name }}"
+  IP: "{{ device.server | default(server) }}"
+  TCPPORT: {{ device.port | default(port) | default(5025) }}
+  POLL: {{ device.poll | default(poll) | default(1.0) }}
+  TIMEOUT: {{ device.timeout | default(timeout) | default(2.0) }}
+  RETRY_DELAY: {{ device.retry_delay | default(retry_delay) | default(2.0) }}
+{%- endfor %}
+
+- type: epics.PostStartupCommand
+  command: |
+    epicsThreadSleep 1.0
+{%- if iocexit %}
+    dbl
+    exit
+{%- else %}
+    dbl("*") > {{ config_dir }}/pvlist.txt
+    dbl
+{%- endif %}
