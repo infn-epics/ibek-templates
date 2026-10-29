@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/infn-epics/ibek-templates/refs/heads/main/schemas/ioc.schema.json
+#
+# Standa 8SMC1-USBhF controllers on a Raspberry Pi running usmc_server.py.
+# Axes are picked by controller serial; ADDR follows the devices[] order.
+
+iocname: "standa-test"
+asset: "https://confluence.infn.it/x/test"
+devtype: standa
+template: "motor"
+devgroup: mot
+iocprefix: "TEST:MOT:STANDA"
+server: "192.168.104.89"
+port: 5080
+motor:
+  velo: 25
+  limitsEnable: 1
+devices:
+  - name: M1
+    serial: "6183"
+    dllm: -1000
+    dhlm: 1000
+  - name: M2
+    serial: "5912"
+    egu: mm
+    mres: 0.000625   # 0.005 mm/step lead screw, 1/8 step
+    velo: 1

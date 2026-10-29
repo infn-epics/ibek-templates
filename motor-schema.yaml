@@ -2,7 +2,7 @@
 #
 # Human-readable reference for the `motor:` block shared by every motor
 # devtype (pollux, pigcs2, newport, technosoft-asyn, thorlabs,
-# motorsim), and for the equivalent per-axis fields on devices[].
+# standa, motorsim), and for the equivalent per-axis fields on devices[].
 #
 # This file documents the same shape that is ENFORCED (IDE-validated) by
 # schemas/ioc.schema.json - see the `motor` and `zones` definitions there,
@@ -38,6 +38,9 @@ shape:
     ASYNPRIO: <int>
     AUTOCONNECT: <int>
     NOPROCESSEOS: <int>
+    limitsEnable: 0 | 1
+    limit1ActiveHigh: 0 | 1
+    limit2ActiveHigh: 0 | 1
     # Axis-default fields - same names as the per-device override fields below
     velo: <number>
     vbas: <number>
@@ -127,6 +130,16 @@ fields_by_devtype:
       envelope for every axis field below it - explicit motor.<field> or
       device mot.<field> still wins over the type default.
       Already used motor.* consistently before this refactor - untouched.
+
+  standa:
+    controller: [movingPollPeriod, idlePollPeriod, limitsEnable, limit1ActiveHigh, limit2ActiveHigh]
+    axis: [dllm, dhlm, dir, egu, velo, vbas, accl, bdst, bvel, bacc, mres, prec]
+    note: >
+      Standa 8SMC1-USBhF, one USB controller per axis behind the usmc_server.py
+      bridge at server:port (default 5080). Each axis is selected by
+      devices[].serial; ADDR follows the devices[] order (no axid). Positions
+      count 1/8 full steps: the default mres 0.125 gives egu = full steps,
+      velo 2..625 steps/s. No homing (no home input).
 
   motorsim:
     axis: [dllm, dhlm, home, start, dir, egu, velo, vbas, accl, bdst, bvel, bacc, mres, prec]

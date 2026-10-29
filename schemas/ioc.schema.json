@@ -96,7 +96,7 @@
                 },
                 "motor": {
                     "type": "object",
-                    "description": "IOC-wide default motor controller/axis configuration, overridable per device (devices[].<field> overrides field-by-field, not block-by-block). Shared by every motor devtype (pollux, pigcs2, newport, technosoft-asyn, thorlabs, motorsim) - not every devtype consumes every field, see motor-schema.yaml's per-devtype table.",
+                    "description": "IOC-wide default motor controller/axis configuration, overridable per device (devices[].<field> overrides field-by-field, not block-by-block). Shared by every motor devtype (pollux, pigcs2, newport, technosoft-asyn, thorlabs, standa, motorsim) - not every devtype consumes every field, see motor-schema.yaml's per-devtype table.",
                     "$ref": "#/definitions/motor"
                 },
                 "zones": {
@@ -732,7 +732,7 @@
                 },
                 "serial": {
                     "type": "string",
-                    "description": "Vendor serial number identifying this specific unit (e.g. PTU meteo station)."
+                    "description": "Vendor serial number identifying this specific unit (e.g. PTU meteo station; standa: the 8SMC1 controller driving this axis, trailing digits are enough)."
                 },
                 "addr": {
                     "type": "string",
@@ -1109,7 +1109,7 @@
         },
         "motor": {
             "type": "object",
-            "description": "Motor controller/axis configuration shared by every motor devtype (pollux, pigcs2, newport, technosoft-asyn, thorlabs, motorsim). See motor-schema.yaml for the per-devtype field table - not every devtype reads every field below, and fields it doesn't read are simply ignored rather than rejected.",
+            "description": "Motor controller/axis configuration shared by every motor devtype (pollux, pigcs2, newport, technosoft-asyn, thorlabs, standa, motorsim). See motor-schema.yaml for the per-devtype field table - not every devtype reads every field below, and fields it doesn't read are simply ignored rather than rejected.",
             "properties": {
                 "hostid": {
                     "type": [
@@ -1171,6 +1171,21 @@
                 "NOPROCESSEOS": {
                     "type": "integer",
                     "description": "Asyn port NOPROCESSEOS flag (pigcs2)."
+                },
+                "limitsEnable": {
+                    "type": "integer",
+                    "enum": [0, 1],
+                    "description": "Enable the limit switch inputs, 1 (default) or 0 (standa)."
+                },
+                "limit1ActiveHigh": {
+                    "type": "integer",
+                    "enum": [0, 1],
+                    "description": "Limit switch 1 (low limit) active level: 0 = 0 V (default), 1 = +3/5 V (standa)."
+                },
+                "limit2ActiveHigh": {
+                    "type": "integer",
+                    "enum": [0, 1],
+                    "description": "Limit switch 2 (high limit) active level: 0 = 0 V (default), 1 = +3/5 V (standa)."
                 },
                 "velo": {
                     "type": "number",

@@ -711,6 +711,103 @@ entities:
 
 {%- endif %}
 
+{%- if devtype == "standa" %}
+{#- Standa 8SMC1-USBhF: one USB controller per axis, reached through the
+    usmc_server.py bridge at server:port; each axis is selected by its
+    controller serial (devices[].serial). Positions count 1/8 full steps, so
+    the default MRES 0.125 gives EGU = full steps. #}
+{%- set motor = motor | default({}, true) %}
+entities:
+
+  - type: standa.controller
+    controllerName: "{{devtype}}_{{server | replace('.', '_')}}"
+    P: "{{iocprefix}}{% if iocroot is defined %}:{{iocroot}}{% endif %}"
+    IP: "{{server}}"
+    TCPPORT: {{port | default(5080, true)}}
+    serials: "{% for dev in devices %}{{ dev.serial }}{% if not loop.last %} {% endif %}{% endfor %}"
+    movingPollPeriod: {{ motor.movingPollPeriod | default(100, true) }}
+    idlePollPeriod: {{ motor.idlePollPeriod | default(1000, true) }}
+    limitsEnable: {{ motor.limitsEnable | default(1) }}
+    limit1ActiveHigh: {{ motor.limit1ActiveHigh | default(0) }}
+    limit2ActiveHigh: {{ motor.limit2ActiveHigh | default(0) }}
+
+  {% for mot in devices %}
+  {#- the controller's slowest speed is 16 (1/8 steps)/s = 16 * MRES EGU/s #}
+  {%- set _mres = mot.mres | default(motor.mres | default(0.125, true)) %}
+  - type: standa.axis
+    controller: "{{devtype}}_{{server | replace('.', '_')}}"
+    M: ":{{mot.name}}"
+    ADDR: {{loop.index0}}
+    {%- if mot.desc is defined %}
+    DESC: "{{mot.desc}}"
+    {%- else %}
+    DESC: "Standa {{mot.name}} SN {{mot.serial}}"
+    {%- endif %}
+    {%- if mot.dllm is defined %}
+    DLLM: {{mot.dllm}}
+    {%- else %}
+    DLLM: {{ motor.dllm | default(0) }}
+    {%- endif %}
+    {%- if mot.dhlm is defined %}
+    DHLM: {{mot.dhlm}}
+    {%- else %}
+    DHLM: {{ motor.dhlm | default(0) }}
+    {%- endif %}
+    {%- if mot.dir is defined %}
+    DIR: {{mot.dir}}
+    {%- else %}
+    DIR: {{ motor.dir | default('Pos', true) }}
+    {%- endif %}
+    {%- if mot.egu is defined %}
+    EGU: "{{mot.egu}}"
+    {%- else %}
+    EGU: "{{ motor.egu | default('steps', true) }}"
+    {%- endif %}
+    {%- if mot.velo is defined %}
+    VELO: {{mot.velo}}
+    {%- else %}
+    VELO: {{ motor.velo | default(25, true) }}
+    {%- endif %}
+    {%- if mot.vbas is defined %}
+    VBAS: {{mot.vbas}}
+    {%- else %}
+    VBAS: {{ motor.vbas | default(_mres * 16, true) }}
+    {%- endif %}
+    {%- if mot.accl is defined %}
+    ACCL: {{mot.accl}}
+    {%- else %}
+    ACCL: {{ motor.accl | default(0.2, true) }}
+    {%- endif %}
+    {%- if mot.bdst is defined %}
+    BDST: {{mot.bdst}}
+    {%- else %}
+    BDST: {{ motor.bdst | default(0) }}
+    {%- endif %}
+    {%- if mot.bvel is defined %}
+    BVEL: {{mot.bvel}}
+    {%- else %}
+    BVEL: {{ motor.bvel | default(mot.velo | default(motor.velo | default(25, true))) }}
+    {%- endif %}
+    {%- if mot.bacc is defined %}
+    BACC: {{mot.bacc}}
+    {%- else %}
+    BACC: {{ motor.bacc | default(mot.accl | default(motor.accl | default(0.2, true))) }}
+    {%- endif %}
+    {%- if mot.mres is defined %}
+    MRES: {{mot.mres}}
+    {%- else %}
+    MRES: {{ motor.mres | default(0.125, true) }}
+    {%- endif %}
+    {%- if mot.prec is defined %}
+    PREC: {{mot.prec}}
+    {%- else %}
+    PREC: {{ motor.prec | default(3, true) }}
+    {%- endif %}
+
+  {% endfor %}
+
+{%- endif %}
+
 
   - type: epics.StartupCommand
     command: |
