@@ -1,16 +1,25 @@
 # yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
 ioc_name: {{iocname}}
-description: Granville-Phillips 307 vacuum gauge IOC
+description: Granville-Phillips 307 vacuum gauges on a shared RS-485 line
 
 entities:
-- type: granville307.controller
-  name: "{{iocname}}_MOXA"
-  P: "{{iocprefix}}"
+- type: granville307.gateway
+  name: GRANVILLE307_MOXA
   IP: "{{server}}"
   TCPPORT: {{port | default(4008)}}
-  ADDR: "{{address | default('01')}}"
   PROTO: "{{protocol | default('granville307-rs485.proto')}}"
-  PRES_UNIT_DEFAULT: "{{unit_default | default(0)}}"
+
+{%- for dev in devices %}
+- type: granville307.controller
+  gateway: GRANVILLE307_MOXA
+  name: "{{dev.name}}"
+  P: "{{dev.name}}"
+  ADDR: "{{dev.address}}"
+  PRES_UNIT_DEFAULT: "{{unit_default | default(1)}}"
+- type: epics.DbAlias
+  name: "{{dev.name}}:{{dev.channel}}:PRES_RB"
+  alias: "{{dev.name}}:PRES_RB"
+{%- endfor %}
 
 - type: epics.PostStartupCommand
   command: |
