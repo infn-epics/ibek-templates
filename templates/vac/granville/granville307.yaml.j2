@@ -14,7 +14,7 @@ entities:
   gateway: GRANVILLE307_MOXA
   name: "{{dev.name}}"
   P: "{{iocprefix}}:{{dev.name}}"
-  ADDR: "{{dev.address}}"
+  ADDR: "{{ "%02X" | format(dev.address | int) }}"
   PRES_UNIT_DEFAULT: "{{unit_default | default(1)}}"
 - type: epics.DbAlias
   name: "{{iocprefix}}:{{dev.name}}:{{dev.channel}}:PRES_RB"
