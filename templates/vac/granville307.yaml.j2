@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+ioc_name: {{iocname}}
+description: Granville-Phillips 307 vacuum gauge IOC
+
+entities:
+- type: granville307.controller
+  name: "{{iocname}}_MOXA"
+  P: "{{iocprefix}}"
+  IP: "{{server}}"
+  TCPPORT: {{port | default(4008)}}
+  ADDR: "{{address | default('01')}}"
+  PROTO: "{{protocol | default('granville307-rs485.proto')}}"
+  PRES_UNIT_DEFAULT: "{{unit_default | default(0)}}"
+
+- type: epics.PostStartupCommand
+  command: |
+      dbl("*") > {{config_dir}}/pvlist.txt
+      dbl
