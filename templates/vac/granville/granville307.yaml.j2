@@ -13,12 +13,15 @@ entities:
 - type: granville307.controller
   gateway: GRANVILLE307_MOXA
   name: "{{dev.name}}"
-  P: "{{dev.name}}"
+  P: "{{iocprefix}}:{{dev.name}}"
   ADDR: "{{dev.address}}"
   PRES_UNIT_DEFAULT: "{{unit_default | default(1)}}"
 - type: epics.DbAlias
-  name: "{{dev.name}}:{{dev.channel}}:PRES_RB"
-  alias: "{{dev.name}}:PRES_RB"
+  name: "{{iocprefix}}:{{dev.name}}:{{dev.channel}}:PRES_RB"
+  alias: "{{iocprefix}}:{{dev.name}}:PRES_RB"
+- type: epics.DbAlias
+  name: "{{iocprefix}}:{{dev.name}}:{{dev.channel}}:STATE_RB"
+  alias: "{{iocprefix}}:{{dev.name}}:STATE_RB"
 {%- endfor %}
 
 - type: epics.PostStartupCommand
