@@ -206,6 +206,11 @@
                     "minimum": 0,
                     "description": "Power-supply setpoint timeout in seconds. Devices may override this IOC-level default."
                 },
+                "fault_ignore": {
+                    "type": "array",
+                    "items": {"type": "integer", "minimum": 0, "maximum": 31},
+                    "description": "Danfysik: S1 interlock bits (STATUS_BITS bit numbers) that never raise INTERLOCKED / STATE_RB=FAULT. Devices may override this IOC-level list."
+                },
                 "init_timeout_s": {
                     "type": "number",
                     "minimum": 0,
@@ -696,6 +701,11 @@
                     "type": "number",
                     "minimum": 0,
                     "description": "Per-device power-supply setpoint timeout in seconds."
+                },
+                "fault_ignore": {
+                    "type": "array",
+                    "items": {"type": "integer", "minimum": 0, "maximum": 31},
+                    "description": "Danfysik: per-device S1 interlock bits (STATUS_BITS bit numbers) that never raise INTERLOCKED / STATE_RB=FAULT."
                 },
                 "init_timeout_s": {
                     "type": "number",

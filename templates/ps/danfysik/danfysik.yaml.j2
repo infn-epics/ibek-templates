@@ -23,6 +23,11 @@ entities:
 {%- set dev_ps = device.get('ps', {}) %}
 {%- set dev_type = device.get('devtype') or devtype | default('sys8x00') %}
 {%- set model = 'sys80it' if dev_type == 'sys80it' else 'sys8800' %}
+{#- fault_ignore: S1 interlock bits to ignore, as STATUS_BITS bit numbers
+      (device list, else the IOC one). sys80it: bit = 24 - S1 char (1-based). #}
+{%- set ignore_bits = device.fault_ignore | default(fault_ignore) | default([]) %}
+{%- set ns = namespace(mask=0) %}
+{%- for b in ignore_bits %}{% set ns.mask = ns.mask + 2 ** (b | int) %}{% endfor %}
 {%- set scan_defaults = {'sys8800': ['1 second', '10 second', 'Passive'],
                          'sys80it': ['2 second', '10 second', 'Passive']}[model] %}
 - type: danfysik.ps
@@ -45,6 +50,7 @@ entities:
   ZERO_TOLERANCE: {{ device.zero_tolerance | default(zero_tolerance) | default(0.5) }}
   SET_TOLERANCE: {{ device.set_tolerance | default(set_tolerance) | default(1.0) }}
   SET_TIMEOUT_S: {{ device.set_timeout_s | default(set_timeout_s) | default(30.0) }}
+  FAULT_IGNORE: {{ ns.mask }}
 {%- endfor %}
 
 # ============================================================================

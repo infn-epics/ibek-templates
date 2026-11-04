@@ -20,6 +20,7 @@ devices:
     id: 2
   - name: "DHSTEST01"
     id: 5
+    fault_ignore: [15]   # S1 char 9 ignored (FAULT_IGNORE 32768)
     ps:
       current:
         max: 700
