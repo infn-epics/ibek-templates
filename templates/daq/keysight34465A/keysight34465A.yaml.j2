@@ -1,0 +1,38 @@
+ioc_name: {{ iocname }}
+description: Keysight 34465A Truevolt DMM TEMPLATE
+
+entities:
+{%- for device in devices %}
+{%- set conv = device.conversion | default(conversion) | default({}) %}
+- type: keysight34465A.dmm
+  name: "{{ device.name }}"
+  P: "{{ iocprefix }}"
+  R: "{{ device.name }}"
+  IP: "{{ device.server | default(server) }}"
+  TCPPORT: {{ device.port | default(port) | default(5025) | int }}
+  NELM: {{ device.nelm | default(nelm) | default(1000) | int }}
+  SCAN: "{{ device.scan | default(scan) | default('1 second') }}"
+  RB_SCAN: "{{ device.rb_scan | default(rb_scan) | default('5 second') }}"
+  ERR_SCAN: "{{ device.err_scan | default(err_scan) | default('1 second') }}"
+  ACQ_EN: {{ device.acq_en | default(acq_en) | default(1) | int }}
+  CONV_FACTOR: {{ conv.factor | default(1.0) | float }}
+  CONV_OFFSET: {{ conv.offset | default(0.0) | float }}
+  CONV_EGU: {{ (conv.egu | default('')) | tojson }}
+  CONV_PREC: {{ conv.prec | default(4) | int }}
+{%- endfor %}
+
+- type: epics.PostStartupCommand
+  command: |
+    epicsThreadSleep 1.0
+{%- for device in devices %}
+{%- for param in device.iocinit | default([]) %}
+    dbpf("{{ iocprefix }}:{{ device.name }}:{{ param.name }}", "{{ param.value }}")
+{%- endfor %}
+{%- endfor %}
+{%- if iocexit %}
+    dbl
+    exit
+{%- else %}
+    dbl("*") > {{ config_dir }}/pvlist.txt
+    dbl
+{%- endif %}
