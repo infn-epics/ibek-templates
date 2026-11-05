@@ -123,6 +123,28 @@
                     "type": "integer",
                     "description": "Default TCP port for this IOC's device connection."
                 },
+                "nelm": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Keysight 34465A: default maximum number of readings per acquisition."
+                },
+                "rb_scan": {
+                    "type": "string",
+                    "description": "Keysight 34465A: default settings readback SCAN rate."
+                },
+                "err_scan": {
+                    "type": "string",
+                    "description": "Keysight 34465A: default SCPI error polling SCAN rate."
+                },
+                "acq_en": {
+                    "type": "integer",
+                    "enum": [0, 1],
+                    "description": "Keysight 34465A: enable acquisition at startup."
+                },
+                "conversion": {
+                    "$ref": "#/definitions/keysightConversion",
+                    "description": "Keysight 34465A: default linear reading conversion."
+                },
                 "host": {
                     "type": "string",
                     "description": "Target hostname for an SSH/SCP-deployed IOC (libera-llrf/libera-sppp style)."
@@ -533,6 +555,32 @@
                     "items": {
                         "$ref": "#/definitions/keyvalue"
                     }
+                },
+                "nelm": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Keysight 34465A: maximum number of readings per acquisition."
+                },
+                "scan": {
+                    "type": "string",
+                    "description": "Keysight 34465A: acquisition SCAN rate."
+                },
+                "rb_scan": {
+                    "type": "string",
+                    "description": "Keysight 34465A: settings readback SCAN rate."
+                },
+                "err_scan": {
+                    "type": "string",
+                    "description": "Keysight 34465A: SCPI error polling SCAN rate."
+                },
+                "acq_en": {
+                    "type": "integer",
+                    "enum": [0, 1],
+                    "description": "Keysight 34465A: enable acquisition at startup."
+                },
+                "conversion": {
+                    "$ref": "#/definitions/keysightConversion",
+                    "description": "Keysight 34465A: linear reading conversion."
                 },
                 "connection": {
                     "type": "object",
@@ -1496,6 +1544,26 @@
             "required": [
                 "name"
             ]
+        },
+        "keysightConversion": {
+            "type": "object",
+            "description": "Keysight 34465A reading conversion: converted value = reading * factor + offset.",
+            "properties": {
+                "factor": {
+                    "type": "number"
+                },
+                "offset": {
+                    "type": "number"
+                },
+                "egu": {
+                    "type": "string"
+                },
+                "prec": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            },
+            "additionalProperties": false
         },
         "serial": {
             "type": "object",
