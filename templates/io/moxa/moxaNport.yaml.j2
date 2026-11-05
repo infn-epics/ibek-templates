@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://github.com/epics-containers/ibek/releases/download/3.1.2/ibek.support.schema.json
+ioc_name: {{iocname}}
+description: Moxa NPort serial device server - web-console monitor and operating-mode control
+
+entities:
+- type: moxaNport.device
+  name: NPORT
+  P: "{{iocprefix}}"
+  host: "{{server}}"
+  httpPort: {{httpport | default(80)}}
+  nports: {{nports | default(4)}}
+  pollPeriod: {{pollperiod | default(2.0)}}
+  credentialsFile: "{{credentials_file | default('/.ssh/moxa_netrc')}}"
+  dryRun: "{{dryrun | default(1)}}"
+
+{% for n in range(1, (nports | default(4) | int) + 1) %}
+- type: moxaNport.port
+  device: NPORT
+  P: "{{iocprefix}}"
+  N: {{n}}
+  ADDR: {{n - 1}}
+{% endfor %}
+
+- type: epics.PostStartupCommand
+  command: |
+      dbl("*") > {{config_dir}}/pvlist.txt
+      dbl
