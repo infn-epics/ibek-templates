@@ -15,6 +15,7 @@ entities:
   RB_SCAN: "{{ device.rb_scan | default(rb_scan) | default('5 second') }}"
   ERR_SCAN: "{{ device.err_scan | default(err_scan) | default('1 second') }}"
   ACQ_EN: {{ device.acq_en | default(acq_en) | default(1) | int }}
+  BOOT_STATE: {{ (device.boot_state | default(boot_state) | default('')) | tojson }}
   CONV_FACTOR: {{ conv.factor | default(1.0) | float }}
   CONV_OFFSET: {{ conv.offset | default(0.0) | float }}
   CONV_EGU: {{ (conv.egu | default('')) | tojson }}

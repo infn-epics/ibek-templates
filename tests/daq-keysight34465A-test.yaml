@@ -10,6 +10,7 @@ iocroot: "DMM"
 server: "192.168.190.18"
 devices:
   - name: "DMM01"
+    boot_state: "STATE_1.sta"
     # Q[pC] = V * C, with C = 1 nF -> factor 1e-9 * 1e12 = 1000
     conversion:
       factor: 1000.0

@@ -145,6 +145,10 @@
                     "$ref": "#/definitions/keysightConversion",
                     "description": "Keysight 34465A: default linear reading conversion."
                 },
+                "boot_state": {
+                    "type": "string",
+                    "description": "Keysight 34465A: default state file (e.g. STATE_1.sta) restored at every IOC boot. Unset: no restore."
+                },
                 "host": {
                     "type": "string",
                     "description": "Target hostname for an SSH/SCP-deployed IOC (libera-llrf/libera-sppp style)."
@@ -581,6 +585,10 @@
                 "conversion": {
                     "$ref": "#/definitions/keysightConversion",
                     "description": "Keysight 34465A: linear reading conversion."
+                },
+                "boot_state": {
+                    "type": "string",
+                    "description": "Keysight 34465A: state file (e.g. STATE_1.sta) restored at every IOC boot. Unset: no restore."
                 },
                 "connection": {
                     "type": "object",
