@@ -232,6 +232,11 @@
                     "minimum": 0,
                     "description": "Power-supply setpoint timeout in seconds. Devices may override this IOC-level default."
                 },
+                "retry": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Times a power-supply command not applied within set_timeout_s is sent again (ocem E642). Devices may override this IOC-level default."
+                },
                 "fault_ignore": {
                     "type": "array",
                     "items": {"type": "integer", "minimum": 0, "maximum": 31},
@@ -757,6 +762,11 @@
                     "type": "number",
                     "minimum": 0,
                     "description": "Per-device power-supply setpoint timeout in seconds."
+                },
+                "retry": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Per-device times a power-supply command not applied within set_timeout_s is sent again (ocem E642)."
                 },
                 "fault_ignore": {
                     "type": "array",

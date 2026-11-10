@@ -94,6 +94,9 @@ shape:
 #   set_timeout_s:  <s>   default 30    how long a setpoint / commanded state
 #                                        may stay unreached, without progress,
 #                                        before it is reported
+#   retry:          <n>   default 3     (ocem E642 only) times a command not
+#                                        applied within set_timeout_s is sent
+#                                        again; IOC-level or per device
 #
 # They reach the IOC as the ZERO_TOLERANCE, SET_TOLERANCE and SET_TIMEOUT_S
 # parameters of the support entity (and db macros of the same names) and are
