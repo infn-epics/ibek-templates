@@ -30,6 +30,9 @@ entities:
   {% for mot in devices %}
   - type: micos.axis
     controller: "{{devtype}}_001"
+    {%- if mot.configFile is defined and mot.configFile %}
+    configFile: "{{ mot.configFile }}"
+    {%- endif %}
     M: ":{{mot.name}}"
     ADDR: {{loop.index0}}
     {%- if mot.dllm is defined %}

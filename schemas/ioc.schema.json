@@ -642,6 +642,10 @@
                     ],
                     "description": "Motor axis number on the controller. Per-device, no IOC-level default (each axis is distinct)."
                 },
+                "configFile": {
+                    "type": "string",
+                    "description": "Optional Pollux configuration file applied only to this axis, after any controller-level configuration file."
+                },
                 "poi": {
                     "type": "array",
                     "description": "Named points of interest (motor positions) for this axis.",

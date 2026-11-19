@@ -61,6 +61,7 @@ shape:
   devices:
     - name: <string>
       axid: <int|string>
+      configFile: <string>       # Pollux only: optional per-axis config overlay
       poi:                   # named points of interest
         - name: <string>
           value: <number>
@@ -98,10 +99,12 @@ shape:
 fields_by_devtype:
   pollux:            # template branch: motor.yaml.j2, devtype == "pollux"
     controller: [eguxstep, configFile, sendVelAccel, debug]
-    axis: [dllm, dhlm, home, velo, dir, egu, vbas, accl, bdst, bvel, bacc, mres, prec]
+    axis: [configFile, dllm, dhlm, home, velo, dir, egu, vbas, accl, bdst, bvel, bacc, mres, prec]
     note: >
-      Previously read axis defaults as bare top-level IOC fields; now reads
-      motor.* first (see "Resolution order" above).
+      motor.configFile is applied to every Pollux in the chain. A
+      devices[].configFile is applied afterward only to that logical axis and
+      overrides matching commands from the controller-level file. Axis config
+      files do not implicitly inherit or repeat the controller filename.
 
   pigcs2:             # template branch: motor.yaml.j2, devtype == "pigcs2"
                        # used for the "mercury" hardware family in EUAPS
