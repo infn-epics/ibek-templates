@@ -249,7 +249,7 @@ entities:
       {%- if tiff_enable | default(True) %}
       dbpf("{{iocprefix}}:{{camera.name}}:TIFF1:FilePath", "{{data_dir}}")
       dbpf("{{iocprefix}}:{{camera.name}}:TIFF1:FileWriteMode",2)
-      dbpf("{{iocprefix}}:{{camera.name}}:TIFF1:FileName","camera")
+      dbpf("{{iocprefix}}:{{camera.name}}:TIFF1:FileName","{{camera.name}}")
       dbpf("{{iocprefix}}:{{camera.name}}:TIFF1:AutoIncrement",1)
       dbpf("{{iocprefix}}:{{camera.name}}:TIFF1:CreateDirectory",1)
 
@@ -257,7 +257,7 @@ entities:
       {%- if proc_enable %}
       dbpf("{{iocprefix}}:{{camera.name}}:Proc1:TIFF1:FilePath", "{{data_dir}}")
       dbpf("{{iocprefix}}:{{camera.name}}:Proc1:TIFF1:FileWriteMode",2)
-      dbpf("{{iocprefix}}:{{camera.name}}:Proc1:TIFF1:FileName","{{camera.name}}")
+      dbpf("{{iocprefix}}:{{camera.name}}:Proc1:TIFF1:FileName","{{camera.name}}-proc1")
       dbpf("{{iocprefix}}:{{camera.name}}:Proc1:TIFF1:AutoIncrement",1)
       dbpf("{{iocprefix}}:{{camera.name}}:Proc1:TIFF1:CreateDirectory",1)
       dbpf("{{iocprefix}}:{{camera.name}}:Proc1:TIFF1:FileTemplate","%s%s_proc_%3.3d.tiff")
@@ -271,7 +271,7 @@ entities:
       {%- if roi_enable %}
       dbpf("{{iocprefix}}:{{camera.name}}:Roi1:TIFF1:FilePath", "{{data_dir}}")
       dbpf("{{iocprefix}}:{{camera.name}}:Roi1:TIFF1:FileWriteMode",2)
-      dbpf("{{iocprefix}}:{{camera.name}}:Roi1:TIFF1:FileName","{{camera.name}}")
+      dbpf("{{iocprefix}}:{{camera.name}}:Roi1:TIFF1:FileName","{{camera.name}}-roi")
       dbpf("{{iocprefix}}:{{camera.name}}:Roi1:TIFF1:AutoIncrement",1)
       dbpf("{{iocprefix}}:{{camera.name}}:Roi1:TIFF1:CreateDirectory",1)
       dbpf("{{iocprefix}}:{{camera.name}}:Roi1:TIFF1:FileTemplate","%s%s_roi_%3.3d.tiff")
@@ -280,7 +280,7 @@ entities:
       dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:TIFF1:FilePath", "{{data_dir}}")
       dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:TIFF1:FileWriteMode",2)
       dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:TIFF1:FileTemplate","%s%s_overlay_%3.3d.tiff")
-      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:TIFF1:FileName","{{camera.name}}")
+      dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:TIFF1:FileName","{{camera.name}}-overlay")
       dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:TIFF1:AutoIncrement",1)
       dbpf("{{iocprefix}}:{{camera.name}}:Overlay1:TIFF1:CreateDirectory",1)
       {%- endif %}
