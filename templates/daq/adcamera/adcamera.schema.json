@@ -34,6 +34,16 @@
             "type": "boolean",
             "description": "Enable or disable statistics plugins."
         },
+        "autosave_enable": {
+            "type": "boolean",
+            "default": false,
+            "description": "Save camera and plugin settings to autosave_dir and restore them at IOC start."
+        },
+        "autosave_period": {
+            "type": "integer",
+            "default": 30,
+            "description": "Seconds between autosave settings file updates."
+        },
         "cameras": {
             "type": "array",
             "description": "List of cameras to configure.",
